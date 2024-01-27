@@ -4,21 +4,19 @@ import HomeView from '../views/HomeView.vue'
 
 Vue.use(VueRouter)
 
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: HomeView
+  },
+
+]
+
 const router = new VueRouter({
   mode: 'history',
-  base: import.meta.env.BASE_URL,
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue')
-    }
-  ]
+  base: process.env.BASE_URL,
+  routes
 })
 
 export default router
