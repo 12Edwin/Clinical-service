@@ -1,7 +1,6 @@
 import adminRoutes from "@/router/admin-routes";
 import doctorRoutes from "@/router/doctor-routes";
-import publicRoutes from "@/router/public-routes";
-const Perfil = { template: '<div>Perfil</div>' }
+import Perfil from "@/modules/user/views/Perfil.vue";
 
 export default [
     {

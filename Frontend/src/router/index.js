@@ -23,8 +23,12 @@ const routes = [
           return {...route}
         })
     ]
+  },
+  {
+    path: '/*',
+    name: '404',
+    component: ()=> import('@/views/404.vue')
   }
-
 ]
 
 const router = new VueRouter({
@@ -35,11 +39,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next)=>{
   //let permission = false;
-  if (!to.matched.some((noAuth) => noAuth.meta.requireAuth)) {
-    next();
-  } else {
-    next({ name: "login" });
-  }
+  //if (!to.matched.some((noAuth) => noAuth.meta.requireAuth)) {
+  //  next();
+  //} else {
+  //  next({ name: "login" });
+  //}
+  next()
 })
 
 export default router
