@@ -1,4 +1,5 @@
 import Appoints from "@/modules/appointment/views/Appoints.vue";
+import Treatments from "@/modules/treatment/views/Treatments.vue";
 
 export default [
     {
@@ -7,6 +8,14 @@ export default [
         component: Appoints,
         meta:{
             title: 'Citas'
+        }
+    },
+    {
+        path: 'treatments',
+        name: 'treatments',
+        component: Treatments,
+        meta:{
+            title: 'Tratamientos'
         }
     }
 ]
