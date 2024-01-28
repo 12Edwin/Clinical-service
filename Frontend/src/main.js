@@ -15,6 +15,8 @@ import 'primeicons/primeicons.css'                           //icons
 import PrimeVue from 'primevue/config';
 Vue.use(PrimeVue);
 
+import Button from 'primevue/button';
+Vue.component('Button', Button)
 
 Vue.config.productionTip = false
 
