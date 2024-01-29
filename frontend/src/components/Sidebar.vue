@@ -56,6 +56,11 @@ export default {
           icon: 'alarm',
           route: 'treatments'
         },
+        {
+          label: 'Especialidades',
+          icon: 'shield',
+          route: 'specialities'
+        },
       ]
     }
   },

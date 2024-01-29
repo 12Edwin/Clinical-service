@@ -26,5 +26,7 @@ export default {
     padding-top: 30px;
     padding-right: 30px;
     width: 100%;
+    overflow: auto;
+    height: 92vh;
   }
 </style>

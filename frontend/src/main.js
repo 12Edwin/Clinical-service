@@ -13,6 +13,7 @@ import 'primevue/resources/themes/saga-blue/theme.css'       //theme
 import 'primevue/resources/primevue.min.css'                 //core css
 import 'primeicons/primeicons.css'                           //icons
 import PrimeVue from 'primevue/config';
+import 'primeflex/primeflex.css';
 Vue.use(PrimeVue);
 
 import Button from 'primevue/button';
@@ -22,6 +23,12 @@ import InputText from "primevue/inputtext/InputText";
 Vue.component('InputText', InputText)
 Vue.component('Panel', Panel)
 Vue.component('Button', Button)
+
+import DataView from 'primevue/dataview';
+Vue.component('DataView', DataView)
+
+import Card from 'primevue/card';
+Vue.component('Card', Card)
 
 Vue.config.productionTip = false
 
