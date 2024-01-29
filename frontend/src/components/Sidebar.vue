@@ -137,7 +137,6 @@ div ul{
   width: 100%;
   background-color: aliceblue;
   border-radius: 5px;
-  box-shadow: 0 2px 20px 1px rgba(0, 0, 0, 0.2);
   transform: scale(1);
   transition: all ease-out 300ms;
   color: #6b8ebd;
@@ -147,6 +146,7 @@ div ul{
   background-color: #ffffff;
   transform: scale(1.05);
   cursor: pointer;
+  box-shadow: 0 2px 20px 1px rgba(0, 0, 0, 0.2);
 }
 </style>
 
