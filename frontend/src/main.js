@@ -16,6 +16,11 @@ import PrimeVue from 'primevue/config';
 Vue.use(PrimeVue);
 
 import Button from 'primevue/button';
+import Panel from 'primevue/panel';
+import InputText from "primevue/inputtext/InputText";
+
+Vue.component('InputText', InputText)
+Vue.component('Panel', Panel)
 Vue.component('Button', Button)
 
 Vue.config.productionTip = false
