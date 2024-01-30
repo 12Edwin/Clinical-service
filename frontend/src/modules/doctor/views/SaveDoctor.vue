@@ -1,137 +1,142 @@
 <template>
     <panel>
         <template #header>
-            <h5 class="d-flex w-100 align-items-center">Registro de doctores
+            <h5 class="d-flex w-100">Registro de doctores
             </h5>
         </template>
-        <div class="media text-muted pt-3">
+        <div class="p-fluid grid">
             <div class="row">
-                <div class="col text-left">
-                    <h5 class="border-none pb-2 mb-2">Información personal</h5>
+                <div class="col d-flex align-items-lelft">
+                    <h5 class="border-none pb-2 mb-2">Datos personales</h5>
                 </div>
             </div>
             <div class="row">
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="input-name" placeholder="Raul">
-                        <label for="input-name">Nombre</label>
-                    </div>
+                <div class="field col-4 md:col-4 sm:col-12 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-user" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Nombre</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-surname" placeholder="Dominguez">
-                        <label for="input-surname">Apellido materno</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-user" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Apellido paterno</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-lastname" placeholder="Dominguez">
-                        <label for="input-lastname">Apellido paterno</label>
-                    </div>
-                </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="date" class="form-control" id="input-birthdate" placeholder="Dominguez">
-                        <label for="input-birthdate">Fecha de nacimiento</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-user" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Apellido materno</label>
+                    </span>
                 </div>
             </div>
             <div class="row">
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-address" placeholder="Av Mor y Pavón">
-                        <label for="input-address">Dirección</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-4">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-id-card" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">CURP</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="number" class="form-control" id="input-phone" placeholder="Av Mor y Pavón">
-                        <label for="input-phone">Número de teléfono</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-4">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-calendar" />
+                        <Calendar id="calendar" icon="pi pi-calendar" :showIcon="true"/>
+                        <label for="calendar">Fecha de nacimiento</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="email" class="form-control" id="input-email" placeholder="Av Mor y Pavón">
-                        <label for="input-email">Correo electrónico</label>
-                    </div>
-                </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating">
-                        <select class="form-select text-secondary" id="floatingSelect" placeholder="Género">
-                            <option selected>Selecciona una opción</option>
-                            <option value="1">Masculino</option>
-                            <option value="2">Femenino</option>
-                            <option value="3">Otro</option>
-                        </select>
-                        <label for="floatingSelect">Género</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-4">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-id-card" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">RFC</label>
+                    </span>
                 </div>
             </div>
             <div class="row">
-                <div class="col">
-                    <h5 class="border-none pb-2 mt-2 text-left">Información profesional</h5>
+                <div class="col d-flex align-items-lelft mt-4">
+                    <h5 class="border-none pb-2 mb-2">Dirección</h5>
                 </div>
             </div>
             <div class="row">
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-licence" placeholder="121223">
-                        <label for="input-licence">Licencia médica</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-map" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Calle</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-speciality" placeholder="Traumatologo">
-                        <label for="input-speciality">Especialidad</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-map-marker" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Colonia</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <textarea class="form-control" placeholder="Leave a comment here" id="input-experience"></textarea>
-                        <label for="input-experience">Experiencia laboral</label>
-                    </div>
+                <div class="field col-4 md:col-4 mt-3">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-home" />
+                        <InputText id="inputtext-right" type="text"/>
+                        <label for="inputtext-right">Código postal</label>
+                    </span>
                 </div>
-                <div class="col col-lg-3 col-md-6 col-sm-12">
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="input-association" placeholder="IMSS">
-                        <label for="input-association">Afiliación a asociaciones médicas</label>
-                    </div>
+                <div class="field col-6 md:col-4 mt-4">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-hashtag" />
+                        <InputNumber id="inputnumber" :useGrouping="false"/>
+                        <label for="inputnumber">Número interior</label>
+                    </span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h5 class="border-none pb-2 mt-2 text-left">Documentación</h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group mb-2">
-                        <input type="file" class="form-control" id="input-medical-licence">
-                        <label class="input-group-text" for="input-medical-licence">Copia licencia médica </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="input-group mb-3">
-                        <input type="file" class="form-control" id="input-medical-curriculum">
-                        <label class="input-group-text" for="input-medical-curriculum">Currículum</label>
-                    </div>
+                <div class="field col-6 md:col-4 mt-4">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-hashtag" />
+                        <InputNumber id="inputnumber" :useGrouping="false"/>
+                        <label for="inputnumber">Número exterior</label>
+                    </span>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <hr>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                        <button class="btn btn-outline-secondary me-md-2" type="button">Cancelar</button>
-                        <button class="btn btn-outline-success" type="button">Guardar</button>
-                    </div>
+            <b-row>
+                <b-col class="d-flex align-items-lelft mt-4">
+                    <h5 class="border-none pb-2">Contacto</h5>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col class="mt-4" cols="12" md="6" lg="4">
+                    <div class="field">
+                    <span class="p-float-label p-input-icon-right">
+                        <i class="pi pi-phone" />
+                        <InputNumber id="inputnumber" :useGrouping="false"/>
+                        <label for="inputnumber">Número de teléfono</label>
+                    </span>
                 </div>
-            </div>
+                </b-col>
+            </b-row>
         </div>
     </panel>
 </template>
 
 <script>
+import Calendar from 'primevue/calendar';
+import InputNumber from 'primevue/inputnumber';
 export default {
+    components: {
+        Calendar,
+        InputNumber
+    },
+    data(){
+        return{
+            doctor: {
+                name: '',
+                lastName: '',
+                secondLastName: '',
+                curp: '',
+                birthDate: ''
+            }
+        }
+    }
 
 }
 </script>
