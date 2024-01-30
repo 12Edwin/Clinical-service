@@ -1,11 +1,16 @@
 <template>
   <div>
-    <h1>Citas</h1>
+    <Calendar/>
   </div>
 </template>
 
 <script>
+import Calendar from "@/modules/appointment/components/Calendar.vue";
+
 export default {
+  components:{
+    Calendar
+  }
 
 }
 </script>

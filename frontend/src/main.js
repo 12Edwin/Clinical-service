@@ -23,6 +23,12 @@ Vue.component('InputText', InputText)
 Vue.component('Panel', Panel)
 Vue.component('Button', Button)
 
+import DataView from 'primevue/dataview';
+Vue.component('DataView', DataView)
+
+import Card from 'primevue/card';
+Vue.component('Card', Card)
+
 Vue.config.productionTip = false
 
 new Vue({
