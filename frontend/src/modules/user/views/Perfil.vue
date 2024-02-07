@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Perfil</h1>
+    <h1 style="padding: auto;">Perfil</h1>
     <div class="container">
       <div class="card">
         <p>Nombre</p>
@@ -32,7 +32,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(80vh - 60px);
+  height: calc(90vh - 60px);
 }
 
 .card {
@@ -40,7 +40,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 150vh;
 }
 
 .p-input {
