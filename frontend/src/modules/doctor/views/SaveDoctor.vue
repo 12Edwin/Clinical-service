@@ -1,12 +1,14 @@
 <template>
-    <panel class="shadow shadow-lg rounded">
+    <Card class="shadow shadow-lg rounded">
         <template #header>
-            <h5 class="d-flex w-100">Registro de doctores
-            </h5>
+            <div class="header">
+                <h4 class="d-flex w-100">Registro de doctores</h4>
+            </div>
         </template>
-        <div class="p-fluid grid">
+        <template #content>
+            <div class="p-fluid grid">
             <div class="row">
-                <div class="col d-flex align-items-lelft">
+                <div class="col d-flex align-items-left">
                     <h5 class="border-none pb-2 mb-1">Datos personales</h5>
                 </div>
             </div>
@@ -51,7 +53,7 @@
                 </b-col>
                 <b-col class="mt-4" cols="12" md="6" lg="4">
                     <span class="p-float-label p-input-icon-right">
-                        <i class="pi pi-calendar" />
+                        <i class="pi pi-calendar"/>
                         <Calendar id="calendar" icon="pi pi-calendar" :showIcon="true"/>
                         <label for="calendar">Fecha de nacimiento</label>
                     </span>
@@ -106,12 +108,14 @@
                         </span>
                     </div>
                 </b-col>
-                <b-col class="field col-6 md:col-4 mt-4">
-                    <span class="p-float-label p-input-icon-right">
-                        <i class="pi pi-hashtag" />
-                        <InputNumber id="inputnumber" :useGrouping="false"/>
+                <b-col class="mt-4" cols="12" md="6" lg="6" sm="12">
+                    <div class="field">
+                        <span class="p-float-label p-input-icon-right">
+                            <i class="pi pi-hashtag" />
+                                <InputNumber id="inputnumber" :useGrouping="false"/>
                         <label for="inputnumber">Número exterior</label>
                     </span>
+                    </div>
                 </b-col>
             </b-row>
             <b-row>
@@ -120,8 +124,23 @@
                 </b-col>
             </b-row>
             <b-row>
-                <b-col>
-
+                <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                    <div class="field">
+                        <span class="p-float-label p-input-icon-right">
+                            <i class="pi pi-star" />
+                            <InputText id="inputtext-right" type="text"/>
+                            <label for="inputtext-right">Especialidad</label>
+                        </span>
+                    </div>
+                </b-col>
+                <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                    <div class="field">
+                        <span class="p-float-label p-input-icon-right">
+                            <i class="pi pi-id-card" />
+                            <InputText id="inputtext-right" type="text"/>
+                            <label for="inputtext-right">Cédula profesional</label>
+                        </span>
+                    </div>
                 </b-col>
             </b-row>
             <b-row>
@@ -130,7 +149,7 @@
                 </b-col>
             </b-row>
             <b-row>
-                <b-col class="mt-2" cols="12" md="6" lg="4">
+                <b-col class="mt-3" cols="12" md="6" lg="4">
                     <div class="field">
                         <span class="p-float-label p-input-icon-right">
                             <i class="pi pi-phone" />
@@ -139,19 +158,37 @@
                         </span>
                     </div>
                 </b-col>
+                <b-col class="mt-3" cols="12" md="6" lg="4">
+                    <div class="field">
+                        <span class="p-float-label p-input-icon-right">
+                            <i class="pi pi-at" />
+                            <InputText id="input-email" type="email" :useGrouping="false"/>
+                            <label for="input-email">Correo electrónico</label>
+                        </span>
+                    </div>
+                </b-col>
             </b-row>
-        </div>
-    </panel>
+            </div>
+        </template>
+        <template #footer>
+            <b-row class="mt-2">
+                <b-col cols="12" class="d-flex justify-content-end">
+                    <Button icon="pi pi-check" label="Guardar" class="p-button-rounded" :loading="isLoading"/>
+                </b-col>
+            </b-row>
+        </template>
+    </Card>
 </template>
 
 <script>
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
-import FileUpload from 'primevue/fileupload';
+import Card from 'primevue/card';
 export default {
     components: {
         Calendar,
-        InputNumber
+        InputNumber,
+        Card
     },
     data(){
         return{
@@ -161,11 +198,20 @@ export default {
                 secondLastName: '',
                 curp: '',
                 birthDate: ''
-            }
+            },
+            isLoading: false
         }
     }
 
 }
 </script>
 <!-- rgb(0 175 245) -->
-<style></style>
+
+<style scoped>
+.header{
+    padding-left: 15px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+</style>

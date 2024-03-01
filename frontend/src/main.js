@@ -26,6 +26,9 @@ Vue.component('Button', Button)
 import DataView from 'primevue/dataview';
 Vue.component('DataView', DataView)
 
+import Toolbar from 'primevue/toolbar';
+Vue.component('Toolbar', Toolbar)
+
 import Card from 'primevue/card';
 Vue.component('Card', Card)
 

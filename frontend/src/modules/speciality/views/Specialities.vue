@@ -2,8 +2,8 @@
     <div class="w-100">
         <panel>
         <template #header>
-        <div class="flex justify-content-between w-100 align-items-center">
-            <h5><b>Especialidades</b></h5>
+        <div class="d-flex justify-content-between w-100 align-items-center">
+            <p class="h5"><b>Gestión de especialidades</b></p>
             <Button class="p-button-rounded p-button-outlined px-2"><BIcon icon="plus-circle" scale="2"/></Button>
         </div>
         </template>
