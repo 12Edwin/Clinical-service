@@ -2,14 +2,23 @@
   <div class="navbar">
     <div class="title"></div>
     <div class="options">
+      <div style="margin-right:20px; display: flex;">
+        <SplitButton 
+          label="Admin" 
+          :model="options" 
+          class="p-splitbutton p-button-rounded p-button-secondary mb-1"
+        ></SplitButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import SplitButton from 'primevue/splitbutton'
 export default {
 
   components:{
+    SplitButton
   },
 
   data(){
@@ -50,8 +59,17 @@ export default {
             window.location.href = 'https://vuejs.org/'
           }
         }
+      ],
+      options: [
+        {
+          label: 'Perfil',
+          icon: 'pi pi-user',
+        },
+        {
+          label: 'Cerrar sesión',
+          icon: 'pi pi-sign-out',
+        }
       ]
-
 
     }
   }
@@ -65,18 +83,36 @@ export default {
     width: 100vw;
     box-shadow: 5px 2px 20px 1px rgba(0, 0, 0, 0.2);
     z-index:2;
-    background-color: aliceblue;
+    background-color:#2a715a;
     display: flex;
     justify-content: space-between;
   }
   .options{
     position: relative;
   }
-</style>
-
-<style>
   .p-speeddial{
     position: absolute !important;
     z-index: 99;
+  }
+</style>
+
+<style>
+  .p-splitbutton{
+    width: 150px !important;
+  }
+  .p-splitbutton-menubutton:hover{
+    background-color: #ffff !important;
+
+  }
+  .p-splitbutton-defaultbutton, .p-splitbutton-menubutton{
+    background-color: transparent !important;
+    width: 80% !important;
+    border: gray
+  }
+  .p-splitbutton-menubutton{
+    width: 20% !important;
+  }
+  .p-highlight{
+    background-color: #bae0cd !important;
   }
 </style>

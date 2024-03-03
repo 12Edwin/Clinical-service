@@ -1,13 +1,13 @@
 <template>
   <div class="sidebar" :class="{'side-close': closeSide}">
     <div class="w-100 d-flex justify-content-end mb-3 pe-3">
-      <Button @click="toggleSidebar()" class="p-button-rounded px-2 p-button-success p-button-outlined"> <b-icon :class="{'toggle-arrow': closeSide}" class="arrow-side" icon="arrow-left-circle" scale="2"/> </Button>
+      <Button style="background-color: transparent; color: white;" @click="toggleSidebar()" class="p-button-rounded px-2 p-button-white p-button-outlined"> <b-icon :class="{'toggle-arrow': closeSide}" class="arrow-side" icon="arrow-left-circle" scale="2"/> </Button>
     </div>
     <div class="dock-window dock-advanced" :class="[{'fade-dock': !closeSide}, {'unFade-dock': closeSide}]">
-      <Dock :model="items" position="left">
+      <Dock :model="items" position="left" style="background: transparent;">
         <template #item="slotProps">
           <a href="#" class="p-dock-action" @click="()=> $router.push({name: slotProps.item.route})">
-            <Button class="p-button-rounded p-button-primary p-button-outlined" pill> <BIcon :icon="slotProps.item.icon"/></Button>
+            <Button class="p-button-rounded p-button-white p-button-outlined" style="color: white;"  pill> <BIcon :icon="slotProps.item.icon"/></Button>
           </a>
         </template>
       </Dock>
@@ -33,7 +33,7 @@ export default {
       items:[
         {
           label: 'Doctores',
-          icon: `trash`,
+          icon: `heart`,
           route: 'doctors'
         },
         {
@@ -48,7 +48,7 @@ export default {
         },
         {
           label: 'Historial clínico',
-          icon: 'heart',
+          icon: 'folder',
           route: 'clinical-history'
         },
         {
@@ -75,11 +75,11 @@ export default {
 <style scoped>
 .sidebar{
   height: 92vh;
-  width: 14em;
+  width: 14rem;
   box-shadow: 5px 2px 20px 1px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
+  border-radius: 1px;
   transition: all ease-out 0.8s;
-  background-color: aliceblue;
+  background-color: #5cab8c;
   position: relative;
   padding-top: 50px;
 }
@@ -134,24 +134,24 @@ div ul{
 .item{
   display: flex;
   align-items: center;
-  margin: 1px 1px;
   text-decoration: none;
   padding-bottom: 18px;
   padding-top: 18px;
   padding-left: 15px;
   width: 100%;
-  background-color: aliceblue;
+  background-color: #5cab8c;
   border-radius: 5px;
   transform: scale(1);
   transition: all ease-out 300ms;
-  color: #6b8ebd;
+  color: white;
 }
 
 .item:hover{
   background-color: #ffffff;
-  transform: scale(1.05);
+  transform: scale(1.02);
   cursor: pointer;
   box-shadow: 0 2px 20px 1px rgba(0, 0, 0, 0.2);
+  color: #373b87
 }
 </style>
 
