@@ -1,5 +1,6 @@
 import HomeView from "@/views/HomeView.vue";
 import Login from "@/views/Login.vue";
+import FreeDoctorsVue from "@/modules/doctor/views/FreeDoctors.vue";
 export default [
     {
         path: 'home',
@@ -7,6 +8,14 @@ export default [
         component: HomeView,
         meta:{
             title: 'Home'
+        }
+    },
+    {
+        path: 'our_doctors',
+        name: 'our_doctors',
+        component: FreeDoctorsVue,
+        meta:{
+            title: 'Doctors'
         }
     },
     {

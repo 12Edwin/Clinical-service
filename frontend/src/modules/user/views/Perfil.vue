@@ -70,6 +70,42 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style>
+.container {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(90vh - 60px);
+}
 
+.card {
+  max-width: 1100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150vh;
+}
+
+.p-input {
+  border: 0.5px solid black;
+  border-radius: 4px;
+  border-color: black;
+  width: 500px;
+  font-weight: normal;
+  text-align: left;
+  font-size: large;
+}
+
+p {
+  font-weight: bolder;
+  font-size: large;
+  
+}
+
+.btn {
+  width: 500px;
+  margin-top: 30px;
+}
 </style>

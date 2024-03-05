@@ -17,7 +17,29 @@ export default {
   }
 }
 </script>
+    const getActivity = (doctor) => {
+      switch (doctor.status) {
+        case 'active':
+          return 'success';
+        case 'inactive':
+          return 'danger';
+        default:
+          return null;
+      }
+    };
 
-<style lang="scss" scoped>
+    return {
+      doctors,
+      filter,
+      filteredDoctors,
+      getActivity
+    };
+  }
+};
+</script>
 
+<style scoped>
+.datatable-custom {
+  width: 95%;
+}
 </style>
