@@ -1,6 +1,7 @@
 <template>
   <div class="navbar">
-    <div class="title"></div>
+    <div class="title">
+    </div>
     <div class="options">
       <div style="margin-right:20px; display: flex;">
         <SplitButton 
