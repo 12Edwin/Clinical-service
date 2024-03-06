@@ -31,7 +31,8 @@ Vue.component('Toolbar', Toolbar)
 
 import Card from 'primevue/card';
 Vue.component('Card', Card)
-
+import ConfirmationService from 'primevue/confirmationservice';
+Vue.use(ConfirmationService);
 Vue.config.productionTip = false
 
 new Vue({
