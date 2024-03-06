@@ -1,101 +1,67 @@
 <template>
     <div class="w-100">
-        <panel>
-        <template #header>
-        <div class="d-flex justify-content-between w-100 align-items-center">
-            <p class="h5"><b>Gestión de especialidades</b></p>
-            <Button class="p-button-rounded p-button-outlined px-2"><BIcon icon="plus-circle" scale="2"/></Button>
-        </div>
-        </template>
-            <div class="row equal-height-cards">
-                <div class="col-lg-3">
-                    <div class="card text-center">
-                        <img src="@/assets/img/imagen1.jpg" class="card-img-top" alt="Imagen de ejemplo">
-                        <div class="card-body" style="min-height: 200px; max-height: 290px;" >
-                            <h5 class="card-title">Cardiología</h5>
-                            <p class="card-tex">
-                                La cardiología es la rama de la medicina que se encarga del estudio, diagnóstico y
-                                tratamiento de las enfermedades del corazón y del aparato circulatorio.
-                            </p>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                        <button class="btn btn-outline-warning me-md-2" type="button"><b-icon icon="pencil"></b-icon></button>
-                                        <button class="btn btn-outline-danger me-md-2" type="button"><b-icon icon="trash"></b-icon></button>
-                                        </div>
-                                </div>
-                            </div>
+        <b-row>
+            <b-col cols="12">
+                <panel>
+                    <template #header>
+                        <div class="d-flex justify-content-between w-100 align-items-center">
+                            <p class="h5"><b>Gestión de especialidades</b></p>
+                            <Button class="p-button-rounded p-button-outlined px-2">
+                                <BIcon icon="plus-circle" scale="2" />
+                            </Button>
                         </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card text-center">
-                        <img src="@/assets/img/imagen2.jpg" class="card-img-top" alt="Imagen de ejemplo">
-                        <div class="card-body" style="min-height: 200px">
-                            <h5 class="card-title">Radiología</h5>
-                            <p class="card-text">
-                                La radiología es la especialidad médica que se ocupa de generar imágenes del interior
-                                del cuerpo mediante diferentes agentes físicos (rayos X)
-                            </p>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                        <button class="btn btn-outline-warning me-md-2" type="button"><b-icon icon="pencil"></b-icon></button>
-                                        <button class="btn btn-outline-danger me-md-2" type="button"><b-icon icon="trash"></b-icon></button>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card text-center">
-                        <img src="@/assets/img/imagen3.jpg" class="card-img-top" alt="Imagen de ejemplo">
-                        <div class="card-body" style="min-height: 200px">
-                            <h5 class="card-title">Neurología</h5>
-                            <p class="card-text">
-                                La neurología es la especialidad médica que trata los trastornos del sistema nervioso y el
-                                diagnóstico y tratamiento de todas las categorías de enfermedades.
-                            </p>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                        <button class="btn btn-outline-warning me-md-2" type="button"><b-icon icon="pencil"></b-icon></button>
-                                        <button class="btn btn-outline-danger me-md-2" type="button"><b-icon icon="trash"></b-icon></button>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card text-center">
-                        <img src="@/assets/img/imagen4.jpg" class="card-img-top" alt="Imagen de ejemplo">
-                        <div class="card-body" style="min-height: 200px">
-                            <h5 class="card-title">Traumatología</h5>
-                            <p class="card-text">
-                                La traumatología es la especialidad médica que se encarga del estudio de las lesiones del
-                                aparato locomotor. Tiene como objetivo el diagnóstico de lesiones fisicas.
-                            </p>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                        <button class="btn btn-outline-warning me-md-2" type="button"><b-icon icon="pencil"></b-icon></button>
-                                        <button class="btn btn-outline-danger me-md-2" type="button"><b-icon icon="trash"></b-icon></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </panel>
+                    </template>
+                    <b-row>
+                        <b-col cols="12" md="8" lg="10" class="mb-4 d-flex justify-content-end align-items-center w-100">
+                            <span class="p-input-icon-right">
+                                <i class="pi pi-search" />
+                                <InputText placeholder="Buscar..." />
+                            </span>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="12" md="6" lg="3" v-for="(speciality, index) in specialities" :key="index" class="d-flex justify-content-center align-items-center">
+                            <Card
+                                class="mb-1 mt-2 card-custom"
+                            >
+                                <template #header>
+                                    <img
+                                        style="border-radius: 10px 10px; width: 100%; height: 120px;" 
+                                        src="https://picsum.photos/600/300/?image=25" 
+                                        :alt="`medical-service-${speciality.name}`"
+                                    >
+                                </template>
+                                <template #title>
+                                    {{ speciality.name }}
+                                </template>
+                                <template #footer>
+                                    <Button icon="pi pi-pencil" class="p-button-rounded button-style" @click="openModal(speciality)"/>
+                                    <Button icon="pi pi-eye" class="p-button-rounded p-button-success" style="margin-left: .5em"/>
+                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality()" />
+                                </template>
+                            </Card>
+                        </b-col>
+                    </b-row>
+                </panel>
+            </b-col>
+            <ConfirmDialog></ConfirmDialog>
+        </b-row>
+        <ModalUpdateSpecialityVue
+            :visible.sync="displayModal"
+            :speciality="speciality"
+        />
     </div>
-    </template>
+</template>
 <script>
-import DataView from 'primevue/dataview';
-
+import AccordionTab from 'primevue/accordiontab';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ModalUpdateSpecialityVue from './ModalUpdateSpeciality.vue';
 export default {
+    components: {
+        AccordionTab,
+        ConfirmDialog,
+        ModalUpdateSpecialityVue
+    },	
     data(){
         return {
             specialities: [
@@ -106,18 +72,89 @@ export default {
                 status: 'ACTIVE'
             },
             {
+                name: 'Neurología',
+                description: 'Especialidad que se encarga del estudio, diagnóstico y tratamiento de las enfermedades de la piel.',
+                price: 2500,
+                status: 'ACTIVE'
+            },
+            {
                 name: 'Dermatología',
                 description: 'Especialidad que se encarga del estudio, diagnóstico y tratamiento de las enfermedades de la piel.',
                 price: 2500,
                 status: 'ACTIVE'
             },
+            {
+                name: 'Oftalmología',
+                description: 'Especialidad de la medicina que estudia las enfermedades del ojo y sus tratamientos.',
+                price: 2500,
+                status: 'ACTIVE'
+            }
 
-        ]
+            ],
+            displayModal: false
         }
+    },
+    methods:{
+        deleteSpeciality() {
+            this.$confirm.require({
+                message: '¿Está seguro de deshabilitar esta especialidad?',
+                header: 'Confirmación',
+                icon: 'pi pi-info-circle',
+                acceptLabel: 'Sí',
+                acceptClass: 'p-button-danger',
+                accept: () => {},
+                reject: () => {}
+            });
+        },
+        openModal(speciality) {
+            this.displayModal = true;
+            this.speciality = speciality;
+        },
     }
 }
 </script>
 
 <style scoped>
 
+.p-inputtext{
+    width: 550px;
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .p-inputtext{
+        width: 100%;
+    }
+    
+}
+
+.p-card{
+    width: 100%;
+    height: 300px !important;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 10px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+.card-custom:hover{
+    transform: scale(1.05);
+}
+
+.label{
+    text-align: justify;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 10;
+    color: #000;
+}
+
+.button-style{
+    background: #2a715a;
+    border: none;
+}
+.button-style:hover{
+    background-color: #368368 !important;
+}
 </style>

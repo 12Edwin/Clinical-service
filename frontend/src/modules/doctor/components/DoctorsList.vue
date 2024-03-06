@@ -11,25 +11,25 @@
     <b-row>
         <b-col>
             <DataTable
-        class="p-datatable-lg w-100" 
-        :value="doctors" 
-        :paginator="true" 
-        :rows="2"
-        responsiveLayout="scroll"
-        dataKey="id" 
-        :loading="loading"
-        :selection.sync="selectedDoctors"
-    >
-        <template #header>
-           <b-row>
-                <b-col cols="12" class="d-flex justify-content-end align-items-center">
-                    <span class="p-input-icon-right">
-                        <i class="pi pi-search" />
-                        <InputText placeholder="Buscar por nombre..." />
-                    </span>
-                </b-col>
-           </b-row>
-        </template>
+                class="p-datatable-lg w-100" 
+                :value="doctors" 
+                :paginator="true" 
+                :rows="2"
+                responsiveLayout="scroll"
+                dataKey="id" 
+                :loading="loading"
+                :selection.sync="selectedDoctors"
+            >
+                <template #header>
+                <b-row>
+                        <b-col cols="12" class="d-flex justify-content-end align-items-center">
+                            <span class="p-input-icon-right">
+                                <i class="pi pi-search" />
+                                <InputText placeholder="Buscar por nombre..." />
+                            </span>
+                        </b-col>
+                </b-row>
+                </template>
       <template #empty>
         <div class="text-center">
             No hay doctores registrados.
@@ -119,10 +119,11 @@ export default {
 </script>
 
 <style scoped>
- .style{
-    color: #2a715a;
+.style{
+    background: #2a715a;
+    border: none;
 }
 .style:hover{
-    color: #368368 !important;
+    background-color: #368368 !important;
 }
 </style>
