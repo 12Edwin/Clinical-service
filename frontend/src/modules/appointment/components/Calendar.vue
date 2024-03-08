@@ -1,6 +1,10 @@
 <template>
   <div>
-    <FullCalendar :options="calendarOptions" />
+    <FullCalendar :options="calendarOptions" id="myCustomCalendar">
+      <template v-slot:eventContent='arg'>
+      <b>{{ arg.event.title }}</b>
+    </template>
+    </FullCalendar>
   </div>
 </template>
 
@@ -8,22 +12,54 @@
 import FullCalendar from '@fullcalendar/vue'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-
+import esLocale from '@fullcalendar/core/locales/es';
 export default {
   components: {
-    FullCalendar // make the <FullCalendar> tag available
+    FullCalendar
   },
   data() {
     return {
       calendarOptions: {
         plugins: [ dayGridPlugin, interactionPlugin ],
-        initialView: 'dayGridMonth'
+        initialView: 'dayGridMonth',
+        locale: esLocale,
+        events: [
+          { title: 'Cita', date: '2024-07-01'},
+          { title: 'event 2', date: '2024-07-04' }
+        ],
+        weekends: false,
+        dateClick: this.handleDateClick,
+        headerToolbar: {
+          start: 'title',
+          center: '',
+          end: 'today prev,next'
+        },
+        views: {
+          dayGridMonth: { // Vista de mes
+            titleFormat: { year: 'numeric', month: 'long' } // Ejemplo: Septiembre 2023
+          }
+        } 
+
       }
     }
+  },
+  methods: {
+    handleDateClick(arg) {
+      alert('date click! ' + arg.dateStr)
+    }    
   }
 }
 </script>
 
-<style scoped>
+<style>
+#myCustomCalendar .fc-button {
+  background: #2a715a;
+  color: #fff;
+  border-color: #2a715a;;
+}
 
+#myCustomCalendar .fc-button:hover {
+  background-color: #368368;
+  border-color: #368368;
+}
 </style>
