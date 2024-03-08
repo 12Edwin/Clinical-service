@@ -6,7 +6,7 @@
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
                             <p class="h5"><b>Gestión de especialidades</b></p>
-                            <Button class="p-button-rounded p-button-outlined px-2">
+                            <Button class="p-button-rounded p-button-outlined px-2"  @click="openModalSaveSpeciality()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
                         </div>
@@ -50,17 +50,22 @@
             :visible.sync="displayModal"
             :speciality="speciality"
         />
+        <ModalSaveSpeciality
+            :visible.sync="displaySaveModal"
+        y></ModalSaveSpeciality>
     </div>
 </template>
 <script>
 import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ModalUpdateSpecialityVue from './ModalUpdateSpeciality.vue';
+import ModalSaveSpeciality from './ModalSaveSpeciality.vue';
 export default {
     components: {
         AccordionTab,
         ConfirmDialog,
-        ModalUpdateSpecialityVue
+        ModalUpdateSpecialityVue,
+        ModalSaveSpeciality
     },	
     data(){
         return {
@@ -91,7 +96,12 @@ export default {
             }
 
             ],
-            displayModal: false
+            displayModal: false,
+            displaySaveModal: false,
+            speciality: {
+                name: '',
+                description: ''
+            }
         }
     },
     methods:{
@@ -110,6 +120,9 @@ export default {
             this.displayModal = true;
             this.speciality = speciality;
         },
+        openModalSaveSpeciality() {
+            this.displaySaveModal = true;
+        }
     }
 }
 </script>
