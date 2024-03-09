@@ -9,7 +9,7 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
-                                    <InputText id="field-name" type="text" />
+                                    <InputText id="field-name" type="text" v-model="speciality.name"/>
                                     <label for="field-name">Nombre</label>
                                 </span>
                             </div>
@@ -18,7 +18,7 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-pen" />
-                                    <Textarea id="field-description" type="text" rows="3" />
+                                    <Textarea id="field-description" type="text" rows="3" v-model="speciality.description"/>
                                     <label for="field-description">Descripción</label>
                                 </span>
                             </div>
@@ -44,7 +44,16 @@
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
 export default {
-    props: ['visible'],
+    props: {
+        visible: {
+            type: Boolean,
+            required: true
+        },
+        speciality: {
+            type: Object,
+            required: true
+        }
+    },
     components:{
         Dialog,
         Textarea
