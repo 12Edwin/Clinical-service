@@ -34,8 +34,8 @@
                                     <p class="error-messages" v-if="v$.description.$dirty && v$.description.required.$invalid">
                                         {{ v$.description.required.$message }}
                                     </p>
-                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.onlyLettersAndAccents.$invalid">
-                                        {{ v$.description.onlyLettersAndAccents.$message }}
+                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.text.$invalid">
+                                        {{ v$.description.text.$message }}
                                     </p>
                                </div>
                             </div>
@@ -45,9 +45,9 @@
                 <template #footer>
                     <b-row>
                         <b-col cols="12">
-                            <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
+                            <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="closeModal"
+                            <Button label="Registrar" icon="pi pi-plus" @click="saveSpeciality()" :disabled="v$.$invalid"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -60,13 +60,18 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import {onlyLettersAndAccents} from "@/utils/regex"
+import {words, text} from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers} from '@vuelidate/validators'
 export default {
     name: 'ModalSaveSpeciality',
-    props: ['visible'],
+    props: {
+        visible: {
+            type: Boolean,
+            required: true
+        }
+    },
     components:{
         Dialog,
         Textarea
@@ -80,11 +85,11 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => onlyLettersAndAccents.test(value))
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => words.test(value))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => onlyLettersAndAccents.test(value))
+                text: helpers.withMessage("Caracteres no válidos",(value) => text.test(value))
             }
         }
         const v$ = useVuelidate(rules, speciality )
@@ -106,6 +111,9 @@ export default {
             this.v$.description.$model = ''
             this.v$.$reset()
         },
+        saveSpeciality(){
+            console.log(this.speciality)
+        }
     },
 }   
 </script>
