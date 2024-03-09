@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="container mt-5">
+    <div class="container p-mt-5">
       <div class="row equal-height-cards">
         <div class="col-md-4 mb-4" v-for="(area, index) in areas" :key="index">
-          <div class="p-card text-center">
+          <div class="p-card p-d-flex p-flex-column p-ai-center">
             <div class="card-img-wrapper">
               <img :src="area.image" class="card-img-top" alt="Imagen area">
             </div>
