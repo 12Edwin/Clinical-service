@@ -2,8 +2,8 @@
   <div>
     <div class="container mt-5">
       <div class="row equal-height-cards">
-        <div class="col-md-4" v-for="(area, index) in areas" :key="index">
-          <div class="card text-center">
+        <div class="col-md-4 mb-4" v-for="(area, index) in areas" :key="index">
+          <div class="p-card text-center">
             <div class="card-img-wrapper">
               <img :src="area.image" class="card-img-top" alt="Imagen area">
             </div>
@@ -12,8 +12,8 @@
               <p class="card-text">{{ area.description }}</p>
             </div>
             <div class="card-footer">
-              <a href="#" class="btn btn-success btn-alejar">Ingresar</a>
-              <a href="#" class="btn btn-success btn-alejar">Información</a>
+              <ButtonPrime class="p-button-success btn-alejar" label="Ingresar"></ButtonPrime>
+              <ButtonPrime class="p-button-success btn-alejar" label="Información"></ButtonPrime>
             </div>
           </div>
         </div>
@@ -23,7 +23,12 @@
 </template>
 
 <script>
+import ButtonPrime from 'primevue/button'; 
+
 export default {
+  components: {
+    ButtonPrime
+  },
   data() {
     return {
       areas: [
@@ -58,16 +63,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .card {
-  height: 450px !important;
+  height: 460px !important;
   justify-content: center;
   align-items: center;
   flex: 1;
   border-color: white !important;
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2) !important;
   padding: 2px;
-  margin-top: 5px;
+  margin-top: 4px;
 }
 
 .card-img-wrapper {
@@ -81,11 +86,9 @@ export default {
 }
 
 .card-footer {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .btn-alejar {
