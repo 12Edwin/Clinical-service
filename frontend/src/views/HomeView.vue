@@ -23,7 +23,7 @@
             <a class="nav-link" href="#">Especialidades</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Servicios</a>
+            <a class="nav-link" href="/services">Servicios</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Aseguradoras</a>
