@@ -1,24 +1,21 @@
 <template>
     <div class="back">
         <h1>Nuestros Servicios</h1>
-        <div class="cards">
-            <b-row class="row-cols-lg-2">
-                <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
-                
-                    <Card class="custom-card">
-                        <template #header>
-                            <img :src="require(`@/assets/${service.image}`)" class="image" alt="">
-                        </template>
-                        <template #title>
-                            <h2 class="card-title">{{ service.titlw }}</h2>
-                        </template>
-                        <template #content>
-                           <p>{{ service.description }}</p>
-                        </template>
-                    </Card>
-                </b-col>
-            </b-row>
-        </div>
+        <b-row>
+            <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
+                <Card class="custom-card">
+                    <template #header>
+                        <img :src="require(`@/assets/${service.image}`)" class="image" alt="">
+                    </template>
+                    <template #title>
+                        <h2>{{ service.title }}</h2>
+                    </template>
+                    <template #content>
+                        <p>{{ service.description }}</p>
+                    </template>
+                </Card>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -71,28 +68,31 @@ export default {
 <style>
 .custom-card {
     border: 1px solid #ccc;
-    border-radius: 10px 10px!important;
+    border-radius: 10px 10px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     height: 100%;
     background-color: #fff;
-    width: 95%;
-    
 }
 
-
 .image {
-    height: 300px;
-    width: 95%!important;
-    margin-top: 15px;
+    height: 300px !important;
+    width: 95% !important;
+    margin: 15px;
     border-radius: 10px 10px;
 }
 
-h2,
 h1 {
     font-weight: bolder !important;
     font-family: Arial, Helvetica, sans-serif;
+    color: black!important;
+}
 
+h2{
+    font-weight: bolder !important;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 30px!important;
+    color: black!important;
 }
 
 p {
@@ -100,20 +100,11 @@ p {
     font-weight: 300 !important;
     padding: 30px;
     font-size: larger !important;
-
+    color: black!important;
 }
 
 .back {
     padding: 20px;
-}
-
-.card {
-    flex: 0 0 calc(50% - 20px);
-    margin-bottom: 20px;
-}
-
-img {
-    height: 150px;
 }
 
 .buttons {
