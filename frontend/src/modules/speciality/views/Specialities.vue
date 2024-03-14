@@ -93,7 +93,8 @@ export default {
                 description: 'Especialidad de la medicina que estudia las enfermedades del ojo y sus tratamientos.',
                 price: 2500,
                 status: 'ACTIVE'
-            }
+            },
+            
 
             ],
             displayModal: false,
