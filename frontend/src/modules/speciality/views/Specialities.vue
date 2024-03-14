@@ -26,7 +26,7 @@
                             >
                                 <template #header>
                                     <img
-                                        style="border-radius: 10px 10px; width: 100%; height: 120px;" 
+                                        style="border-radius: 10px 10px; width: 100%; height: 120px!important;" 
                                         src="https://picsum.photos/600/300/?image=25" 
                                         :alt="`medical-service-${speciality.name}`"
                                     >

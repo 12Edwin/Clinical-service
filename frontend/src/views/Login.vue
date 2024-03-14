@@ -1,71 +1,125 @@
 <template>
   <div id="login">
-    <div class="card">
-      <h2 class="h2">Hospital San Edwin</h2>
-      <form @submit.prevent="login" class="form">
-        <b-form-group label="Usuario:" label-for="username">
-          <b-form-input id="username" v-model="username" placeholder="Ingresa tu usuario"></b-form-input>
-        </b-form-group>
-        <b-form-group label="Contraseña:" label-for="password">
-          <b-form-input type="password" id="password" v-model="password"
-            placeholder="Ingresa tu contraseña"></b-form-input>
-        </b-form-group>
-        <b-button class="btn" type="submit" variant="primary">Iniciar Sesión</b-button>
-      </form>
+    <Card class="cards">
+      <template #header>
+        <div class="d-flex justify-content-center align-items-center">
+          <img src="../assets/img/logo.png" alt="">
+        </div>
 
-    </div>
+        <h1>Hospital</h1>
+      </template>
+      <template #content>
+        <b-row>
+          <b-col class="mt-4 mb-2" lg="12">
+            <div class="field w-100">
+              <span class="p-float-label p-input-icon-right">
+                <InputText id="username" type="text" v-model="value" />
+                <label for="username">Username</label>
+              </span>
+            </div>
+          </b-col>
+        </b-row>
+
+        <b-col class="mt-4 mb-2" lg="12">
+          <div class="field">
+            <span class="p-float-label p-input-icon-right">
+              <InputText type="password" v-model="password"></InputText>
+              <label for="password">Password</label>
+            </span>
+          </div>
+        </b-col>
+        <div>
+          <Button class="p-button-rounded" label="Inicar Sesion" />
+        </div>
+      </template>
+    </Card>
   </div>
 </template>
 
 <script>
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password'
+import Card from 'primevue/card/Card';
+import Carousel from 'primevue/carousel';
 export default {
   name: 'login',
   components: {
-
+    Button,
+    InputText,
+    Password,
+    Card,
+    Carousel
   },
   data() {
     return {
       isLoading: true,
+      password: null,
     }
   },
 
 }
 </script>
-<style>
+<style scoped>
 #login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #d2d3d4;
+  background-color: #2a715a;
 }
 
-.card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 500px;
-  max-height: 450px;
+
+img {
+  max-width: 100%;
+  max-height: 350px;
+  width: auto;
+  height: auto;
 }
 
-.form-group {
-  text-align: start;
-  margin-top: 20px;
+.cards {
+  width: 800px;
+  height: 85%;
+  border: 1px solid #ccc;
+  border-radius: 10px 10px !important;
+  overflow: auto;
 }
 
-.form {
-  margin-bottom: 20px;
-  width: 100%;
-  padding: 10px;
+h1 {
+  font-weight: bolder !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
-.h2 {
-  font-weight: bolder;
+.p-button {
+  width: 50%;
+  margin-top: 50px !important;
+  background-color: #2383f0 !important;
+  border: 0px solid !important;
 }
 
-.btn {
-  width: 100%;
-  margin-top: 30px;
+.p-inputtext {
+  width: 380px;
+}
+
+Button {
+  width: 380px;
+}
+
+@media(max-width: 768px){
+  .p-button{
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .p-inputtext {
+    width: 100%;
+  }
+
+}
+
+.inputs {
+  margin-top: 25px;
 }
 </style>
