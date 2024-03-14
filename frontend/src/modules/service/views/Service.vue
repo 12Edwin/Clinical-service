@@ -1,12 +1,6 @@
 <template>
     <div class="back">
         <h1>Nuestros Servicios</h1>
-        <Carousel :value="cars">
-            <template #item="services">
-            </template>
-        </Carousel>
-
-
         <b-row>
             <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
                 <Card class="custom-card">
