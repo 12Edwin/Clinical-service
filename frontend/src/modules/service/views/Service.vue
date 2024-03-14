@@ -1,6 +1,12 @@
 <template>
     <div class="back">
         <h1>Nuestros Servicios</h1>
+        <Carousel :value="cars">
+            <template #item="services">
+            </template>
+        </Carousel>
+
+
         <b-row>
             <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
                 <Card class="custom-card">
@@ -65,12 +71,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .custom-card {
     border: 1px solid #ccc;
     border-radius: 10px 10px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
     height: 100%;
     background-color: #fff;
 }
@@ -78,21 +83,21 @@ export default {
 .image {
     height: 300px !important;
     width: 95% !important;
-    margin: 15px;
+    margin-top: 15px;
     border-radius: 10px 10px;
 }
 
 h1 {
     font-weight: bolder !important;
     font-family: Arial, Helvetica, sans-serif;
-    color: black!important;
+    color: black !important;
 }
 
-h2{
+h2 {
     font-weight: bolder !important;
     font-family: Arial, Helvetica, sans-serif;
-    margin-top: 30px!important;
-    color: black!important;
+    margin-top: 30px !important;
+    color: black !important;
 }
 
 p {
@@ -100,7 +105,7 @@ p {
     font-weight: 300 !important;
     padding: 30px;
     font-size: larger !important;
-    color: black!important;
+    color: black !important;
 }
 
 .back {
