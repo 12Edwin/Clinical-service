@@ -40,6 +40,12 @@ public class Role {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "role")
     private List<User> users;
 
+    public Role(RoleTypes name, String description, String privileges) {
+        this.name = name;
+        this.description = description;
+        this.privileges = privileges;
+    }
+
     public List<Privilege> getPrivileges() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(this.privileges, new TypeReference<List<Privilege>>() {

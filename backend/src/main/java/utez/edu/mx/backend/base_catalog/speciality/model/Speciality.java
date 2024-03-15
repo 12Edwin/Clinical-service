@@ -22,7 +22,7 @@ public class Speciality {
     @Column(name = "name", columnDefinition = "VARCHAR(60) NOT NULL")
     private String name;
 
-    @Column(name = "description", columnDefinition = "VARCHAR(60) NOT NULL")
+    @Column(name = "description", columnDefinition = "VARCHAR(150) NOT NULL")
     private String description;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "speciality")
@@ -30,5 +30,10 @@ public class Speciality {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "speciality")
     private List<User> users;
+
+    public Speciality(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
 

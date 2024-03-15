@@ -22,9 +22,8 @@ public class UserService {
     private final UserRepository repository;
 
     @Transactional(readOnly = true)
-    public boolean existsUsername (String username){
-        Optional<User> optionalUser = repository.findFirstByCode(username);
-        return optionalUser.isPresent();
+    public boolean existsUsername (String username) {
+        return repository.existsByCode(username);
     }
 
     public Optional<User> findFirstByCode(String code) {
@@ -39,6 +38,11 @@ public class UserService {
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<?> verifyCode (UserDto user){
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public User saveInitial (User user){
+        return repository.saveAndFlush(user);
     }
 
 }

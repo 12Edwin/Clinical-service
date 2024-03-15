@@ -22,9 +22,14 @@ public class TypePathological {
     @Column(name = "name", columnDefinition = "VARCHAR(70) NOT NULL")
     private String name;
 
-    @Column(name = "description", columnDefinition = "VARCHAR(150) NOT NULL")
+    @Column(name = "description", columnDefinition = "VARCHAR(250) NOT NULL")
     private String description;
 
     @OneToMany(mappedBy = "typePathological")
     private List<Pathological_record> pathologicalRecords;
+
+    public TypePathological(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
