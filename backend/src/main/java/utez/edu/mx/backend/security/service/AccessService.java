@@ -39,7 +39,6 @@ public class AccessService {
     AuthenticationManager authenticationManager;
 
     public ResponseEntity<?> login(LoginDto loginDto) throws SQLException {
-        logger.info("Entra al login");
         Optional<User> optionalUser = userService.findFirstByCode(loginDto.getUsername());
         if (optionalUser.isEmpty()) {
             return new ResponseEntity<>(new Message("Usuario no encontrado", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -53,10 +52,14 @@ public class AccessService {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String tkn = jwtProvider.generateToken(authentication);
-            JwtDto jwtDto = new JwtDto(tkn, userDetails.getUsername(), Collections.singletonList(user.getRole()));
-            jwtDto.setName(user.getPerson().getName() + " " + user.getPerson().getSurname());
-            jwtDto.setIdentKey(user.getPerson().getId());
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username",userDetails.getUsername());
+            claims.put("name", user.getPerson().getName() + " " + user.getPerson().getSurname() + " " + user.getPerson().getLastname());
+            claims.put("user_id", user.getId());
+            claims.put("role", user.getRole());
+
+            String tkn = jwtProvider.generateToken(authentication, claims);
+            JwtDto jwtDto = new JwtDto(tkn, userDetails.getUsername());
             return new ResponseEntity<>(jwtDto, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error de autenticación");

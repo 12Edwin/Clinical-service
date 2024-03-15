@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.access.user.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,6 +38,7 @@ public class User {
     private Person person;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private Appoint appoint;
 
     @ManyToOne

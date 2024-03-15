@@ -15,15 +15,6 @@ import java.util.List;
 public class JwtDto {
 
     private String token;
-    private String bearer = "Bearer";
-    private String email;
-    private String name;
-    private Long identKey;
-    private List<Role> roles;
+    private String username;
 
-    public JwtDto(String token, String email, List<Role> roles) {
-        this.token = token;
-        this.email = email;
-        this.roles = roles;
-    }
 }

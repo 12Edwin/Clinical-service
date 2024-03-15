@@ -1,5 +1,6 @@
 package utez.edu.mx.backend.access.role.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +38,8 @@ public class Role {
     @Type(type = "json")
     private String privileges;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "role")
+    @OneToMany(mappedBy = "role")
+    @JsonIgnore
     private List<User> users;
 
     public Role(RoleTypes name, String description, String privileges) {

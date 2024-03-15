@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.base_catalog.person.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,9 +45,11 @@ public class Person {
     private String phone;
 
     @OneToOne(mappedBy = "person")
+    @JsonIgnore
     private User user;
 
     @OneToOne(mappedBy = "person")
+    @JsonIgnore
     private Patient patient;
 
     public Person(String name, String surname, String lastname, Date birthday, SexType sex, String phone) {
