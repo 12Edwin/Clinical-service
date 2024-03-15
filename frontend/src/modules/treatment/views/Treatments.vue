@@ -1,8 +1,8 @@
 <template>
-  <div style="position: relative">
-    <transition-group name="fade">
-        <loader v-show="isLoading" key="load"/>
-        <div v-show="!isLoading" key="main">
+  <div style="position: relative" class="w-100 h-100">
+    <transition-group name="fade" type="transition">
+        <loader v-if="isLoading" key="load"/>
+        <div v-else key="main">
           <div class="head-title"></div>
           <b-row>
             <b-col lg="5" md="12" class="mt-4">
@@ -31,7 +31,7 @@ export default {
   },
 
   created() {
-    //setTimeout(()=> this.isLoading = false, 5000)
+    setTimeout(()=> this.isLoading = false, 5000)
   }
 }
 </script>
@@ -54,4 +54,17 @@ export default {
     height: 100%;
     text-align: left;
   }
+</style>
+<style>
+.fade-enter-active{
+  transition: all 1s;
+}
+.fade-leave-active {
+  transition: all .1s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

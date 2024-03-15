@@ -57,7 +57,7 @@ export default {
     text-align: left;
     position: relative;
     animation-name: resize2;
-    animation-duration: 0.7s;
+    animation-duration: 0.5s;
     animation-fill-mode: forwards;
     cursor: pointer;
   }
@@ -76,7 +76,7 @@ export default {
     animation-name: expand;
     animation-fill-mode: both;
     animation-timing-function: ease-in;
-    animation-duration: 0.7s;
+    animation-duration: 0.5s;
   }
 
 
