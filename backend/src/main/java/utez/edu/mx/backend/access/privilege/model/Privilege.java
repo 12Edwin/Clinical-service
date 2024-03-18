@@ -24,4 +24,8 @@ public class Privilege {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    public Privilege(PrivilegeNames name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

@@ -19,7 +19,7 @@ public class Disease {
     @Column(name = "name", columnDefinition = "VARCHAR(50) NOT NULL")
     private String name;
 
-    @Column(name = "description", columnDefinition = "VARCHAR(50) NOT NULL")
+    @Column(name = "description", columnDefinition = "VARCHAR(150) NOT NULL")
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
