@@ -15,7 +15,6 @@ import utez.edu.mx.backend.access.role.model.Role;
 import utez.edu.mx.backend.access.role.model.RoleTypes;
 import utez.edu.mx.backend.access.user.control.UserService;
 import utez.edu.mx.backend.access.user.model.User;
-import utez.edu.mx.backend.base_catalog.disease.control.DiseaseService;
 import utez.edu.mx.backend.base_catalog.pathology.control.PathologicalService;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.person.control.PersonService;
@@ -27,7 +26,6 @@ import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 @Component
@@ -42,7 +40,6 @@ public class InitialDatabase implements CommandLineRunner {
     private final PersonService personService;
     private final ServiceService serviceService;
     private final SpecialityService specialityService;
-    private final DiseaseService diseaseService;
     private final PathologicalService pathologicalService;
     private final PasswordEncoder passwordEncoder;
     @Override
@@ -161,7 +158,7 @@ public class InitialDatabase implements CommandLineRunner {
         // ROLES    -- DOCTOR --
         Optional<Role> optionalRoleDoctor = roleService.findByName(RoleTypes.DOCTOR);
         String finalPrivilegeDoctor = privilegeDoctor;
-        Role roleDoctor = optionalRoleDoctor.orElseGet(() ->
+        optionalRoleDoctor.orElseGet(() ->
                 roleService.saveInitial(new Role(RoleTypes.DOCTOR, "Doctor", finalPrivilegeDoctor)));
 
         // USERS    -- ADMIN --
@@ -218,7 +215,7 @@ public class InitialDatabase implements CommandLineRunner {
         // SERVICE  -- Tratamiento de fracturas y lesiones óseas --
         Optional<Service> optionalService = serviceService.findFirstByName("Tratamiento de fracturas y lesiones óseas");
         if (optionalService.isEmpty()){
-            Service service = serviceService.saveInitial(new Service("Tratamiento de fracturas y lesiones óseas", "", 200, speciality1));
+            serviceService.saveInitial(new Service("Tratamiento de fracturas y lesiones óseas", "", 200, speciality1));
         }
 
         // SERVICE  -- Cirugía de reemplazo articular --

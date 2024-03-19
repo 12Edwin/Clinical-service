@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div id="login">
     <Card class="cards">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
@@ -21,7 +21,7 @@
         </b-row>
 
         <b-col class="mt-4 mb-2" lg="12">
-          <div>
+          <div class="field">
             <span class="p-float-label p-input-icon-right">
               <InputText type="password" v-model="credentials.password"></InputText>
               <label for="password">Password</label>
