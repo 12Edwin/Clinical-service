@@ -14,7 +14,7 @@
               <span class="p-float-label p-input-icon-right">
                 <i class="pi pi-user"></i>
                 <InputText id="username" type="text" v-model="username" />
-                <label for="username">Username</label>
+                <label for="username">Usuario</label>
               </span>
             </div>
           </b-col>
@@ -24,7 +24,7 @@
             <span class="p-float-label p-input-icon-right">
               <i class="pi" :class="inputType == 'text' ? 'pi-eye-slash' : 'pi-eye'" @click="setTypeInput(inputType)"></i>
               <InputText :type="inputType" v-model="password"></InputText>
-              <label for="password">Password</label>
+              <label for="password">Contraseña</label>
             </span>
           </div>
         </b-col>
@@ -76,6 +76,7 @@ export default {
     align-items: center;
     height: 100vh;
     background-color: #2a715a;
+    overflow: hidden;
   }
 
 
@@ -102,24 +103,21 @@ export default {
     font-family: Arial, Helvetica, sans-serif !important;
   }
 
-  .p-button {
-    width: 50%;
-    margin-top: 20px !important;
-    background-color: #2383f0 !important;
-    border: 0px solid !important;
-  }
-
   .p-inputtext {
     width: 380px;
   }
 
   Button {
-    width: 380px;
+    width: 50%;
+    max-width: 380px;
+    margin-top: 20px !important;
+    background-color: #2383f0 !important;
+    border: 0px solid !important;
   }
 
   @media(max-width: 768px){
-    .p-button{
-      width: 100%;
+    Button{
+      width: 50%;
     }
   }
 
