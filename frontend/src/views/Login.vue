@@ -1,5 +1,5 @@
 <template>
-  <div id="login">
+  <div class="login">
     <Card class="cards">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
@@ -13,7 +13,7 @@
           <b-col class="mt-4 mb-2" lg="12">
             <div class="field w-100">
               <span class="p-float-label p-input-icon-right">
-                <InputText id="username" type="text" v-model="value" />
+                <InputText id="username" type="text"/>
                 <label for="username">Username</label>
               </span>
             </div>
@@ -21,9 +21,9 @@
         </b-row>
 
         <b-col class="mt-4 mb-2" lg="12">
-          <div class="field">
+          <div>
             <span class="p-float-label p-input-icon-right">
-              <InputText type="password" v-model="password"></InputText>
+              <InputText type="password" ></InputText>
               <label for="password">Password</label>
             </span>
           </div>
@@ -58,15 +58,20 @@ export default {
     }
   },
 
+  methods: {
+    hola(){
+      
+    }
+  }
+
 }
 </script>
 <style scoped>
-#login {
+.login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #2a715a;
 }
 
 
