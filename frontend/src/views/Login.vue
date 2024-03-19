@@ -13,7 +13,7 @@
           <b-col class="mt-4 mb-2" lg="12">
             <div class="field w-100">
               <span class="p-float-label p-input-icon-right">
-                <InputText id="username" type="text"/>
+                <InputText id="username" type="text" v-model="credentials.username"/>
                 <label for="username">Username</label>
               </span>
             </div>
@@ -23,13 +23,13 @@
         <b-col class="mt-4 mb-2" lg="12">
           <div>
             <span class="p-float-label p-input-icon-right">
-              <InputText type="password" ></InputText>
+              <InputText type="password" v-model="credentials.password"></InputText>
               <label for="password">Password</label>
             </span>
           </div>
         </b-col>
         <div>
-          <Button class="p-button-rounded" label="Inicar Sesion" />
+          <Button class="p-button-rounded" label="Inicar Sesion" @click="login(credentials)"/>
         </div>
       </template>
     </Card>
@@ -42,6 +42,8 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password'
 import Card from 'primevue/card/Card';
 import Carousel from 'primevue/carousel';
+import services from "@/modules/auth-services/Auth"
+import jwtDecode from 'jwt-decode';
 export default {
   name: 'login',
   components: {
@@ -54,13 +56,26 @@ export default {
   data() {
     return {
       isLoading: true,
-      password: null,
+      credentials: {
+        username: '',
+        password: ''
+      }
     }
   },
 
   methods: {
-    hola(){
-      
+    async login(credentials){
+      const {data, status} = await services.login(credentials)
+      if(status === 200 || status === 201){
+        console.log("data =>",data)
+        console.log("token =>",data.token)
+/*         localStorage.setItem('token', data.token)
+        const token = jwtDecode(data.token)
+        localStorage.setItem('role', JSON.stringify(token.role.name))
+        localStorage.setItem('privileges', JSON.stringify(token.role.privileges))
+        console.log("token =>",token) */
+
+      }
     }
   }
 
