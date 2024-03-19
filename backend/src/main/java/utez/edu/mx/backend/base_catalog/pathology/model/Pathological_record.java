@@ -26,4 +26,7 @@ public class Pathological_record {
     @JoinColumn(name = "expedient_id", referencedColumnName = "id")
     private Expedient expedient;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "typePathological_id", referencedColumnName = "id")
+    private TypePathological typePathological;
 }

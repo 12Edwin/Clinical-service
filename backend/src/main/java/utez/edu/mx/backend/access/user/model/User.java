@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.access.user.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,13 +38,26 @@ public class User {
     private Person person;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private Appoint appoint;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "speciality_id", referencedColumnName = "id")
     private Speciality speciality;
+
+    public User(String code, String password, String token, Long person, Role role, Speciality speciality) {
+        this.code = code;
+        this.password = password;
+        this.token = token;
+        this.available = true;
+        Person newPerson = new Person();
+        newPerson.setId(person);
+        this.person = newPerson;
+        this.role = role;
+        this.speciality = speciality;
+    }
 }

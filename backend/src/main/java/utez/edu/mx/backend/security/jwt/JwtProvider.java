@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import utez.edu.mx.backend.security.entity.MyUserDetails;
 
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtProvider {
@@ -18,9 +19,10 @@ public class JwtProvider {
     @Value("${jwt.expiration}")
     private int expiration;
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, Map<String, Object> claims) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername()).setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + expiration * 1000L))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
