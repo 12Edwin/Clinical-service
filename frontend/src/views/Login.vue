@@ -1,71 +1,135 @@
 <template>
   <div id="login">
-    <div class="card">
-      <h2 class="h2">Hospital San Edwin</h2>
-      <form @submit.prevent="login" class="form">
-        <b-form-group label="Usuario:" label-for="username">
-          <b-form-input id="username" v-model="username" placeholder="Ingresa tu usuario"></b-form-input>
-        </b-form-group>
-        <b-form-group label="Contraseña:" label-for="password">
-          <b-form-input type="password" id="password" v-model="password"
-            placeholder="Ingresa tu contraseña"></b-form-input>
-        </b-form-group>
-        <b-button class="btn" type="submit" variant="primary">Iniciar Sesión</b-button>
-      </form>
-
-    </div>
+    <Card class="cards">
+      <template #header>
+        <div class="d-flex justify-content-center align-items-center">
+          <img src="../assets/img/logo.png" alt="">
+        </div>
+        <h1>Hospital</h1>
+      </template>
+      <template #content>
+        <b-row>
+          <b-col class="mt-4 mb-2" lg="12">
+            <div class="field w-100">
+              <span class="p-float-label p-input-icon-right">
+                <i class="pi pi-user"></i>
+                <InputText id="username" type="text" v-model="username" />
+                <label for="username">Usuario</label>
+              </span>
+            </div>
+          </b-col>
+        </b-row>
+        <b-col class="mt-4 mb-2" lg="12">
+          <div class="field">
+            <span class="p-float-label p-input-icon-right">
+              <i class="pi" :class="inputType == 'text' ? 'pi-eye-slash' : 'pi-eye'" @click="setTypeInput(inputType)"></i>
+              <InputText :type="inputType" v-model="password"></InputText>
+              <label for="password">Contraseña</label>
+            </span>
+          </div>
+        </b-col>
+          <Button class="p-button-rounded" label="Inicar Sesion" />
+      </template>
+    </Card>
   </div>
 </template>
 
 <script>
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password'
+import Card from 'primevue/card/Card';
+import Carousel from 'primevue/carousel';
 export default {
   name: 'login',
   components: {
-
+    Button,
+    InputText,
+    Password,
+    Card,
+    Carousel
   },
   data() {
     return {
       isLoading: true,
+      password: null,
+      inputType: 'password',
+      username: null
     }
   },
+  methods: {
+    setTypeInput(t) {
+      if(t === 'text') {
+        this.inputType = 'password';
+        return;
+      }
+      this.inputType = 'text';
+    },
+  }
 
 }
 </script>
-<style>
-#login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #d2d3d4;
-}
+  <style scoped>
+  #login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #2a715a;
+    overflow: hidden;
+  }
 
-.card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 500px;
-  max-height: 450px;
-}
 
-.form-group {
-  text-align: start;
-  margin-top: 20px;
-}
+  img {
+    max-width: 100%;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+  }
 
-.form {
-  margin-bottom: 20px;
-  width: 100%;
-  padding: 10px;
-}
+  .cards {
+    width: 800px;
+    height: 750px;
+    border: 1px solid #ccc;
+    border-radius: 10px 10px !important;
+    overflow: hidden;
+  }
+  .pi{
+    cursor: pointer;
+  }
 
-.h2 {
-  font-weight: bolder;
-}
+  h1 {
+    font-weight: bolder !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
 
-.btn {
-  width: 100%;
-  margin-top: 30px;
-}
-</style>
+  .p-inputtext {
+    width: 380px;
+  }
+
+  Button {
+    width: 50%;
+    max-width: 380px;
+    margin-top: 20px !important;
+    background-color: #2383f0 !important;
+    border: 0px solid !important;
+  }
+
+  @media(max-width: 768px){
+    Button{
+      width: 50%;
+    }
+  }
+
+
+  @media (max-width: 768px) {
+    .p-inputtext {
+      width: 100%;
+    }
+
+  }
+
+  .inputs {
+    margin-top: 25px;
+  }
+  </style>

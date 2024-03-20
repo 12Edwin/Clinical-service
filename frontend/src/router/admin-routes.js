@@ -6,10 +6,30 @@ export default [
     {
         path: 'doctors',
         name: 'doctors',
-        component: Doctors,
-        meta: {
-            title:'Doctores'
-        }
+        component: {
+            render(c){
+                return c("router-view")
+            }
+        },
+        meta: { title: ""},
+        children:[
+            {
+                path: '',
+                name: 'doctors',
+                component: Doctors,
+                meta: {
+                    title:'Doctores'
+                }
+            },
+            {
+                path: 'register',
+                name: 'register',
+                component: SaveDoctor,
+                meta: {
+                    title:'Registro'
+                }
+            }
+        ]
     },
     {
         path: 'areas',
@@ -27,12 +47,5 @@ export default [
             title:'Especialidades'
         }
     },
-    {
-        path: 'register',
-        name: 'register',
-        component: SaveDoctor,
-        meta: {
-            title:'Registro'
-        }
-    }
+
 ]
