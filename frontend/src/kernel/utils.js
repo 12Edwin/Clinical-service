@@ -12,9 +12,19 @@ const getToken = () => {
 const removeToken = () => {
     localStorage.removeItem("token")
 }
-
+async function encodeBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = (error) => reject("");
+    });
+}
 export default { 
     getRoleNameBytoken,
     getToken,
-    removeToken
+    removeToken,
+    encodeBase64
 }
