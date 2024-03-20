@@ -3,6 +3,7 @@ package utez.edu.mx.backend.base_catalog.person.model;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "people")
 public class Person {
 
@@ -40,7 +42,7 @@ public class Person {
     @Column(name = "sex", columnDefinition = "VARCHAR(40) NOT NULL")
     private SexType sex;
 
-    @Column(name = "phone", columnDefinition = "VARCHAR(12) NOT NULL")
+    @Column(name = "phone", columnDefinition = "VARCHAR(12) UNIQUE NOT NULL")
     @Length(min = 10, max = 12)
     private String phone;
 

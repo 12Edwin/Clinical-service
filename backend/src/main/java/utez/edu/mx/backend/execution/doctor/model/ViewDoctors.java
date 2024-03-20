@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import utez.edu.mx.backend.base_catalog.person.model.SexType;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,7 +29,7 @@ public class ViewDoctors {
     private String lastname;
     private Date birthday;
     private String phone;
-    private String sex;
+    private SexType sex;
     private String speciality;
     private int speciality_id;
     private String description;

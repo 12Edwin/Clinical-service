@@ -21,6 +21,11 @@ public class SpecialityService {
         return repository.findByName(name);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Speciality> findById(Long id){
+        return repository.findById(id);
+    }
+
     @Transactional(rollbackFor = {SQLException.class})
     public Speciality saveInitial(Speciality speciality){
         return repository.save(speciality);

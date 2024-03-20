@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.service.CryptService;
 
+import java.sql.SQLException;
+
 
 @RestController
 @RequestMapping("/api/doctor")
@@ -30,13 +32,23 @@ public class DoctorController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<?> findAllDoctors (@PathVariable(name = "id") Long id){
+    ResponseEntity<?> findAllDoctors (@PathVariable(name = "id") Long id) throws SQLException {
         return service.findDoctor(id);
     }
 
     @PostMapping("/")
-    ResponseEntity<?> saveDoctor (@RequestBody ViewDoctors doctor){
+    ResponseEntity<?> saveDoctor (@RequestBody ViewDoctors doctor) throws SQLException {
         return service.saveDoctor(doctor);
+    }
+
+    @PutMapping("/")
+    ResponseEntity<?> updateDoctor (@RequestBody ViewDoctors doctor) throws SQLException {
+        return service.updateDoctor(doctor);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> lockDoctor (@PathVariable Long id) throws SQLException {
+        return service.lockDoctor(id);
     }
 
 }
