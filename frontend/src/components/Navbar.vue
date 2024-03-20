@@ -67,33 +67,27 @@ export default {
         {
           label: 'Perfil',
           icon: 'pi pi-user',
+          command: ()=> {
+            this.$router.push('/perfil')
+          }
         },
         {
           label: 'Cerrar sesión',
           icon: 'pi pi-sign-out',
+          command: ()=> {
+            this.logout()
+          }
         }
       ],
       isLogged: false,
     }
   },
-/*   methods: {
-    isAuthenticated(){
-      return utils.getToken() !== undefined
-    },
-    getRoleName(){
-        if(this.isAuthenticated){
-          this.isLogged = true
-          return utils.getRoleNameBytoken()
-        }else{
-          this.isLogged = false
-          return false
-        
-        }
+  methods: {
+    logout(){
+      utils.removeToken()
+      this.$router.push('/login')
     }
-  },
-  mounted(){
-    this.getRoleName()
-  } */
+  }
 
 }
 </script>

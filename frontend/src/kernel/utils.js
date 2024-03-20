@@ -9,8 +9,12 @@ const getToken = () => {
     return localStorage.getItem("token")
 }
 
+const removeToken = () => {
+    localStorage.removeItem("token")
+}
 
 export default { 
     getRoleNameBytoken,
-    getToken
+    getToken,
+    removeToken
 }

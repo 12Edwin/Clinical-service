@@ -5,7 +5,6 @@
         <div class="d-flex justify-content-center align-items-center">
           <img src="../assets/img/logo.png" alt="">
         </div>
-
         <h1>Hospital</h1>
       </template>
       <template #content>
@@ -13,24 +12,25 @@
           <b-col class="mt-4 mb-2" lg="12">
             <div class="field w-100">
               <span class="p-float-label p-input-icon-right">
-                <InputText id="username" type="text" v-model="credentials.username"/>
-                <label for="username">Username</label>
+                <i class="pi pi-user"></i>
+                <InputText id="username" type="text" v-model="credentials.username" />
+                <label for="username">Usuario</label>
               </span>
             </div>
           </b-col>
         </b-row>
-
         <b-col class="mt-4 mb-2" lg="12">
           <div class="field">
             <span class="p-float-label p-input-icon-right">
-              <InputText type="password" v-model="credentials.password"></InputText>
-              <label for="password">Password</label>
+              <i class="pi" :class="inputType == 'text' ? 'pi-eye-slash' : 'pi-eye'" @click="setTypeInput(inputType)"></i>
+              <InputText :type="inputType" v-model="credentials.password"></InputText>
+              <label for="password">Contraseña</label>
             </span>
           </div>
+          <b-row>
+        </b-row>
         </b-col>
-        <div>
-          <Button class="p-button-rounded" label="Inicar Sesion" @click="login(credentials)"/>
-        </div>
+          <Button class="p-button-rounded" label="Inicar sesion" @click="login(credentials)"/>
       </template>
     </Card>
   </div>
@@ -43,7 +43,7 @@ import Password from 'primevue/password'
 import Card from 'primevue/card/Card';
 import Carousel from 'primevue/carousel';
 import services from "@/modules/auth-services/Auth"
-import jwtDecode from 'jwt-decode';
+import InlineMessage from 'primevue/inlinemessage';
 export default {
   name: 'login',
   components: {
@@ -51,7 +51,8 @@ export default {
     InputText,
     Password,
     Card,
-    Carousel
+    Carousel,
+    InlineMessage
   },
   data() {
     return {
@@ -59,7 +60,9 @@ export default {
       credentials: {
         username: '',
         password: ''
-      }
+      },
+      inputType: 'password',
+      loginError: false
     }
   },
 
@@ -68,16 +71,22 @@ export default {
       const {data, status} = await services.login(credentials)
       if(status === 200 || status === 201){
         localStorage.setItem('token', data.token)
-      }else{
-
+        this.$router.push({name: 'doctors'})
       }
-    }
+    },
+    setTypeInput(t) {
+      if(t === 'text') {
+        this.inputType = 'password';
+        return;
+      }
+      this.inputType = 'text';
+    },
   }
 
 }
 </script>
 <style scoped>
-.login {
+#login {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,10 +103,13 @@ img {
 
 .cards {
   width: 800px;
-  height: 85%;
+  height: 700px;
   border: 1px solid #ccc;
   border-radius: 10px 10px !important;
-  overflow: auto;
+
+}
+.pi{
+  cursor: pointer;
 }
 
 h1 {
@@ -105,24 +117,21 @@ h1 {
   font-family: Arial, Helvetica, sans-serif !important;
 }
 
-.p-button {
-  width: 50%;
-  margin-top: 50px !important;
-  background-color: #2383f0 !important;
-  border: 0px solid !important;
-}
-
 .p-inputtext {
   width: 380px;
 }
 
 Button {
-  width: 380px;
+  width: 50%;
+  max-width: 380px;
+  margin-top: 20px !important;
+  background-color: #2383f0 !important;
+  border: 0px solid !important;
 }
 
 @media(max-width: 768px){
-  .p-button{
-    width: 100%;
+  Button{
+    width: 50%;
   }
 }
 
@@ -137,4 +146,5 @@ Button {
 .inputs {
   margin-top: 25px;
 }
+</style>
 </style>

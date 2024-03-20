@@ -50,21 +50,17 @@ router.beforeEach((to, from, next)=> {
     if (authRequired && !loggedIn) {
         return next('/login')
     }
-
-/*     if(loggedIn){
+    if(loggedIn){
         const role = utils.getRoleNameBytoken()
-        console.log("role from index", role);
-        console.log("to.meta.role", to);
-        if(to.children.meta.role !== role.toLowerCase()){
+        if(to.meta && to.meta.role && to.meta.role.toString().toLowerCase() !== role.toString().toLowerCase()){
+            console.log(to)
             return next("/unautorized")
         }
-    } */
-    //let permission = false;
-    //if (!to.matched.some((noAuth) => noAuth.meta.requireAuth)) {
-    //  next();
-    //} else {
-    //  next({ name: "login" });
-    //}
+        next();
+    }
+    if(loggedIn && to.path.toString().toLowerCase() === "/login"){
+        return next("/perfil")
+    }
     next()
 })
 
