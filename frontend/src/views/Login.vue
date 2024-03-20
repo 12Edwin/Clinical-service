@@ -67,13 +67,8 @@ export default {
     async login(credentials){
       const {data, status} = await services.login(credentials)
       if(status === 200 || status === 201){
-        console.log("data =>",data)
-        console.log("token =>",data.token)
-/*         localStorage.setItem('token', data.token)
-        const token = jwtDecode(data.token)
-        localStorage.setItem('role', JSON.stringify(token.role.name))
-        localStorage.setItem('privileges', JSON.stringify(token.role.privileges))
-        console.log("token =>",token) */
+        localStorage.setItem('token', data.token)
+      }else{
 
       }
     }

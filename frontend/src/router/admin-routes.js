@@ -18,7 +18,8 @@ export default [
                 name: 'doctors',
                 component: Doctors,
                 meta: {
-                    title:'Doctores'
+                    title:'Doctores',
+                    role : 'admin'
                 }
             },
             {
@@ -26,7 +27,8 @@ export default [
                 name: 'register',
                 component: SaveDoctor,
                 meta: {
-                    title:'Registro'
+                    title:'Registro',
+                    role : 'admin'
                 }
             }
         ]
@@ -36,7 +38,8 @@ export default [
         name: 'areas',
         component: Area,
         meta: {
-            title:'Áreas'
+            title:'Áreas',
+            role : 'admin'
         }
     },
     {
@@ -44,7 +47,8 @@ export default [
         name: 'specialities',
         component: Specialities,
         meta: {
-            title:'Especialidades'
+            title:'Especialidades',
+            role : 'admin'
         }
     },
 

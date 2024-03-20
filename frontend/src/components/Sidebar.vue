@@ -14,7 +14,7 @@
     </div>
     <div class="w-100" :class="[{'fade-dock': closeSide}, {'unFade-dock': !closeSide}]">
       <ul>
-        <li class="item" v-for="(item, ind) in items" :key="ind" @click="()=> $router.push({name: item.route})">
+        <li class="item"  v-for="(item, ind) in items" :key="ind" @click="()=> $router.push({name: item.route})">
           <BIcon :icon="item.icon" scale="1.15"/> <span class="ms-3">{{item.label}}</span>
         </li>
       </ul>
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import utils from "@/kernel/utils"
 export default {
   components:{
     Dock: () => import('primevue/dock')
@@ -68,6 +69,9 @@ export default {
     toggleSidebar(){
       this.closeSide = !this.closeSide
     }
+  },
+  mounted(){
+    console.log("This user is logged in as  =>", utils.getRoleNameBytoken())
   }
 }
 </script>
