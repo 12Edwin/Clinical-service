@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @ControllerAdvice
-public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
+public class CustomRestExceptionHandler<T> extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -58,12 +58,20 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintViolation(
-            ConstraintViolationException ex, WebRequest request) {
+            ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
             errors.put(violation.getPropertyPath() + "", violation.getMessage());
         }
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    public ResponseEntity<Object> handleViolations(
+            Set<ConstraintViolation<T>> ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.forEach(violation ->{errors.put(violation.getPropertyPath() + "", violation.getMessage());});
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation errors", errors);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
