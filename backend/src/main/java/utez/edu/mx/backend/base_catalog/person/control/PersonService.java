@@ -33,13 +33,13 @@ public class PersonService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save (Person person) throws SQLException {
+    public ResponseEntity<?> save (Person person) throws IllegalArgumentException {
         if (person.getName() == null || person.getSurname() == null
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
                 || person.getPhone() == null
                 || person.getSex() == null || person.getBirthday() == null
-        ) throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+        ) throw new IllegalArgumentException("missing fields");
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(person.getBirthday());
@@ -60,12 +60,12 @@ public class PersonService {
 
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> update (Person person) throws SQLException {
+    public ResponseEntity<?> update (Person person) throws IllegalArgumentException {
         if (person.getName() == null || person.getSurname() == null || person.getId() <= 0
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
                 || person.getSex() == null || person.getBirthday() == null
-        ) throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+        ) throw new IllegalArgumentException("missing fields");
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(person.getBirthday());

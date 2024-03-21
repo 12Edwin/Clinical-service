@@ -16,6 +16,7 @@ import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.person.control.PersonService;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
+import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
@@ -24,10 +25,7 @@ import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -51,8 +49,8 @@ public class DoctorService {
     private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findDoctor(Long id) throws SQLException {
-        if (id <= 0) throw new SQLException("missing fields");
+    public ResponseEntity<?> findDoctor(Long id) throws IllegalArgumentException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<ViewDoctors> doctor = viewRepository.findById(id);
         if (doctor.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
@@ -66,10 +64,10 @@ public class DoctorService {
     }
 
     @Transactional
-    public ResponseEntity<?> saveDoctor(ViewDoctors doctor) throws SQLException {
+    public ResponseEntity<?> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException {
 
         if (doctor.getSpeciality_id() <= 0  || doctor.getCode() == null || doctor.getPassword() == null)
-            throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+            throw new IllegalArgumentException("missing fields");
 
         if (userRepository.existsByCode(doctor.getCode())){
             return new ResponseEntity<>(new Message("code already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -86,7 +84,7 @@ public class DoctorService {
         }
 
         ResponseEntity resp = personService.save(new Person(doctor.getName(), doctor.getSurname(), doctor.getLastname(),
-                doctor.getBirthday(), doctor.getSex(), doctor.getPhone()));
+                doctor.getBirthday(), SexType.valueOf(doctor.getSex()), doctor.getPhone()));
         Message message = (Message) resp.getBody();
         assert message != null;
         if (!message.getType().equals(TypeResponse.SUCCESS)){
@@ -96,9 +94,9 @@ public class DoctorService {
     }
 
     @Transactional(value = "transactionManager", propagation = Propagation.REQUIRES_NEW, rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateDoctor(ViewDoctors doctor) throws SQLException {
+    public ResponseEntity<?> updateDoctor(ViewDoctors doctor) throws IllegalArgumentException {
 
-        if (doctor.getSpeciality_id() <= 0) throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+        if (doctor.getSpeciality_id() <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Role> role = roleService.findByName(RoleTypes.DOCTOR);
         if (role.isEmpty()) return new ResponseEntity<>(new Message("invalid role", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         Optional<Speciality> speciality = specialityService.findById((long) doctor.getSpeciality_id());
@@ -113,7 +111,7 @@ public class DoctorService {
         }
 
         ResponseEntity resp = personService.update(new Person(person.get().getId(), doctor.getName(), doctor.getSurname(), doctor.getLastname(),
-                doctor.getBirthday(), doctor.getSex(), null, null, null));
+                doctor.getBirthday(), SexType.valueOf(doctor.getSex()), null, null, null));
         Message message = (Message) resp.getBody();
         assert message != null;
         if (!message.getType().equals(TypeResponse.SUCCESS)){
@@ -123,7 +121,7 @@ public class DoctorService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> lockDoctor(Long id) throws SQLException {
+    public ResponseEntity<?> lockDoctor(Long id) throws IllegalArgumentException {
         return userService.lockUser(id);
     }
 }

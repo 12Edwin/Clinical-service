@@ -50,9 +50,9 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> saveUserDoctor (User user) throws SQLException {
+    public ResponseEntity<?> saveUserDoctor (User user) throws IllegalArgumentException {
         if (user.getCode() == null || user.getPassword() == null
-        ) throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+        ) throw new IllegalArgumentException("missing fields");
 
         if (repository.existsByCode(user.getCode())){
             return new ResponseEntity<>(new Message("code already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -73,9 +73,9 @@ public class UserService {
     }
 
     @Transactional(value = "transactionManager",rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateUserDoctor (User user) throws SQLException {
+    public ResponseEntity<?> updateUserDoctor (User user) throws IllegalArgumentException {
         if (user.getId() <= 0
-        ) throw new SQLException("missing fields", String.valueOf(TypeResponse.ERROR));
+        ) throw new IllegalArgumentException("missing fields");
 
         if (!repository.existsById(user.getId())){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -94,8 +94,8 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> lockUser (Long id) throws SQLException {
-        if (id <= 0) throw new SQLException("missing fields");
+    public ResponseEntity<?> lockUser (Long id) throws IllegalArgumentException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<User> user = findById(id);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
