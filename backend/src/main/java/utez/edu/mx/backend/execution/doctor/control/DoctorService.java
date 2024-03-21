@@ -1,5 +1,7 @@
 package utez.edu.mx.backend.execution.doctor.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +23,13 @@ import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.execution.doctor.model.DoctorRepository;
+import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import javax.persistence.EntityManager;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -45,26 +50,26 @@ public class DoctorService {
     private final RoleService roleService;
     @Autowired
     private final SpecialityService specialityService;
-    @Autowired
-    private final EntityManager entityManager;
+    private final ObjectMapper mapper;
+    private final CryptService cryptService;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findDoctor(Long id) throws IllegalArgumentException {
+    public ResponseEntity<?> findDoctor(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<ViewDoctors> doctor = viewRepository.findById(id);
         if (doctor.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new Message(doctor.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(cryptService.encrypt(mapper.writeValueAsString(doctor.get())), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAllDoctors(Pageable pageable){
-        return new ResponseEntity<> ( new Message(viewRepository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    public ResponseEntity<?> findAllDoctors(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        return new ResponseEntity<> ( new Message(cryptService.encrypt( mapper.writeValueAsString(viewRepository.findAll(pageable))), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException {
+    public ResponseEntity<?> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException, UnsupportedEncodingException, NoSuchAlgorithmException, JsonProcessingException {
 
         if (doctor.getSpeciality_id() <= 0  || doctor.getCode() == null || doctor.getPassword() == null)
             throw new IllegalArgumentException("missing fields");

@@ -35,8 +35,14 @@ public class DoctorController {
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable){
-        return service.findAllDoctors(pageable);
+    ResponseEntity<?> findAllDoctors (Pageable pageable) throws JsonProcessingException {
+        try {
+            return service.findAllDoctors(pageable);
+        }catch (UnsupportedEncodingException | JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Bad encoded text"), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NoSuchAlgorithmException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{str_id}")
@@ -44,8 +50,8 @@ public class DoctorController {
         try {
             String id = cryptService.decrypt(str_id);
             return service.findDoctor(Long.valueOf(id));
-        }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }catch (UnsupportedEncodingException | JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Bad encoded text"), HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (NoSuchAlgorithmException ex){
             return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
         }

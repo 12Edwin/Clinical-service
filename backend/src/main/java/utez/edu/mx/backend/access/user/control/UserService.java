@@ -1,5 +1,7 @@
 package utez.edu.mx.backend.access.user.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.access.user.model.UserDto;
 import utez.edu.mx.backend.access.user.model.UserRepository;
+import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,6 +29,8 @@ public class UserService {
     @Autowired
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final CryptService cryptService;
+    private final ObjectMapper mapper;
 
     @Transactional(readOnly = true)
     public boolean existsUsername (String username) {
@@ -50,7 +56,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> saveUserDoctor (User user) throws IllegalArgumentException {
+    public ResponseEntity<?> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException {
         if (user.getCode() == null || user.getPassword() == null
         ) throw new IllegalArgumentException("missing fields");
 
@@ -69,7 +75,7 @@ public class UserService {
         if (newUser.getCode() == null){
             return new ResponseEntity<>(new Message("Unregistered user", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(new Message(newUser, "Registered user", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(cryptService.encrypt(mapper.writeValueAsString(newUser)), "Registered user", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(value = "transactionManager",rollbackFor = {SQLException.class})
