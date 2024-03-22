@@ -1,5 +1,6 @@
 package utez.edu.mx.backend.base_catalog.person.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import utez.edu.mx.backend.base_catalog.person.model.PersonRepository;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +35,7 @@ public class PersonService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save (Person person) throws IllegalArgumentException {
+    public ResponseEntity<?> save (Person person) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (person.getName() == null || person.getSurname() == null
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
