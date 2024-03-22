@@ -15,7 +15,6 @@ import utez.edu.mx.backend.security.service.CryptService;
 
 import javax.validation.*;
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 
@@ -35,13 +34,13 @@ public class DoctorController {
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) throws JsonProcessingException {
+    ResponseEntity<?> findAllDoctors (Pageable pageable) {
         try {
             return service.findAllDoctors(pageable);
-        }catch (UnsupportedEncodingException | JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Bad encoded text"), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NoSuchAlgorithmException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -49,11 +48,12 @@ public class DoctorController {
     ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
+            System.out.println(id);
             return service.findDoctor(Long.valueOf(id));
-        }catch (UnsupportedEncodingException | JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Bad encoded text"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch (NoSuchAlgorithmException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -73,8 +73,6 @@ public class DoctorController {
             return service.saveDoctor(doctor);
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
-        }catch (NoSuchAlgorithmException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }
@@ -96,8 +94,6 @@ public class DoctorController {
             return service.updateDoctor(doctor);
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
-        }catch (NoSuchAlgorithmException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }
@@ -110,8 +106,6 @@ public class DoctorController {
             return service.lockDoctor(Long.valueOf(id));
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
-        }catch (NoSuchAlgorithmException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Cipher is corrupted"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
