@@ -1,7 +1,7 @@
 import HomeView from "@/views/HomeView.vue";
 import Login from "@/views/Login.vue";
 import FreeDoctorsVue from "@/modules/doctor/views/FreeDoctors.vue";
-import Service from "@/modules/service/views/Service.vue"
+import Service from "@/modules/service-public/views/ServicePublic.vue"
 export default [
     {
         path: '',
@@ -42,7 +42,7 @@ export default [
                 },
             },
             {
-                path: 'services',
+                path: 'publicServices',
                 name: 'services',
                 component: Service,
                 meta:{
