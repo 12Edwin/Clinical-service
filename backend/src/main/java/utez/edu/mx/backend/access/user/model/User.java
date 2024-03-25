@@ -3,6 +3,7 @@ package utez.edu.mx.backend.access.user.model;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import utez.edu.mx.backend.execution.appoint.model.Appoint;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "users")
 public class User {
 
@@ -21,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "code", columnDefinition = "VARCHAR(15) NOT NULL")
+    @Column(name = "code", columnDefinition = "VARCHAR(15) UNIQUE NOT NULL")
     private String code;
 
     @Column(name = "password", columnDefinition = "VARCHAR(100) NOT NULL")

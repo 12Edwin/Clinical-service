@@ -1,4 +1,4 @@
-package utez.edu.mx.backend.execution.doctor.control;
+package utez.edu.mx.backend.base_catalog.service.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,35 +8,37 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
+import utez.edu.mx.backend.base_catalog.service.model.DtoService;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
-
 @RestController
-@RequestMapping("/api/doctor")
+@RequestMapping("/api/service")
 @AllArgsConstructor
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-public class DoctorController {
+public class ServiceController {
 
-    private static final String DOCTOR = "DOCTOR";
+    private static final String SERVICE = "SERVICE";
 
     @Autowired
-    private final DoctorService service;
+    private ServiceService serv;
 
     private final CryptService cryptService;
-    private final ObjectMapper objectMapper;
-    private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
+    private final ObjectMapper mapper;
+    private final CustomRestExceptionHandler<DtoService> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) {
+    ResponseEntity<?> findAll (Pageable pageable) {
         try {
-            return service.findAllDoctors(pageable);
+            return serv.findAll(pageable);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
@@ -48,7 +50,7 @@ public class DoctorController {
     ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
-            return service.findDoctor(Long.valueOf(id));
+            return serv.findById(Long.valueOf(id));
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
@@ -57,19 +59,19 @@ public class DoctorController {
     }
 
     @PostMapping("/")
-    ResponseEntity<?> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<?> save (@RequestBody String str_service) throws IllegalArgumentException {
         try {
-            String decrypt = cryptService.decrypt(str_doctor);
-            ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
+            String decrypt = cryptService.decrypt(str_service);
+            DtoService service = mapper.readValue(decrypt, DtoService.class);
 
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<ViewDoctors>> violations = validator.validate(doctor, ViewDoctors.Register.class);
+            Set<ConstraintViolation<DtoService>> violations = validator.validate(service, DtoService.Register.class);
             if (!violations.isEmpty())
                 return exceptionHandler.handleViolations(violations);
 
-            return service.saveDoctor(doctor);
+            return serv.save(service.cast());
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
@@ -78,19 +80,19 @@ public class DoctorController {
     }
 
     @PutMapping("/")
-    ResponseEntity<?> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<?> update (@RequestBody String str_service) throws IllegalArgumentException {
         try {
-            String decrypt = cryptService.decrypt(str_doctor);
-            ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
+            String decrypt = cryptService.decrypt(str_service);
+            DtoService service = mapper.readValue(decrypt, DtoService.class);
 
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<ViewDoctors>> violations = validator.validate(doctor, ViewDoctors.Modify.class);
+            Set<ConstraintViolation<DtoService>> violations = validator.validate(service, DtoService.Modify.class);
             if (!violations.isEmpty())
                 return exceptionHandler.handleViolations(violations);
 
-            return service.updateDoctor(doctor);
+            return serv.update(service.cast());
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
@@ -99,13 +101,12 @@ public class DoctorController {
     }
 
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
-            return service.lockDoctor(Long.valueOf(id));
+            return serv.delete(Long.valueOf(id));
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
-
 }

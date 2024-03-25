@@ -16,9 +16,10 @@ import utez.edu.mx.backend.security.service.CryptService;
 public class TestController {
 
     private final CryptService service;
+    private final ObjectMapper objectMapper;
     @PostMapping("/encrypt")
     public String encrypt(@RequestBody Object object) throws Exception {
-        return service.encrypt(object);
+        return service.encrypt(objectMapper.writeValueAsString(object));
     }
 
     @PostMapping("/decrypt")
