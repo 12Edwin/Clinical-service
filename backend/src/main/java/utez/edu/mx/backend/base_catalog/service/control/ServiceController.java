@@ -1,4 +1,4 @@
-package utez.edu.mx.backend.base_catalog.speciality.control;
+package utez.edu.mx.backend.base_catalog.service.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,9 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.base_catalog.speciality.model.DtoSpeciality;
-import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
+import utez.edu.mx.backend.base_catalog.service.model.DtoService;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -23,24 +21,24 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/speciality")
+@RequestMapping("/api/service")
 @AllArgsConstructor
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
-public class SpecialityController {
+public class ServiceController {
 
-    private static final String SPECIALITY = "SPECIALITY";
+    private static final String SERVICE = "SERVICE";
 
     @Autowired
-    private SpecialityService service;
+    private ServiceService serv;
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;
-    private final CustomRestExceptionHandler<DtoSpeciality> exceptionHandler;
+    private final CustomRestExceptionHandler<DtoService> exceptionHandler;
 
     @GetMapping("/")
     ResponseEntity<?> findAll (Pageable pageable) {
         try {
-            return service.findAll(pageable);
+            return serv.findAll(pageable);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
@@ -52,7 +50,7 @@ public class SpecialityController {
     ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
-            return service.findSpecialityById(Long.valueOf(id));
+            return serv.findById(Long.valueOf(id));
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
@@ -61,19 +59,19 @@ public class SpecialityController {
     }
 
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_speciality) throws IllegalArgumentException {
+    ResponseEntity<?> save (@RequestBody String str_service) throws IllegalArgumentException {
         try {
-            String decrypt = cryptService.decrypt(str_speciality);
-            DtoSpeciality speciality = mapper.readValue(decrypt, DtoSpeciality.class);
+            String decrypt = cryptService.decrypt(str_service);
+            DtoService service = mapper.readValue(decrypt, DtoService.class);
 
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<DtoSpeciality>> violations = validator.validate(speciality, DtoSpeciality.Register.class);
+            Set<ConstraintViolation<DtoService>> violations = validator.validate(service, DtoService.Register.class);
             if (!violations.isEmpty())
                 return exceptionHandler.handleViolations(violations);
 
-            return service.save(speciality.cast());
+            return serv.save(service.cast());
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
@@ -82,19 +80,19 @@ public class SpecialityController {
     }
 
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_speciality) throws IllegalArgumentException {
+    ResponseEntity<?> update (@RequestBody String str_service) throws IllegalArgumentException {
         try {
-            String decrypt = cryptService.decrypt(str_speciality);
-            DtoSpeciality speciality = mapper.readValue(decrypt, DtoSpeciality.class);
+            String decrypt = cryptService.decrypt(str_service);
+            DtoService service = mapper.readValue(decrypt, DtoService.class);
 
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<DtoSpeciality>> violations = validator.validate(speciality, DtoSpeciality.Modify.class);
+            Set<ConstraintViolation<DtoService>> violations = validator.validate(service, DtoService.Modify.class);
             if (!violations.isEmpty())
                 return exceptionHandler.handleViolations(violations);
 
-            return service.update(speciality.cast());
+            return serv.update(service.cast());
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
@@ -106,7 +104,7 @@ public class SpecialityController {
     ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
-            return service.delete(Long.valueOf(id));
+            return serv.delete(Long.valueOf(id));
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
