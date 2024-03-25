@@ -7,7 +7,7 @@
         </div>
         <h1>Hospital</h1>
       </template>
-      <template #content>''
+      <template #content>
         <b-row>
           <b-col class="mt-4 mb-2" lg="12">
             <div class="field w-100">

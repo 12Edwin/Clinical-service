@@ -6,6 +6,9 @@ export default [
     {
         path: 'doctors',
         name: 'doctors',
+        meta: {
+            role: "admin"
+        },
         component: {
             render(c){
                 return c("router-view")
@@ -18,7 +21,9 @@ export default [
                 name: 'doctors',
                 component: Doctors,
                 meta: {
-                    title:'Doctores'
+                    title:'Doctores',
+                    role: "admin"
+
                 }
             },
             {
@@ -26,7 +31,8 @@ export default [
                 name: 'register',
                 component: SaveDoctor,
                 meta: {
-                    title:'Registro'
+                    title:'Registro',
+                    role: "admin"
                 }
             }
         ]
@@ -44,7 +50,7 @@ export default [
         name: 'specialities',
         component: Specialities,
         meta: {
-            title:'Especialidades'
+            title:'Especialidades',
         }
     },
 

@@ -1,13 +1,14 @@
 import Appoints from "@/modules/appointment/views/Appoints.vue";
 import Treatments from "@/modules/treatment/views/Treatments.vue";
-
+import ClinicalHistory from "@/modules/expedient/views/ClinicalHistory.vue";
 export default [
     {
         path: 'appoints',
         name: 'appoints',
         component: Appoints,
         meta:{
-            title: 'Citas'
+            title: 'Citas',
+            role: "doctor"
         }
     },
     {
@@ -15,7 +16,17 @@ export default [
         name: 'treatments',
         component: Treatments,
         meta:{
-            title: 'Tratamientos'
+            title: 'Tratamientos',
+            role: "doctor"
         }
-    }
+    },
+    {
+        path: 'clinicalHistory',
+        name: 'clinical-history',
+        component: ClinicalHistory,
+        meta:{
+            title: 'Historial clínico',
+            role: "doctor"
+        }
+    },
 ]

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h1>404</h1>
+    <div class="container">
+      <img src="../assets/404.svg" alt="not-found" class="img-style">
+    </div>
   </div>
 </template>
 
@@ -10,6 +12,12 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+.img-style{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  height: 100%;
+}
 </style>
