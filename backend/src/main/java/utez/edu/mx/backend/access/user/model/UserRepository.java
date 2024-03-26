@@ -7,7 +7,9 @@ import org.springframework.data.repository.query.Param;
 import utez.edu.mx.backend.access.role.model.Role;
 import utez.edu.mx.backend.access.role.model.RoleTypes;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
+import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -24,4 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "UPDATE users SET available = :status WHERE id = :id")
     int lockUser(@Param("id") Long id, @Param("status") boolean status);
+
+    List<User> findAllBySpeciality(Speciality speciality);
 }
