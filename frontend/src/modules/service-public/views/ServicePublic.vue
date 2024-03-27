@@ -26,7 +26,7 @@
 <script>
 import Card from 'primevue/card';
 import Menubar from 'primevue/menubar';
-import publicServicios from '@/modules/auth-services/Services.js';
+import publicServicios from '@/modules/service-private/views/service-services/Services.js';
 export default {
     data() {
         return {
@@ -179,4 +179,4 @@ p {
     align-items: center;
     gap: 10px;
 }
-</style>
+</style>@/modules/service-private/views/service-services/Services.js
