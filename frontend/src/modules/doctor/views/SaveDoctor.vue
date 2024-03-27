@@ -341,20 +341,31 @@ export default {
                     value: 'Hombre'
                 }
             ],
+            // newDoctor: {
+            //     id: 123456789,
+            //     fullname: "Carlos Gonzalez",
+            //     name: "Carlos",
+            //     code: "949596",
+            //     password: "753159",
+            //     surname: "Gonzalez",
+            //     lastname: "Gonzalez",
+            //     birthday: "1999-01-01",
+            //     phone: "773531419",
+            //     sex: "Masculino",
+            //     speciality: "Cardiologia",
+            //     speciality_id: 19,
+            //     description: "Estudio del corazon y de sus funciones y enfermedades."
+            // }
             newDoctor: {
-                id: 123456789,
-                fullname: "Carlos Gonzalez",
-                name: "Carlos",
-                code: "949596",
-                password: "753159",
-                surname: "Gonzalez",
-                lastname: "Gonzalez",
-                birthday: "1999-01-01",
-                phone: "773531419",
-                sex: "Masculino",
-                speciality: "Cardiologia",
-                speciality_id: 19,
-                description: "Estudio del corazon y de sus funciones y enfermedades."
+                name: "Yaret",
+                surname: "apellido",
+                lastname: "apellido",
+                birthday: "2006-03-20",
+                phone: "1234567895",
+                sex: "Femenino",
+                speciality_id: 54,
+                code: "1234567127",
+                password: "123"
             }
         }
     },

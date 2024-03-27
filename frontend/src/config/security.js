@@ -1,62 +1,63 @@
-// Define la clave aquí (debería ser la misma que la definida en el backend)
-const secretKey = 'SECRETO1';
-
-// Función para generar la clave secreta
-async function generateSecretKey() {
+// Esta función genera una clave criptográfica utilizando el algoritmo SHA-256
+// a partir de un secreto definido, y devuelve los primeros 16 bytes de la clave resultante.
+const getKey = async () => {
+    const secretKey = 'SECRETO1';
     const encoder = new TextEncoder();
-    const keyMaterial = await window.crypto.subtle.digest(
+    const hashedKey = await window.crypto.subtle.digest(
         {
             name: "SHA-256",
         },
         encoder.encode(secretKey)
     );
-    return await window.crypto.subtle.importKey(
+    return new Uint8Array(hashedKey).slice(0, 16);
+};
+
+// Esta función realiza la operación de cifrado de un texto utilizando el algoritmo AES-CBC
+// con una clave generada mediante la función getKey(). Devuelve el texto cifrado en formato base64.
+export async function encrypt(plaintext) {
+    const encoder = new TextEncoder();
+    const keyMaterial = await getKey();
+    const key = await window.crypto.subtle.importKey(
         "raw",
-        new Uint8Array(keyMaterial),
+        keyMaterial,
         { name: "AES-CBC" },
         false,
-        ["encrypt", "decrypt"]
+        ["encrypt"]
     );
+    const iv = new Uint8Array(16);
+    const encrypted = await window.crypto.subtle.encrypt(
+        {
+            name: "AES-CBC",
+            iv,
+        },
+        key,
+        encoder.encode(plaintext)
+    );
+    return window.btoa(String.fromCharCode.apply(null, new Uint8Array(encrypted)));
 }
 
-// Función para generar un vector de inicialización aleatorio
-function generateRandomIV() {
-    return window.crypto.getRandomValues(new Uint8Array(16));
-}
-
-// Función para codificar un ArrayBuffer en base64 URL-safe
-function base64UrlEncode(arrayBuffer) {
-    const uint8Array = new Uint8Array(arrayBuffer);
-    const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
-    return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-// Función para decodificar una cadena base64 URL-safe en un ArrayBuffer
-function base64UrlDecode(base64UrlString) {
-    const base64String = base64UrlString.replace(/-/g, '+').replace(/_/g, '/');
-    const binaryString = atob(base64String);
-    const uint8Array = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        uint8Array[i] = binaryString.charCodeAt(i);
-    }
-    return uint8Array.buffer;
-}
-
-// Función para desencriptar los datos
+// Esta función realiza la operación de descifrado de un texto cifrado en formato base64
+// utilizando el algoritmo AES-CBC y una clave generada mediante la función getKey().
+// Devuelve el texto descifrado.
 export async function decrypt(ciphertext) {
-    try {
-        const key = await generateSecretKey();
-        const iv = generateRandomIV();
-        const encryptedData = base64UrlDecode(ciphertext);
-        const decrypted = await window.crypto.subtle.decrypt(
-            { name: "AES-CBC", iv: iv },
-            key,
-            encryptedData
-        );
-        const decoder = new TextDecoder();
-        return decoder.decode(decrypted);
-    } catch (error) {
-        console.error(error);
-        throw new Error("Decryption failed.");
-    }
+    const decoder = new TextDecoder();
+    const keyMaterial = await getKey();
+    const key = await window.crypto.subtle.importKey(
+        "raw",
+        keyMaterial,
+        { name: "AES-CBC" },
+        false,
+        ["decrypt"]
+    );
+    const iv = new Uint8Array(16);
+    const encryptedData = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+    const decrypted = await window.crypto.subtle.decrypt(
+        {
+            name: "AES-CBC",
+            iv,
+        },
+        key,
+        encryptedData
+    );
+    return decoder.decode(decrypted);
 }
