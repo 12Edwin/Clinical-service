@@ -1,34 +1,31 @@
-// Esta función genera una clave criptográfica utilizando el algoritmo SHA-256
-// a partir de un secreto definido, y devuelve los primeros 16 bytes de la clave resultante.
 const getKey = async () => {
     const secretKey = 'SECRETO1';
     const encoder = new TextEncoder();
     const hashedKey = await window.crypto.subtle.digest(
-        {
-            name: "SHA-256",
-        },
-        encoder.encode(secretKey)
+      {
+        name: "SHA-256",
+      },
+      encoder.encode(secretKey)
     );
     return new Uint8Array(hashedKey).slice(0, 16);
-};
-
-// Esta función realiza la operación de cifrado de un texto utilizando el algoritmo AES-CBC
-// con una clave generada mediante la función getKey(). Devuelve el texto cifrado en formato base64.
-export async function encrypt(plaintext) {
-    const encoder = new TextEncoder();
-    const keyMaterial = await getKey();
-    const key = await window.crypto.subtle.importKey(
+  }
+  
+  export async function encrypt(plaintext) {
+    try {
+      const encoder = new TextEncoder();
+      const keyMaterial = await getKey();
+      const key = await window.crypto.subtle.importKey(
         "raw",
         keyMaterial,
         { name: "AES-CBC" },
         false,
         ["encrypt"]
-    );
-    const iv = new Uint8Array(16);
-    const encrypted = await window.crypto.subtle.encrypt(
+      );
+      const iv = new Uint8Array(16);
+      const encrypted = await window.crypto.subtle.encrypt(
         {
-            name: "AES-CBC",
-            iv,
+          name: "AES-CBC",
+          iv,
         },
         key,
         encoder.encode(plaintext)
@@ -40,22 +37,25 @@ export async function encrypt(plaintext) {
 // utilizando el algoritmo AES-CBC y una clave generada mediante la función getKey().
 // Devuelve el texto descifrado.
 export async function decrypt(ciphertext) {
-
     const decoder = new TextDecoder();
     const keyMaterial = await getKey();
     const key = await window.crypto.subtle.importKey(
+
         "raw",
         keyMaterial,
         { name: "AES-CBC" },
         false,
         ["decrypt"]
-    );
-    const iv = new Uint8Array(16);
-    const encryptedData = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
-    const decrypted = await window.crypto.subtle.decrypt(
+      );
+      const iv = new Uint8Array(16);
+      // Decodificar la cadena encriptada de URL
+      const base64Decoded = decodeURIComponent(ciphertext);
+      // Decodificar la cadena encriptada en Base64
+      const encryptedData = Uint8Array.from(atob(base64Decoded), c => c.charCodeAt(0));
+      const decrypted = await window.crypto.subtle.decrypt(
         {
-            name: "AES-CBC",
-            iv,
+          name: "AES-CBC",
+          iv,
         },
         key,
         encryptedData

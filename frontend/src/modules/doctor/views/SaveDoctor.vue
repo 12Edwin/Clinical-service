@@ -377,7 +377,7 @@ export default {
         async saveDoctors() {
             const objectToEncrypt = JSON.stringify(this.newDoctor)
             const chiperedObject = await encrypt(objectToEncrypt)
-            const unzipObject = await decrypt(chiperedObject)
+            const unzipObject = await decrypt(chiperedObject);
             console.log("=>", unzipObject)
             console.log("encryp =>", chiperedObject);
             const { data, status } = await service.save_doctor(chiperedObject)
