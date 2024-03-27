@@ -10,7 +10,7 @@
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
                                     <InputText id="field-name" type="text" v-model="v$.name.$model"
-                                        :class="{'invalid-field-custom': v$.name.$error}" />
+                                        :class="{'invalid-field-custom': v$.name.$error}"/>
                                     <label for="field-name" class="form-label-required">Nombre</label>
                                 </span>
                                <div class="text-danger text-start pt-2">
@@ -19,6 +19,12 @@
                                     </p>
                                     <p class="error-messages" v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
                                         {{ v$.name.onlyLettersAndAccents.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
+                                        {{ v$.name.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.maxLength.$invalid">
+                                        {{ v$.name.maxLength.$message }}
                                     </p>
                                </div>
                             </div>
@@ -36,6 +42,12 @@
                                     </p>
                                     <p class="error-messages" v-if="v$.description.$dirty && v$.description.text.$invalid">
                                         {{ v$.description.text.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.minLength.$invalid">
+                                        {{ v$.description.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.maxLength.$invalid">
+                                        {{ v$.description.maxLength.$message }}
                                     </p>
                                </div>
                             </div>
@@ -60,10 +72,12 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import {words, text} from "@/utils/regex"
+import {words, text, newregex} from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
-import { required, helpers} from '@vuelidate/validators'
+import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
+import { encrypt } from "@/config/security"
+import specialityService from "@/modules/speciality/services/speciality-services"
 export default {
     name: 'ModalSaveSpeciality',
     props: {
@@ -85,11 +99,15 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => words.test(value))
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos",(value) => text.test(value))
+                text: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("La descripción debe tener menos de 50 caracteres", maxLength(60))
             }
         }
         const v$ = useVuelidate(rules, speciality )
@@ -98,10 +116,6 @@ export default {
 
     data(){
         return{
-            speciality: {
-                name: '',
-                description: ''
-            }
         }
     },
     methods:{
@@ -111,8 +125,15 @@ export default {
             this.v$.description.$model = ''
             this.v$.$reset()
         },
-        saveSpeciality(){
-            console.log(this.speciality)
+        async saveSpeciality(){
+            const encoded = await encrypt(JSON.stringify(this.speciality))
+            console.log("encoded",encoded)
+            try {
+                const response = await specialityService.saveSpeciality(encoded)
+                console.log("response",response)
+            } catch (error) {
+                console.log("error en la peticion",error)
+            }
         }
     },
 }   
