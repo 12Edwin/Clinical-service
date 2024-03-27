@@ -9,7 +9,7 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
-                                    <InputText id="field-name" type="text" v-model="service.name"/>
+                                    <InputText id="field-name" type="text" v-model="service.title"/>
                                     <label for="field-name">Nombre</label>
                                 </span>
                             </div>

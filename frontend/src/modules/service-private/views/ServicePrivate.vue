@@ -58,6 +58,7 @@ import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ModalSaveServiceVue from '@/modules/service-private/views/ModalSaveService.vue'
 import ModalUpdateServiceVue from '@/modules/service-private/views/ModalUpdateService.vue'
+import service from './service-services/Services';
 export default {
     data() {
         return {
@@ -98,7 +99,6 @@ export default {
                     image: "img/vision.jpg",
                     price: "$4000"
                 },
-
             ],
             displayModal: false,
             displaySaveModal: false,
