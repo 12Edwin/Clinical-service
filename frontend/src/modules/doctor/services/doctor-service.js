@@ -3,11 +3,7 @@ import utils from "@/kernel/utils";
 
 const get_doctors = async () => {
     try {
-        const token = utils.getToken;
         const response = await api.doGet('/doctor/', {
-            headers: {
-                Authorization: `Bearer ${token}` 
-            }
         });
         return response;
     } catch (error) {
@@ -17,13 +13,7 @@ const get_doctors = async () => {
 
 const save_doctor = async (data) => {
     try {
-        // const token = utils.getToken;
-        const token = localStorage.getItem('token');
-        // console.log(token);
-        const response = await api.doPost('/doctor/', data, {
-            headers: {
-                Authorization: `Bearer ${token}` 
-            }
+        const response = await api.doPost('/doctor/', data, {        
         });
         return response;
     } catch (error) {
