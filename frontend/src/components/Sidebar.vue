@@ -14,8 +14,8 @@
     </div>
     <div class="w-100" :class="[{'fade-dock': closeSide}, {'unFade-dock': !closeSide}]">
       <ul>
-        <li class="item" v-for="(item, ind) in items" :key="ind" @click="()=> $router.push({name: item.route})">
-          <BIcon :icon="item.icon" scale="1.15"/> <span class="ms-3">{{item.label}}</span>
+        <li class="item"  v-for="(item, ind) in filteredRoutes" :key="ind" @click="()=> $router.push({name: item.route})" >
+          <BIcon  :icon="item.icon" scale="1.15"/> <span class="ms-3">{{item.label}}</span>
         </li>
       </ul>
     </div>
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import utils from "@/kernel/utils"
 export default {
   components:{
     Dock: () => import('primevue/dock')
@@ -34,40 +35,55 @@ export default {
         {
           label: 'Doctores',
           icon: `heart`,
-          route: 'doctors'
+          route: 'doctors',
+          role: 'admin'
         },
         {
           label: 'Citas',
           icon: 'box',
-          route: 'appoints'
+          route: 'appoints',
+          role: 'doctor'
         },
         {
           label: 'Áreas',
           icon: 'building',
-          route: 'areas'
+          route: 'areas',
+          role: 'admin'
         },
         {
           label: 'Historial clínico',
           icon: 'folder',
-          route: 'clinical-history'
+          route: 'clinical-history',
+          role: 'doctor'
         },
         {
           label: 'Tratamientos',
           icon: 'alarm',
-          route: 'treatments'
+          route: 'treatments',
+          role: 'doctor'
         },
         {
           label: 'Especialidades',
           icon: 'shield',
-          route: 'specialities'
+          route: 'specialities',
+          role: 'admin'
         },
-      ]
+      ],
+      role: null,
     }
   },
   methods:{
     toggleSidebar(){
       this.closeSide = !this.closeSide
     }
+  },
+  computed: {
+    filteredRoutes(){
+      return this.items.filter(item => this.role === item.role);
+    }
+  },
+  mounted(){
+    this.role = utils.getRoleNameBytoken().toLowerCase()
   }
 }
 </script>

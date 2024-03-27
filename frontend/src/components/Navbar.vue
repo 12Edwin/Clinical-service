@@ -3,9 +3,10 @@
     <div class="title">
     </div>
     <div class="options">
+
       <div style="margin-right:20px; display: flex;">
         <SplitButton 
-          label="Admin" 
+          :label="'admin'" 
           :model="options" 
           class="p-splitbutton p-button-rounded p-button-secondary mb-1"
         ></SplitButton>
@@ -16,6 +17,7 @@
 
 <script>
 import SplitButton from 'primevue/splitbutton'
+import utils from '@/kernel/utils';
 export default {
 
   components:{
@@ -65,13 +67,25 @@ export default {
         {
           label: 'Perfil',
           icon: 'pi pi-user',
+          command: ()=> {
+            this.$router.push('/perfil')
+          }
         },
         {
           label: 'Cerrar sesión',
           icon: 'pi pi-sign-out',
+          command: ()=> {
+            this.logout()
+          }
         }
-      ]
-
+      ],
+      isLogged: false,
+    }
+  },
+  methods: {
+    logout(){
+      utils.removeToken()
+      this.$router.push('/login')
     }
   }
 

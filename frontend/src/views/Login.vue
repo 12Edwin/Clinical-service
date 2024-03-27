@@ -13,7 +13,7 @@
             <div class="field w-100">
               <span class="p-float-label p-input-icon-right">
                 <i class="pi pi-user"></i>
-                <InputText id="username" type="text" v-model="username" />
+                <InputText id="username" type="text" v-model="credentials.username" />
                 <label for="username">Usuario</label>
               </span>
             </div>
@@ -23,12 +23,14 @@
           <div class="field">
             <span class="p-float-label p-input-icon-right">
               <i class="pi" :class="inputType == 'text' ? 'pi-eye-slash' : 'pi-eye'" @click="setTypeInput(inputType)"></i>
-              <InputText :type="inputType" v-model="password"></InputText>
+              <InputText :type="inputType" v-model="credentials.password"></InputText>
               <label for="password">Contraseña</label>
             </span>
           </div>
+          <b-row>
+        </b-row>
         </b-col>
-          <Button class="p-button-rounded" label="Inicar Sesion" />
+          <Button class="p-button-rounded" label="Inicar sesion" @click="login(credentials)"/>
       </template>
     </Card>
   </div>
@@ -40,6 +42,8 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password'
 import Card from 'primevue/card/Card';
 import Carousel from 'primevue/carousel';
+import services from "@/modules/auth-services/Auth"
+import InlineMessage from 'primevue/inlinemessage';
 export default {
   name: 'login',
   components: {
@@ -47,17 +51,29 @@ export default {
     InputText,
     Password,
     Card,
-    Carousel
+    Carousel,
+    InlineMessage
   },
   data() {
     return {
       isLoading: true,
-      password: null,
+      credentials: {
+        username: '',
+        password: ''
+      },
       inputType: 'password',
-      username: null
+      loginError: false
     }
   },
+
   methods: {
+    async login(credentials){
+      const {data, status} = await services.login(credentials)
+      if(status === 200 || status === 201){
+        localStorage.setItem('token', data.token)
+        this.$router.push({name: 'doctors'})
+      }
+    },
     setTypeInput(t) {
       if(t === 'text') {
         this.inputType = 'password';
@@ -69,67 +85,66 @@ export default {
 
 }
 </script>
-  <style scoped>
-  #login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #2a715a;
-    overflow: hidden;
-  }
+<style scoped>
+#login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
 
-  img {
-    max-width: 100%;
-    max-height: 350px;
-    width: auto;
-    height: auto;
-  }
+img {
+  max-width: 100%;
+  max-height: 350px;
+  width: auto;
+  height: auto;
+}
 
-  .cards {
-    width: 800px;
-    height: 750px;
-    border: 1px solid #ccc;
-    border-radius: 10px 10px !important;
-    overflow: hidden;
-  }
-  .pi{
-    cursor: pointer;
-  }
+.cards {
+  width: 800px;
+  height: 700px;
+  border: 1px solid #ccc;
+  border-radius: 10px 10px !important;
 
-  h1 {
-    font-weight: bolder !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-  }
+}
+.pi{
+  cursor: pointer;
+}
 
-  .p-inputtext {
-    width: 380px;
-  }
+h1 {
+  font-weight: bolder !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
 
-  Button {
+.p-inputtext {
+  width: 380px;
+}
+
+Button {
+  width: 50%;
+  max-width: 380px;
+  margin-top: 20px !important;
+  background-color: #2383f0 !important;
+  border: 0px solid !important;
+}
+
+@media(max-width: 768px){
+  Button{
     width: 50%;
-    max-width: 380px;
-    margin-top: 20px !important;
-    background-color: #2383f0 !important;
-    border: 0px solid !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .p-inputtext {
+    width: 100%;
   }
 
-  @media(max-width: 768px){
-    Button{
-      width: 50%;
-    }
-  }
+}
 
-
-  @media (max-width: 768px) {
-    .p-inputtext {
-      width: 100%;
-    }
-
-  }
-
-  .inputs {
-    margin-top: 25px;
-  }
-  </style>
+.inputs {
+  margin-top: 25px;
+}
+</style>
+</style>
