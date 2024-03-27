@@ -64,4 +64,31 @@ public class ExpedientController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/")
+    ResponseEntity<?> update (@RequestBody String str_expedient) throws IllegalArgumentException {
+        try {
+            String decrypt = cryptService.decrypt(str_expedient);
+            DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
+
+            // Validations
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<DtoExpedient>> violations = validator.validate(expedient, DtoExpedient.Modify.class);
+            if (!violations.isEmpty())
+                return exceptionHandler.handleViolations(violations);
+
+            for (DtoPathological_record pathology : expedient.getPathologicalRecords()){
+                Set<ConstraintViolation<DtoPathological_record>> violationsP = validator.validate(pathology, DtoPathological_record.Modify.class);
+                if (!violationsP.isEmpty())
+                    return exceptionHandler_pathology.handleViolations(violationsP);
+            }
+
+            return service.update(expedient);
+        }catch (UnsupportedEncodingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

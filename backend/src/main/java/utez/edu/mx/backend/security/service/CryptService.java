@@ -46,6 +46,7 @@ public class CryptService {
             byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().encodeToString(encryptedBytes);
         }catch (Exception e){
+            System.out.println(e.getMessage());
             throw new UnsupportedEncodingException();
         }
     }
@@ -59,6 +60,7 @@ public class CryptService {
             byte[] decryptedBytes = cipher.doFinal(Base64.getUrlDecoder().decode(encodedEncryptedText));
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         }catch (Exception e){
+            System.out.println(e.getMessage());
             throw new UnsupportedEncodingException();
         }
     }

@@ -28,9 +28,6 @@ public class DtoPathological_record {
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$", groups = {Register.class,  Modify.class}, message = "Descripción inválida")
     private String description;
 
-    @NotNull(groups = { Register.class,  Modify.class})
-    @Min(value = 1, groups = {Register.class, Modify.class})
-    @Max(value = 1000000, groups = { Register.class, Modify.class})
     private Long expedient;
 
     @NotNull(groups = { Register.class,  Modify.class})

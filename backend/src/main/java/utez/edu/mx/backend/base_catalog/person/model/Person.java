@@ -62,4 +62,13 @@ public class Person {
         this.sex = sex;
         this.phone = phone;
     }
+    public Person(Long id, String name, String surname, String lastname, Date birthday, SexType sex, String phone) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.lastname = lastname;
+        this.birthday = birthday;
+        this.sex = sex;
+        this.phone = phone;
+    }
 }

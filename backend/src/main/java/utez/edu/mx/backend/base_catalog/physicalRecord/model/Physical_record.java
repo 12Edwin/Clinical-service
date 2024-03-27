@@ -37,4 +37,12 @@ public class Physical_record {
         this.gender = gender;
         this.allergies = allergies;
     }
+
+    public Physical_record(Long id, float weight, float height, TypeGender gender, String allergies) {
+        this.id = id;
+        this.weight = weight;
+        this.height = height;
+        this.gender = gender;
+        this.allergies = allergies;
+    }
 }

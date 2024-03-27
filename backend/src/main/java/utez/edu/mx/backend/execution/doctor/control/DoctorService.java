@@ -1,6 +1,7 @@
 package utez.edu.mx.backend.execution.doctor.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.execution.doctor.model.DoctorRepository;
+import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 import java.io.UnsupportedEncodingException;
@@ -45,6 +47,9 @@ public class DoctorService {
     private final RoleService roleService;
     @Autowired
     private final SpecialityService specialityService;
+
+    private final ObjectMapper mapper;
+    private static final CryptService cryptService = new CryptService();
 
     @Transactional(readOnly = true)
     public ResponseEntity<?> findDoctor(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
@@ -84,11 +89,12 @@ public class DoctorService {
         ResponseEntity resp = personService.save(new Person(doctor.getName(), doctor.getSurname(), doctor.getLastname(),
                 doctor.getBirthday(), SexType.valueOf(doctor.getSex()), doctor.getPhone()));
         Message message = (Message) resp.getBody();
+        Person newPerson = mapper.readValue( cryptService.decrypt(String.valueOf(message.getResult())), Person.class);
         assert message != null;
         if (!message.getType().equals(TypeResponse.SUCCESS)){
             return resp;
         }
-        return userService.saveUserDoctor(new User(doctor.getCode(), doctor.getPassword(), "", ((Person) message.getResult()).getId(), role.get(), speciality.get()));
+        return userService.saveUserDoctor(new User(doctor.getCode(), doctor.getPassword(), "", newPerson.getId(), role.get(), speciality.get()));
     }
 
     @Transactional(value = "transactionManager", propagation = Propagation.REQUIRES_NEW, rollbackFor = {SQLException.class})
