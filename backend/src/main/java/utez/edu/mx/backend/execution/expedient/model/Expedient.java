@@ -25,7 +25,7 @@ public class Expedient {
     @Column(name = "folio", columnDefinition = "VARCHAR(10) NOT NULL")
     private String folio;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date created_at;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -41,4 +41,9 @@ public class Expedient {
 
     @OneToMany(mappedBy = "expedient")
     private List<Treatment> treatments;
+
+    public Expedient(Physical_record physicalRecord, Patient patient) {
+        this.physicalRecord = physicalRecord;
+        this.patient = patient;
+    }
 }
