@@ -73,6 +73,8 @@
 import DataTable from 'primevue/datatable/DataTable'
 import Column from 'primevue/column/Column'
 import service from '../services/doctor-service'
+import { decrypt, encrypt } from '@/config/security';
+
 export default {
     components: {
         Column,
@@ -117,16 +119,18 @@ export default {
         }
     },
     mounted(){
-    //  this.getDoctors();
+        this.getDoctors();
     },
     methods: {
         async getDoctors() {
-            loading = true;
-            const { data, status } = await service.get_doctors()
+            this.loading = true;
+            const { status, data: { data } } = await service.get_doctors();
             if (status === 200 || status === 201) {
+                // const { content, totalElements } = JSON.parse(await decrypt(data));
+                // console.log(content);
                 console.log(data);
             }
-            loading = false;
+            this.loading = false;
             console.log(data);
         },
     }
