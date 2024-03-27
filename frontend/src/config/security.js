@@ -12,25 +12,28 @@ const getKey = async () => {
   
   export async function encrypt(plaintext) {
     try {
-      const encoder = new TextEncoder();
-      const keyMaterial = await getKey();
-      const key = await window.crypto.subtle.importKey(
-        "raw",
-        keyMaterial,
-        { name: "AES-CBC" },
-        false,
-        ["encrypt"]
-      );
-      const iv = new Uint8Array(16);
-      const encrypted = await window.crypto.subtle.encrypt(
-        {
-          name: "AES-CBC",
-          iv,
-        },
-        key,
-        encoder.encode(plaintext)
-    );
-    return base64UrlEncode(String.fromCharCode.apply(null, new Uint8Array(encrypted)));
+        const encoder = new TextEncoder();
+        const keyMaterial = await getKey();
+        const key = await window.crypto.subtle.importKey(
+            "raw",
+            keyMaterial,
+            {name: "AES-CBC"},
+            false,
+            ["encrypt"]
+        );
+        const iv = new Uint8Array(16);
+        const encrypted = await window.crypto.subtle.encrypt(
+            {
+                name: "AES-CBC",
+                iv,
+            },
+            key,
+            encoder.encode(plaintext)
+        );
+        return base64UrlEncode(String.fromCharCode.apply(null, new Uint8Array(encrypted)));
+    }catch (err){
+        console.log(err)
+    }
 }
 
 // Esta función realiza la operación de descifrado de un texto cifrado en formato base64
