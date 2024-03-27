@@ -91,6 +91,10 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  /* background-color: #2a715a; */
+  background: rgb(92, 171, 140);
+  background: linear-gradient(180deg, rgba(92, 171, 140, 1) 0%, rgba(42, 113, 90, 1) 51%, rgba(0, 0, 0, 1) 100%);
+  overflow: hidden;
 }
 
 
