@@ -2,6 +2,8 @@ package utez.edu.mx.backend.execution.doctor.model;
 
 import lombok.*;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
 
 import javax.persistence.Entity;
@@ -17,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ViewDoctors {
 
-    @NotNull(groups = {Modify.class, ChangeStatus.class})
+    @NotNull(groups = {Modify.class})
     @Id
     private Long id;
 
@@ -37,8 +39,10 @@ public class ViewDoctors {
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+)*$", groups = {Register.class, Modify.class}, message = "Apellido inválido")
     private String lastname;
     @NotNull(groups = {Register.class, Modify.class})
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
     @NotBlank(groups = {Register.class})
+    @Length(min = 10, max = 10, groups = {Register.class, Modify.class})
     private String phone;
     @NotNull(groups = {Register.class, Modify.class})
     @Pattern(regexp = "^(Masculino|Femenino)$", groups = {Register.class, Modify.class}, message = "Sexo inválido")
