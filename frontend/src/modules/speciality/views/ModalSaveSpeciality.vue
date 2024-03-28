@@ -73,7 +73,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import {words, text, newregex} from "@/utils/regex"
+import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
@@ -130,18 +130,21 @@ export default {
             this.v$.$reset()
         },
         async saveSpeciality(){
-            const encoded = await encrypt(JSON.stringify(this.speciality))
-            try {
-                const {status, data} = await specialityService.saveSpeciality(encoded)
-                if(status === 200 || status === 201){
-                    this.closeModal()
-                    this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
-                }else{
-                    console.log("error en la peticion",data)
+            if(this.speciality.name || this.speciality.name != "" || this.speciality.description || this.speciality.description != "" ){
+                const encoded = await encrypt(JSON.stringify(this.speciality))
+                try {
+                    const {status} = await specialityService.saveSpeciality(encoded)
+                    if(status === 200 || status === 201){
+                        this.closeModal()
+                        this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
+                    }else{
+                        console.log("error en la peticion" )
+                    }
+                } catch (error) {
+                    console.log("error en la peticion",error)
                 }
-        
-            } catch (error) {
-                console.log("error en la peticion",error)
+            }else{
+                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos', life: 3000});
             }
         }
     },
@@ -168,7 +171,7 @@ export default {
 }
 
 .invalid-field-custom{
-    border-color:  rgba(255, 0, 0, 1) !important;
+    border-color:  #ff0000 !important;
     box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
 }
 
@@ -178,11 +181,11 @@ export default {
 
 .error-messages::before{
     content: "* ";
-    color: red;
+    color: #ff0000;
 }
 
 .form-label-required::after{
     content: " *";
-    color: red;
+    color: #ff0000;
 }
 </style>
