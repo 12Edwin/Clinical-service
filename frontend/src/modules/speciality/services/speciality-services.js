@@ -9,7 +9,16 @@ const saveSpeciality = async (encodedPayload) => {
     }
 }
 
+const getSpecialities = async () => {
+    try {
+        const response = await api.doGet("/speciality/")
+        return response
+    } catch (error) {
+        return error
+    }
+}
 
 export default {
-    saveSpeciality
+    saveSpeciality,
+    getSpecialities
 }

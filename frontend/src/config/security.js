@@ -54,7 +54,7 @@ export async function decrypt(ciphertext) {
       // Decodificar la cadena encriptada de URL
       const base64Decoded = decodeURIComponent(ciphertext);
       // Decodificar la cadena encriptada en Base64
-      const encryptedData = Uint8Array.from(atob(base64Decoded), c => c.charCodeAt(0));
+      const encryptedData = Uint8Array.from(window.atob(base64Decoded), c => c.charCodeAt(0));
       const decrypted = await window.crypto.subtle.decrypt(
         {
           name: "AES-CBC",
@@ -63,6 +63,7 @@ export async function decrypt(ciphertext) {
         key,
         encryptedData
     );
+    console.log("esto",decoder.decode(decrypted))
     return decoder.decode(decrypted);
 }
 

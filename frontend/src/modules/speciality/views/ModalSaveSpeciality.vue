@@ -57,7 +57,7 @@
                 <template #footer>
                     <b-row>
                         <b-col cols="12">
-                            <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
+                            <Button icon="pi pi-times" @click="closeModal()" label="Cancelar"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Registrar" icon="pi pi-plus" @click="saveSpeciality()" :disabled="v$.$invalid"
                                 class="p-button-rounded button-style" />
@@ -127,7 +127,6 @@ export default {
         },
         async saveSpeciality(){
             const encoded = await encrypt(JSON.stringify(this.speciality))
-            console.log("encoded",encoded)
             try {
                 const response = await specialityService.saveSpeciality(encoded)
                 console.log("response",response)

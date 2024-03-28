@@ -40,6 +40,10 @@ Vue.use(VueCompositionAPI)
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
+
+import Tooltip from 'primevue/tooltip';
+
+Vue.directive('tooltip', Tooltip);
 new Vue({
     router,
     store,
