@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 
@@ -23,6 +24,9 @@ public class DtoExpedient {
     @Min(value = 1, groups = {Modify.class})
     @Max(value = 1000000, groups = {Modify.class})
     private Long id;
+
+    @Null
+    private String folio;
 
     //Physical records
     @NotNull(groups = {Modify.class})
@@ -49,6 +53,10 @@ public class DtoExpedient {
     //Pathologies
     @NotNull(groups = {Register.class, Modify.class})
     private List<DtoPathological_record> pathologicalRecords;
+
+    //Diseases
+    @NotNull(groups = {Register.class, Modify.class})
+    private List<DtoDisease> diseases;
 
     //Patient
     @NotNull(groups = {Modify.class})

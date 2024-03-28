@@ -25,4 +25,8 @@ public class Disease {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "expedient_id", referencedColumnName = "id")
     private Expedient expedient;
+
+    public DtoDisease cast(){
+        return new DtoDisease(getId(), getName(), getDescription());
+    }
 }
