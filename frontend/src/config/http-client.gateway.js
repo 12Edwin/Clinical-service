@@ -1,7 +1,7 @@
 import router from "@/router";
 import axios from "axios";
 
-const SERVER_URL = "http://127.0.0.1:8081/api"
+const SERVER_URL = "http://127.0.0.1:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
@@ -26,6 +26,7 @@ AxiosClient.interceptors.response.use(
     (response) => {
         if(response.status === 200 || response.status === 201){
             return Promise.resolve(response)
+            //console.log(response.data.result) puede o no venir el result
         }else{
             return Promise.reject(response)
         }

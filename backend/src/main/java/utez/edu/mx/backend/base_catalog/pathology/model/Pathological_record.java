@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.base_catalog.pathology.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,11 +24,16 @@ public class Pathological_record {
     @Column(name = "description", columnDefinition = "VARCHAR(100) NOT NULL")
     private String description;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "expedient_id", referencedColumnName = "id")
     private Expedient expedient;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "typePathological_id", referencedColumnName = "id")
     private TypePathological typePathological;
+
+    public DtoPathological_record cast (){
+        return new DtoPathological_record(getId(), getName(), getDescription(), getExpedient().getId(), getTypePathological().getId());
+    }
 }

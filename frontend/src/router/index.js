@@ -7,6 +7,10 @@ Vue.use(VueRouter)
 
 const routes = [
     {
+        path:'',
+        redirect: '/home'
+    },
+    {
         path: '/',
         component: {
             render (c){
@@ -63,5 +67,6 @@ router.beforeEach((to, from, next)=> {
     }
     next()
 })
+
 
 export default router

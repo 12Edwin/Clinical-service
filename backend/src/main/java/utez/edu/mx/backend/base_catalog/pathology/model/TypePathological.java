@@ -1,5 +1,6 @@
 package utez.edu.mx.backend.base_catalog.pathology.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class TypePathological {
     private String description;
 
     @OneToMany(mappedBy = "typePathological")
+    @JsonIgnore
     private List<Pathological_record> pathologicalRecords;
 
     public TypePathological(String name, String description) {
