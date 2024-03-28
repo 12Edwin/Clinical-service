@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ViewDoctors {
 
-    @NotNull(groups = {Modify.class, ChangeStatus.class})
+    @NotNull(groups = {Modify.class})
     @Id
     private Long id;
 
