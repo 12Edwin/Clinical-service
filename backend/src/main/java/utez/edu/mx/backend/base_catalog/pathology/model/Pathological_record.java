@@ -32,4 +32,8 @@ public class Pathological_record {
     @ManyToOne
     @JoinColumn(name = "typePathological_id", referencedColumnName = "id")
     private TypePathological typePathological;
+
+    public DtoPathological_record cast (){
+        return new DtoPathological_record(getId(), getName(), getDescription(), getExpedient().getId(), getTypePathological().getId());
+    }
 }

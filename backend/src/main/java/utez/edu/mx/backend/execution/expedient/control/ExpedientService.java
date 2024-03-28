@@ -1,12 +1,16 @@
 package utez.edu.mx.backend.execution.expedient.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backend.base_catalog.disease.model.Disease;
+import utez.edu.mx.backend.base_catalog.disease.model.DiseaseRepository;
+import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
 import utez.edu.mx.backend.base_catalog.pathology.model.PathologicalRepository;
 import utez.edu.mx.backend.base_catalog.pathology.model.Pathological_record;
@@ -16,9 +20,7 @@ import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.base_catalog.physicalRecord.model.Physical_record;
 import utez.edu.mx.backend.base_catalog.physicalRecord.model.Physical_recordRepository;
 import utez.edu.mx.backend.base_catalog.physicalRecord.model.TypeGender;
-import utez.edu.mx.backend.execution.expedient.model.DtoExpedient;
-import utez.edu.mx.backend.execution.expedient.model.Expedient;
-import utez.edu.mx.backend.execution.expedient.model.ExpedientRepository;
+import utez.edu.mx.backend.execution.expedient.model.*;
 import utez.edu.mx.backend.execution.patient.model.Patient;
 import utez.edu.mx.backend.execution.patient.model.PatientRepository;
 import utez.edu.mx.backend.execution.patient.model.TypeMaritalStatus;
@@ -29,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +48,36 @@ public class ExpedientService {
     private PatientRepository patientRepository;
     @Autowired
     private PathologicalRepository pathologicalRepository;
+    @Autowired
+    private DiseaseRepository diseaseRepository;
+    @Autowired
+    private ViewExpedientRepository viewRepository;
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findAll(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException {
+        Page<ViewExpedients> expedients = viewRepository.findAll(pageable);
+        Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
+        dtoExpedients.getContent().forEach((expedient) -> {
+            Optional<Expedient> exp = repository.findById(expedient.getId());
+            expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+            expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        });
+        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findById(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        Optional<ViewExpedients> optional = viewRepository.findById(id);
+        if (optional.isEmpty()){
+            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        DtoExpedient expedient = optional.get().cast();
+        Optional<Expedient> exp = repository.findById(expedient.getId());
+        expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+        expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        return new ResponseEntity<>(new Message(expedient, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
 
     @Transactional
     public ResponseEntity<?> save(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
@@ -72,6 +105,10 @@ public class ExpedientService {
         if (!expedient.getPathologicalRecords().isEmpty()){
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
             pathologicalRepository.saveAll(pathologies.stream().peek(p -> p.setExpedient(exp)).collect(Collectors.toList()));
+        }
+        if (!expedient.getDiseases().isEmpty()){
+            List<Disease> diseases = expedient.getDiseases().stream().map(DtoDisease::cast).toList();
+            diseaseRepository.saveAll(diseases.stream().peek(d -> d.setExpedient(exp)).collect(Collectors.toList()));
         }
         if (repository.existsById(exp.getId())){
             return new ResponseEntity<>(new Message(exp,"Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
@@ -111,6 +148,11 @@ public class ExpedientService {
             pathologicalRepository.deletePathological_recordByExpedient(optionalExpedient.get());
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
             pathologicalRepository.saveAllAndFlush(pathologies.stream().peek(p -> p.setExpedient(optionalExpedient.get())).collect(Collectors.toList()));
+        }
+        if (!expedient.getDiseases().isEmpty()){
+            diseaseRepository.deleteByExpedient(optionalExpedient.get());
+            List<Disease> diseases = expedient.getDiseases().stream().map(DtoDisease::cast).toList();
+            diseaseRepository.saveAllAndFlush(diseases.stream().peek(d -> d.setExpedient(optionalExpedient.get())).collect(Collectors.toList()));
         }
         Optional<Expedient> exp = repository.findById(optionalExpedient.get().getId());
         if (exp.isPresent()){
