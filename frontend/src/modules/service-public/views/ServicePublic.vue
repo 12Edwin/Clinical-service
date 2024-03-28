@@ -21,9 +21,11 @@
                 </b-col>
             </b-row>
         </div>
-        <footer class="bg-white" >
+        <footer class="bg-white">
             <div class="text-center py-2 text-white" style="background-color: #2a715a;">
-                <p style="font-weight: bolder!important; color: white!important;">© Hospital San J 2024. Todos los derechos reservados.</p>
+                <p style="font-weight: bolder!important; color: white!important;">© Hospital San J 2024. Todos los
+                    derechos
+                    reservados.</p>
             </div>
         </footer>
     </div>
@@ -37,7 +39,7 @@ export default {
     data() {
         return {
             services: [
-            {
+                {
                     title: "Urgencias",
                     description: "Los servicios de urgencias tienen como misión la prestación de la atención sanitaria urgente a las personas que la demanden, en el tiempo adecuado.",
                     image: "img/urgencias.jpg",
@@ -118,15 +120,11 @@ export default {
     methods: {
         async getServices() {
             try {
-                console.log("Si entra");
+                console.log("si entra");
                 const { data, status } = await servicios.get_services();
-                console.log("aqui igual men");
                 if (status === 200 || status === 201) {
-                    console.log("aqui si entra");
+                    console.log("aqui entra y aun no hay nada");
                     console.log(data);
-                    console.log("ME ODIO A MI  MISMO PD: no me odio solo no jala esto");
-                } else if (status === 400) {
-                    console.error("Este es el status del server papu: " + status);
                 }
 
             } catch (error) {
@@ -142,7 +140,7 @@ export default {
     border: 1px solid #ccc;
     border-radius: 10px 10px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 90%;
+    height: 100%;
     background-color: #fff;
 }
 

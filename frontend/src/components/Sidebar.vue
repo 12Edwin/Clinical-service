@@ -70,7 +70,7 @@ export default {
         },
         {
           label: 'Servicios',
-          icon: 'shield',
+          icon: 'server',
           route: 'service',
           role: 'admin'
         },
