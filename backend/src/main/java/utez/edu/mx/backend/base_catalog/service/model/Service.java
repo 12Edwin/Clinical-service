@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.base_catalog.service.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,6 +35,7 @@ public class Service {
     private Speciality speciality;
 
     @OneToMany(mappedBy = "service")
+    @JsonIgnore
     private List<Treatment> treatments;
 
     public Service(String name, String description, float price, Speciality speciality) {
