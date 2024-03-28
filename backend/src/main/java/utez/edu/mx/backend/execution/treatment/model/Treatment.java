@@ -1,6 +1,8 @@
 package utez.edu.mx.backend.execution.treatment.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,11 +31,12 @@ public class Treatment {
     @Column(name = "recommendation", columnDefinition = "VARCHAR(150) NOT NULL")
     private String recommendation;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id")
     private Service service;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "expedient_id", referencedColumnName = "id")
     private Expedient expedient;
 
