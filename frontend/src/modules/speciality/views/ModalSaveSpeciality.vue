@@ -65,6 +65,7 @@
                     </b-row>
                 </template>
             </Dialog>
+            <Toast />
         </b-col>
     </b-row>
 </template>
@@ -78,6 +79,8 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
 import { encrypt } from "@/config/security"
 import specialityService from "@/modules/speciality/services/speciality-services"
+import Toast from 'primevue/toast';
+
 export default {
     name: 'ModalSaveSpeciality',
     props: {
@@ -88,7 +91,8 @@ export default {
     },
     components:{
         Dialog,
-        Textarea
+        Textarea,
+        Toast
     }, 
     setup(){
         const speciality = reactive({
@@ -128,8 +132,14 @@ export default {
         async saveSpeciality(){
             const encoded = await encrypt(JSON.stringify(this.speciality))
             try {
-                const response = await specialityService.saveSpeciality(encoded)
-                console.log("response",response)
+                const {status, data} = await specialityService.saveSpeciality(encoded)
+                if(status === 200 || status === 201){
+                    this.closeModal()
+                    this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
+                }else{
+                    console.log("error en la peticion",data)
+                }
+        
             } catch (error) {
                 console.log("error en la peticion",error)
             }

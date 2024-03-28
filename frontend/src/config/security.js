@@ -40,32 +40,29 @@ const getKey = async () => {
 // utilizando el algoritmo AES-CBC y una clave generada mediante la función getKey().
 // Devuelve el texto descifrado.
 export async function decrypt(ciphertext) {
-    const decoder = new TextDecoder();
-    const keyMaterial = await getKey();
-    const key = await window.crypto.subtle.importKey(
-
-        "raw",
-        keyMaterial,
-        { name: "AES-CBC" },
-        false,
-        ["decrypt"]
-      );
-      const iv = new Uint8Array(16);
-      // Decodificar la cadena encriptada de URL
-      const base64Decoded = decodeURIComponent(ciphertext);
-      // Decodificar la cadena encriptada en Base64
-      const encryptedData = Uint8Array.from(window.atob(base64Decoded), c => c.charCodeAt(0));
-      const decrypted = await window.crypto.subtle.decrypt(
-        {
-          name: "AES-CBC",
-          iv,
-        },
-        key,
-        encryptedData
+  const decoder = new TextDecoder();
+  const keyMaterial = await getKey();
+  const key = await window.crypto.subtle.importKey(
+      "raw",
+      keyMaterial,
+      { name: "AES-CBC" },
+      false,
+      ["decrypt"]
     );
-    console.log("esto",decoder.decode(decrypted))
-    return decoder.decode(decrypted);
+  const iv = new Uint8Array(16);
+  const base64Decoded = decodeURIComponent(ciphertext.replace(/\-/g, '+').replace(/_/g, '/'));
+  const encryptedData = Uint8Array.from(window.atob(base64Decoded), c => c.charCodeAt(0));
+  const decrypted = await window.crypto.subtle.decrypt(
+    {
+      name: "AES-CBC",
+      iv,
+    },
+    key,
+    encryptedData
+  );
+  return decoder.decode(decrypted);
 }
+
 
 
 function base64UrlEncode(input) {

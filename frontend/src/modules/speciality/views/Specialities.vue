@@ -87,34 +87,7 @@ export default {
     },	
     data(){
         return {
-            specialities: [
-            {
-                name: 'Cardiología',
-                description: 'Especialidad que se encarga del estudio, diagnóstico y tratamiento de las enfermedades del corazón y del aparato circulatorio.',
-                price: 2500,
-                status: true
-            },
-            {
-                name: 'Neurología',
-                description: 'Especialidad que se encarga del estudio, diagnóstico y tratamiento de las enfermedades de la piel.',
-                price: 2500,
-                status: true
-            },
-            {
-                name: 'Dermatología',
-                description: 'Especialidad que se encarga del estudio, diagnóstico y tratamiento de las enfermedades de la piel.',
-                price: 2500,
-                status: false
-            },
-            {
-                name: 'Oftalmología',
-                description: 'Especialidad de la medicina que estudia las enfermedades del ojo y sus tratamientos.',
-                price: 2500,
-                status: true
-            },
-            
-
-            ],
+            specialities: [],
             displayModal: false,
             displaySaveModal: false,
             speciality: {
@@ -152,15 +125,13 @@ export default {
                 this.pageable.page = page;
                 this.pageable.size = rows;
            }
-        
            try {
-            const {data : { result }} = await specialitiesServices.getSpecialities(this.pageable)
-            console.log("result",result)
-/*             const decripted = await decrypt(result)
-            console.log("decripted",decripted) */
-           } catch (error) {
-                console.log("error",error.stack)
-           }
+            const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)          
+            if(status === 200 || status === 201){
+                const decripted = await decrypt(result)
+                this.specialities = JSON.parse(decripted).content
+            }
+           } catch (error) {}
            
         },
     },
