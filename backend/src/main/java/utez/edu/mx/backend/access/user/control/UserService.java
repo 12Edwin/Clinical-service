@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backend.access.role.model.RoleRepository;
 import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.access.user.model.UserDto;
 import utez.edu.mx.backend.access.user.model.UserRepository;
@@ -27,6 +28,8 @@ public class UserService {
 
     @Autowired
     private final UserRepository repository;
+    @Autowired
+    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
 
     @Transactional(readOnly = true)
@@ -60,7 +63,7 @@ public class UserService {
         if (repository.existsByCode(user.getCode())){
             return new ResponseEntity<>(new Message("code already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-        if (!repository.existsByRole(user.getRole())){
+        if (!roleRepository.existsById(user.getRole().getId())){
             return new ResponseEntity<>(new Message("invalid role", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (repository.existsByPerson(user.getPerson())){
