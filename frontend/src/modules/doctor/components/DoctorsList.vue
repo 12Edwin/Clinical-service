@@ -72,13 +72,21 @@
 <script>
 import DataTable from 'primevue/datatable/DataTable'
 import Column from 'primevue/column/Column'
+import AccordionTab from 'primevue/accordiontab';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Paginator from 'primevue/paginator';
+import Toast from 'primevue/toast';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 
 export default {
     components: {
         Column,
-        DataTable
+        DataTable,
+        AccordionTab,
+        ConfirmDialog,
+        Paginator,
+        Toast,
     },
     data() {
         return {
@@ -112,6 +120,17 @@ export default {
                     specialty: 'Radiología'
                 }
             ],
+            doctor: {
+                name: '',
+                lastname: '',
+                surname: '',
+                phone: '',
+            },
+            pageable: {
+                page: 0,
+                size: 10
+            },
+            totalRecords: 0,
             selectedDoctors: null,
             filters1: {
                 global: { value: '' } // Inicializar el filtro global
@@ -122,16 +141,25 @@ export default {
         this.getDoctors();
     },
     methods: {
-        async getDoctors() {
+        async getDoctors(event) {
             this.loading = true;
-            const { status, data: { data } } = await service.get_doctors();
-            if (status === 200 || status === 201) {
-                //  const info = JSON.parse(await decrypt(data));
-                // // console.log(content);
-                // console.log(info);
+            if(event != undefined){
+            const {page, rows} = event;
+                this.pageable.page = page;
+                this.pageable.size = rows;
+           }
+           try {
+            const {status, data : { result } } = await service.get_doctors(this.pageable)          
+            if(status === 200 || status === 201){
+                const decripted = await decrypt(result)
+                const {content, totalElements} = JSON.parse(decripted)
+                this.totalRecords = totalElements
+                // this.doctors = content
+                console.log(content);
             }
-            this.loading = false;
-            console.log(data);
+           } catch (error) {
+           }
+           this.loading = false
         },
     }
 } 

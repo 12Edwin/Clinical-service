@@ -180,7 +180,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-map-marker" />
                                 <InputText id="field-town" type="text" />
-                                <label for="field-town" >Colonia</label>
+                                <label for="field-town">Colonia</label>
                             </span>
                         </div>
                     </b-col>
@@ -189,7 +189,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-home" />
                                 <InputText type="number" id="field-zip" :useGrouping="false" />
-                                <label for="field-zip" >Codigo postal</label>
+                                <label for="field-zip">Codigo postal</label>
                             </span>
                         </div>
                     </b-col>
@@ -225,10 +225,11 @@
                                 <InputText id="field-speciality" v-model="v$.speciality.$model" type="text" />
                                 <label for="field-speciality" class="form-label-required">Especialidad</label>
                                 <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
-                                    {{ v$.speciality.required.$message }}
-                                </p>
-                            </div>
+                                    <p class="error-messages"
+                                        v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                        {{ v$.speciality.required.$message }}
+                                    </p>
+                                </div>
                             </span>
                         </div>
                     </b-col>
@@ -252,29 +253,30 @@
                     <b-col class="mt-3" cols="12" md="6" lg="4">
                         <div class="field">
                             <span class="p-float-label p-input-icon-right"
-                            :class="{ 'invalid-field-custom': v$.phone.$error }">
+                                :class="{ 'invalid-field-custom': v$.phone.$error }">
                                 <i class="pi pi-phone" />
-                                <InputText type="number" v-model="v$.phone.$model" id="field-phone" :useGrouping="false" />
+                                <InputText type="number" v-model="v$.phone.$model" id="field-phone"
+                                    :useGrouping="false" />
                                 <label for="field-phone" class="form-label-required">Número de teléfono</label>
                             </span>
                             <div class="text-danger text-start pt-1">
-                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
-                                {{ v$.phone.rfcFormmat.$message }}
-                            </p>
-                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
-                                {{ v$.phone.minLength.$message }}
-                            </p>
-                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.maxLength.$invalid">
-                                {{ v$.phone.maxLength.$message }}
-                            </p>
-                        </div>
+                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
+                                    {{ v$.phone.rfcFormmat.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
+                                    {{ v$.phone.minLength.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.maxLength.$invalid">
+                                    {{ v$.phone.maxLength.$message }}
+                                </p>
+                            </div>
                         </div>
                     </b-col>
                     <b-col class="mt-3" cols="12" md="6" lg="4">
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-at" />
-                                <InputText id="field-email"  type="email" :useGrouping="false" />
+                                <InputText id="field-email" type="email" :useGrouping="false" />
                                 <label for="field-email">Correo electrónico</label>
                             </span>
                         </div>
@@ -307,6 +309,8 @@ import InputMask from 'primevue/inputmask';
 import { decrypt, encrypt } from '@/config/security';
 import service from '@/modules/doctor/services/doctor-service';
 import InputText from 'primevue/inputtext/InputText';
+import Toast from 'primevue/toast';
+import specialityServices from '@/modules/speciality/services/speciality-services';
 
 export default {
     name: 'SaveDoctor',
@@ -316,7 +320,8 @@ export default {
         Card,
         RadioButton,
         InputMask,
-        Dropdown
+        Dropdown,
+        Toast
     },
     setup() {
         const doctor = reactive({
@@ -369,7 +374,7 @@ export default {
                 minLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", minLength(10)),
                 maxLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", maxLength(10))
             },
-            speciality:{
+            speciality: {
                 required: helpers.withMessage("Debes seleccionar una especialidad", required)
             }
 
@@ -393,11 +398,32 @@ export default {
                     value: 'Masculino'
                 }
             ],
+            specialitys: [],
+            pageable: {
+                page: 0,
+                size: 100
+            },
         }
+    },
+    mounted() {
+        this.getSpecialities();
     },
     methods: {
         getNewDate() {
             return new Date()
+        },
+
+        async getSpecialities() {
+            try {
+                const { status, data: { result } } = await specialityServices.getSpecialities(this.pageable)
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result)
+                    const { content } = JSON.parse(decripted)
+                    this.specialities = content
+                    console.log(this.specialities);
+                }
+            } catch (error) { }
+
         },
 
         generatePass() {
@@ -417,31 +443,15 @@ export default {
         },
 
         async verifyDoctors() {
-           
-            // Obtener todos los campos de entrada con la clase "form-label-required"
-            const inputFields = document.querySelectorAll('.form-label-required + .p-inputtext');
-
-            // Iterar sobre cada campo de entrada
-            let hasValue = false;
-            inputFields.forEach(input => {
-                console.log(inputFields);
-                // Verificar si el campo tiene algo escrito (y no es nulo)
-                if (input.value.trim() !== '') {
-                    hasValue = true;
-                    return; // Salir del bucle si al menos un campo tiene un valor
-                }
-            });
-
-            // Verificar el resultado
-            if (hasValue) {
-                console.log("Al menos un campo requerido tiene algo escrito");
+            if (this.doctor.name || this.doctor.lastname
+                || this.doctor.surname || this.doctor.birthDate
+                || this.doctor.phone != ""
+            ) {
+                this.saveDoctor();
             } else {
-                console.log("Todos los campos requeridos están vacíos");
-
+                // this.v$.$touch();
+                this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos requeridos', life: 3000 });
             }
-
-            this.saveDoctor();
-
         },
 
 
@@ -454,22 +464,27 @@ export default {
                 name: this.doctor.name,
                 surname: this.doctor.surname,
                 lastname: this.doctor.lastname,
-                birthday: this.doctor.birthDate,
+                birthday: "1997-10-10",
                 phone: this.doctor.phone,
                 sex: selectedGender,
-                speciality_id: this.doctor.speciality,
                 code: this.doctor.phone,
-                password: pass
+                password: pass,
+                speciality_id: "46",
             }
 
             console.log(newData);
 
-            const objectToEncrypt = JSON.stringify(newData);
-            const chiperedObject = await encrypt(objectToEncrypt)
-            console.log("encryp =>", chiperedObject);
-            const { data, status } = await service.save_doctor(chiperedObject)
-            if (status === 200 || status === 201) {
-                console.log(data);
+            try {
+                const encoded = await encrypt(JSON.stringify(newData))
+                console.log("encryp =>", encoded);
+                const { status } = await service.save_doctor(encoded)
+                if (status === 200 || status === 201) {
+                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                } else {
+                    console.log("error en la peticion", error);
+                }
+            } catch (error) {
+                console.log(error);
             }
         }
     }
@@ -494,24 +509,24 @@ export default {
 
 .error-messages::before {
     content: "* ";
-    color: $red-validate;
+    color: $red-primary;
 }
 
 .form-label-required::after {
     content: " *";
-    color: $red-validate;
+    color: $red-primary;
 }
 
 .invalid-field-custom .p-inputtext {
-    border-color: $red-validate !important;
+    border-color: $red-primary !important;
     box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
 }
 
 .invalid-field-custom label {
-    color: $red-validate !important;
+    color: $red-primary !important;
 }
 
 .invalid-field-custom .pi {
-    color: $red-validate !important;
+    color: $red-primary !important;
 }
 </style>
