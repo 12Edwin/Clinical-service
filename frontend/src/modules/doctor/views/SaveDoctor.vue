@@ -469,7 +469,7 @@ export default {
                 sex: selectedGender,
                 code: this.doctor.phone,
                 password: pass,
-                speciality_id: "46",
+                speciality_id: 45,
             }
 
             console.log(newData);
@@ -479,12 +479,13 @@ export default {
                 console.log("encryp =>", encoded);
                 const { status } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
+                    console.log(status);
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
                 } else {
-                    console.log("error en la peticion", error);
+                    console.log("error en la peticion");
                 }
             } catch (error) {
-                console.log(error);
+                
             }
         }
     }
