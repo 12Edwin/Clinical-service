@@ -34,7 +34,7 @@
 <script>
 import Card from 'primevue/card';
 import Menubar from 'primevue/menubar';
-import servicios from '@/modules/service-private/views/service-services/Services.js';
+import servicios from  '@/modules/service-private/service-services/Services'
 export default {
     data() {
         return {

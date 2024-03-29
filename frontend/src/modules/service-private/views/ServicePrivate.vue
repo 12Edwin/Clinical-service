@@ -22,32 +22,43 @@
                     </b-row>
                     <b-row>
                         <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
-                            <Card class="custom-card">
+                            <Card class="mb-1 mt-2 custom-card">
                                 <template #header>
-                                    <img :src="require(`@/assets/${service.image}`)" class="image" alt="">
+                                   
                                 </template>
                                 <template #title>
-                                    <h2>{{ service.title }}</h2>
-                                </template>
-                                <template #content>
-                                    <p>{{ service.description }}</p>
-                                    <p>{{ service.price }}</p>
+                                    <h2>{{ service.name }}</h2>
                                 </template>
                                 <template #footer>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
-                                        @click="openModal(service)" />
-                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-secondary"
-                                        style="margin-left: .5em" @click="deleteSpeciality()" />
+                                        @click="openModal(service)" v-tooltip.top="'Editar'" />
+                                    <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
+                                        style="margin-left: .5em" v-tooltip.top="'Detalle'"
+                                        @click="openModalDetail(service)" />
+                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'"
+                                        class="p-button-rounded p-button-secondary" style="margin-left: .5em"
+                                        @click="deleteSpeciality(speciality.id)" />
                                 </template>
                             </Card>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="1" :style="{ marginTop: '20px' }">
+                            <small style="">Registros: </small> {{ totalRecords }}
+                        </b-col>
+                        <b-col>
+                            <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
+                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }"
+                                @page="pagination($event)"/>
                         </b-col>
                     </b-row>
                 </panel>
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateServiceVue :visible.sync="displayModal" :service="service" />
-        <ModalSaveServiceVue :visible.sync="displaySaveModal" y></ModalSaveServiceVue>
+        <ModalUpdateService :visible.sync="displayModal" :service="service" />
+        <ModalSaveServiceVue :visible.sync="displaySaveModal" />
+        <ModalDetailService :visible.sync="displayDetailModal" :service="service" />
     </div>
 </template>
 
@@ -56,69 +67,42 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
-import ModalSaveServiceVue from '@/modules/service-private/views/ModalSaveService.vue'
-import ModalUpdateServiceVue from '@/modules/service-private/views/ModalUpdateService.vue'
-import servicios from './service-services/Services';
+import ModalSaveServiceVue from './ModalSaveService.vue'
+import ModalUpdateService from './ModalUpdateService.vue';
+import ModalDetailService from './ModalDetailService.vue';
+import Paginator from 'primevue/paginator';
+import Toast from 'primevue/toast';
+import servicios from '../service-services/Services';
+import { decrypt } from '@/config/security';
 export default {
-    data() {
-        return {
-            services: [
-                {
-                    title: "Urgencias",
-                    description: "Los servicios de urgencias tienen como misión la prestación de la atención sanitaria urgente a las personas que la demanden, en el tiempo adecuado.",
-                    image: "img/urgencias.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Intervenciones Quirúrgicas",
-                    description: "Es la operación instrumental, total o parcial, de lesiones causadas por enfermedades o accidentes, con fines diagnósticos, de tratamiento o de rehabilitación de secuelas.",
-                    image: "img/intervenciones.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Atención del embarazo parto y puerperio.",
-                    description: "El embarazo, parto y puerperio constituye un proceso por el que atraviesan las mujeres que deciden tener hijos a lo largo de su vida reproductiva.",
-                    image: "img/parto.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Unidad de Cuidados Especiales Neonatales.",
-                    description: "Unidad Médica destinada a atender a todo recién nacido (0 a 28 días de vida) con cualquier proceso mórbido o enfermedad que ponga en peligro su vida.",
-                    image: "img/cuidado.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Vacunas",
-                    description: " La vacunación es una forma sencilla, inocua y eficaz de protegernos contra enfermedades dañinas antes de entrar en contacto con ellas.",
-                    image: "img/vacuna.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Exámenes de audición y visión.",
-                    description: "Las pruebas de audición miden qué tan bien escucha. Pueden ayudar a diagnosticar pérdida de la audición, qué tan severa es y qué parte de su audición no está funcionando bien.",
-                    image: "img/vision.jpg",
-                    price: "$4000"
-                },
-            ],
-            displayModal: false,
-            displaySaveModal: false,
-            service: {
-                name: '',
-                description: '',
-                price: ''
-            }
-        };
-    },
     components: {
         Card,
         Button,
         AccordionTab,
         ConfirmDialog,
         ModalSaveServiceVue,
-        ModalUpdateServiceVue
+        ModalUpdateService,
+        ModalDetailService,
+        Paginator,
+        Toast
     },
-    mounted() {
-        this.getServices();
+    data() {
+        return {
+            services: [],
+            displayModal: false,
+            displaySaveModal: false,
+            displayDetailModal: false,
+            service: {
+                name: '',
+                description: '',
+                price: ''
+            },
+            pageable: {
+                page: 0,
+                size: 10
+            },
+            totalRecords: 0
+        };
     },
     methods: {
         openModalSaveService() {
@@ -126,33 +110,52 @@ export default {
         },
         openModal(service) {
             this.displayModal = true;
-            this.service = service;
+            this.service = JSON.stringify(service)
+        }, openModalDetail(service) {
+            this.displayDetailModal = true;
+            this.service = JSON.stringify(service)
         },
 
-        async getServices() {
-            try {
-                const { data, status } = await servicios.get_services();
-                if (status === 200 || status === 201) {
-                    // console.log("response de servicios", data.result);
-                }
-
-            } catch (error) {
-                console.log("error en la peticion", error);
+        async pagination(event) {
+            if (event != undefined) {
+                const { page, rows } = event;
+                this.pageable.page = page;
+                this.pageable.size = rows;
             }
-        }
+            try {
+                const { status, data: { result } } = await servicios.get_services(this.pageable)
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result)
+                    const {content, totalElements} = JSON.parse(decripted)
+                    this.totalRecords = totalElements
+                    this.services = content
+                }
+            } catch (error) { }
 
-    }
+        },
+    },
+    mounted() {
+        this.pagination();
+    },
+
 };
 </script>
 
 <style scoped>
-.custom-card {
-    border: 1px solid #ccc;
-    border-radius: 10px 10px !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 100%;
-    background-color: #fff;
+.p-card{
+    width: 100%;
+    height: 330px !important;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 10px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
 }
+
+.custom-card:hover{
+    transform: scale(1.05);
+}
+
 
 .image {
     height: 200px !important;
@@ -191,4 +194,4 @@ Button {
     background-color: #2a715a;
     size: 50px !important;
 }
-</style>
+</style>../service-services/Services

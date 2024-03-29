@@ -73,8 +73,8 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
-                                    <InputText id="field-speciality_id" type="number" rows="2"
-                                        v-model="v$.speciality_id.$model"
+                                    <Dropdown id="field-speciality_id" :options="specialities" optionLabel="name"
+                                        optionValue="id" v-model="selectedSpeciality"
                                         :class="{ 'invalid-field-custom': v$.speciality_id.$error }" />
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
@@ -82,10 +82,6 @@
                                     <p class="error-messages"
                                         v-if="v$.speciality_id.$dirty && v$.speciality_id.required.$invalid">
                                         {{ v$.speciality_id.required.$message }}
-                                    </p>
-                                    <p class="error-messages"
-                                        v-if="v$.speciality_id.$dirty && v$.speciality_id.text.$invalid">
-                                        {{ v$.speciality_id.text.$message }}
                                     </p>
                                 </div>
                             </div>
@@ -97,12 +93,13 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveService()" :disabled="v$.$invalid"
+                            <Button label="Registrar" icon="pi pi-plus" @click="saveService()"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
             </Dialog>
+            <Toast />
         </b-col>
     </b-row>
 </template>
@@ -110,13 +107,14 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { words, text } from "@/utils/regex"
+import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
-import { encrypt } from '@/config/security';
-import servicios from './service-services/Services'
+import { decrypt, encrypt } from '@/config/security';
+import servicios from '../service-services/Services'
 import Dropdown from 'primevue/dropdown'
+import Toast from 'primevue/toast';
 export default {
     name: 'ModalSaveService',
     props: {
@@ -128,7 +126,8 @@ export default {
     components: {
         Dialog,
         Textarea,
-        Dropdown
+        Dropdown,
+        Toast
     },
     setup() {
         const services = reactive({
@@ -141,24 +140,23 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre para el servicio", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => words.test(value)),
                 onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
             },
             description: {
                 required: helpers.withMessage("Debes agregar una descripción para el servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => text.test(value)),
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },
             price: {
                 required: helpers.withMessage("Debes agregar un precio al servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => text.test(value))
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             },
             speciality_id: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => text.test(value))
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             }
         }
         const v$ = useVuelidate(rules, services)
@@ -167,6 +165,8 @@ export default {
 
     data() {
         return {
+            specialities: [],
+            selectedSpeciality: null
         }
     },
     methods: {
@@ -180,18 +180,26 @@ export default {
         },
         async saveService() {
             const encoded = await encrypt(JSON.stringify(this.services))
-            console.log("encoded", encoded);
             try {
-                const response = await servicios.save_Service(encoded);
-                console.log("response", response);
+                const { status, data } = await servicios.save_Service(encoded);
+                if (status === 200 || status === 201) {
+                    this.closeModal()
+                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    console.log("response del save: ",data);
+                } else {
+                    console.log("error en la peticion", data.result)
+                }
             } catch (error) {
-                console.log("error en la peticion", error);
+                return error
             }
         },
         async getSpecialities() {
             try {
-                const response = await servicios.get_specialities();
-                // console.log("response de especialidades", response.data.result);
+                const { status, data: { result } } = await servicios.get_specialities();
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result);
+                    this.specialities = JSON.parse(decripted).content
+                }
             } catch (error) {
                 console.log("error en la peticion", error);
             }
@@ -243,4 +251,4 @@ export default {
     content: " *";
     color: red;
 }
-</style>
+</style>../service-services/Services
