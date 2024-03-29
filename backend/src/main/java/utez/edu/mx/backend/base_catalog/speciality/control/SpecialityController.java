@@ -3,6 +3,7 @@ package utez.edu.mx.backend.base_catalog.speciality.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.common.util.impl.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -63,9 +64,9 @@ public class SpecialityController {
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_speciality) throws IllegalArgumentException {
         try {
+            System.out.println(str_speciality);
             String decrypt = cryptService.decrypt(str_speciality);
             DtoSpeciality speciality = mapper.readValue(decrypt, DtoSpeciality.class);
-
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
@@ -75,8 +76,10 @@ public class SpecialityController {
 
             return service.save(speciality.cast());
         }catch (UnsupportedEncodingException ex) {
+            System.out.println("hola => "+ ex);
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
+            System.out.println("hola segunda exception=> "+ e);
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }
     }
