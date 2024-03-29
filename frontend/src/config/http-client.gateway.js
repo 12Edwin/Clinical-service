@@ -1,7 +1,7 @@
 import router from "@/router";
 import axios from "axios";
 
-const SERVER_URL = "http://127.0.0.1:8081/api"
+const SERVER_URL = "http://127.0.0.1:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
@@ -42,6 +42,7 @@ AxiosClient.interceptors.response.use(
                 case 400:
                     console.log('Error 400')
                     console.log(error.response.data)
+                    this.$toast.add({severity:'warn', summary: 'Warn Message', detail:'Message Content', life: 3000});
                     break;
                 case 401:
                     console.log('Error 401')
@@ -73,8 +74,8 @@ export default {
     doPost: function (endPoint, object, config) {
         return AxiosClient.post(endPoint, object, config || {});
     },
-    doPut: function (endPoint, object) {
-        return AxiosClient.put(endPoint, object);
+    doPut: function (endPoint, object, config) {
+        return AxiosClient.put(endPoint, object, config || {});
     },
     doDelete: function (endPoint) {
         return AxiosClient.delete(endPoint);

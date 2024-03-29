@@ -10,7 +10,7 @@
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
                                     <InputText id="field-name" type="text" v-model="v$.name.$model"
-                                        :class="{'invalid-field-custom': v$.name.$error}" />
+                                        :class="{'invalid-field-custom': v$.name.$error}"/>
                                     <label for="field-name" class="form-label-required">Nombre</label>
                                 </span>
                                <div class="text-danger text-start pt-2">
@@ -19,6 +19,12 @@
                                     </p>
                                     <p class="error-messages" v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
                                         {{ v$.name.onlyLettersAndAccents.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
+                                        {{ v$.name.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.maxLength.$invalid">
+                                        {{ v$.name.maxLength.$message }}
                                     </p>
                                </div>
                             </div>
@@ -37,6 +43,12 @@
                                     <p class="error-messages" v-if="v$.description.$dirty && v$.description.text.$invalid">
                                         {{ v$.description.text.$message }}
                                     </p>
+                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.minLength.$invalid">
+                                        {{ v$.description.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.description.$dirty && v$.description.maxLength.$invalid">
+                                        {{ v$.description.maxLength.$message }}
+                                    </p>
                                </div>
                             </div>
                         </b-col>
@@ -45,7 +57,7 @@
                 <template #footer>
                     <b-row>
                         <b-col cols="12">
-                            <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
+                            <Button icon="pi pi-times" @click="closeModal()" label="Cancelar"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Registrar" icon="pi pi-plus" @click="saveSpeciality()" :disabled="v$.$invalid"
                                 class="p-button-rounded button-style" />
@@ -53,6 +65,7 @@
                     </b-row>
                 </template>
             </Dialog>
+            <Toast />
         </b-col>
     </b-row>
 </template>
@@ -60,10 +73,14 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import {words, text} from "@/utils/regex"
+import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
-import { required, helpers} from '@vuelidate/validators'
+import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
+import { encrypt } from "@/config/security"
+import specialityService from "@/modules/speciality/services/speciality-services"
+import Toast from 'primevue/toast';
+
 export default {
     name: 'ModalSaveSpeciality',
     props: {
@@ -74,7 +91,8 @@ export default {
     },
     components:{
         Dialog,
-        Textarea
+        Textarea,
+        Toast
     }, 
     setup(){
         const speciality = reactive({
@@ -85,11 +103,15 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => words.test(value))
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos",(value) => text.test(value))
+                text: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("La descripción debe tener menos de 50 caracteres", maxLength(60))
             }
         }
         const v$ = useVuelidate(rules, speciality )
@@ -98,10 +120,6 @@ export default {
 
     data(){
         return{
-            speciality: {
-                name: '',
-                description: ''
-            }
         }
     },
     methods:{
@@ -111,8 +129,23 @@ export default {
             this.v$.description.$model = ''
             this.v$.$reset()
         },
-        saveSpeciality(){
-            console.log(this.speciality)
+        async saveSpeciality(){
+            if(this.speciality.name || this.speciality.name != "" || this.speciality.description || this.speciality.description != "" ){
+                const encoded = await encrypt(JSON.stringify(this.speciality))
+                try {
+                    const {status} = await specialityService.saveSpeciality(encoded)
+                    if(status === 200 || status === 201){
+                        this.closeModal()
+                        this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
+                    }else{
+                        console.log("error en la peticion" )
+                    }
+                } catch (error) {
+                    console.log("error en la peticion",error)
+                }
+            }else{
+                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos', life: 3000});
+            }
         }
     },
 }   
@@ -138,7 +171,7 @@ export default {
 }
 
 .invalid-field-custom{
-    border-color:  rgba(255, 0, 0, 1) !important;
+    border-color:  #ff0000 !important;
     box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
 }
 
@@ -148,11 +181,11 @@ export default {
 
 .error-messages::before{
     content: "* ";
-    color: red;
+    color: #ff0000;
 }
 
 .form-label-required::after{
     content: " *";
-    color: red;
+    color: #ff0000;
 }
 </style>
