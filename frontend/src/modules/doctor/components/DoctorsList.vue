@@ -126,9 +126,9 @@ export default {
             this.loading = true;
             const { status, data: { data } } = await service.get_doctors();
             if (status === 200 || status === 201) {
-                // const { content, totalElements } = JSON.parse(await decrypt(data));
-                // console.log(content);
-                console.log(data);
+                //  const info = JSON.parse(await decrypt(data));
+                // // console.log(content);
+                // console.log(info);
             }
             this.loading = false;
             console.log(data);

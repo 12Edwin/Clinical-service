@@ -1,5 +1,4 @@
 import api from "@/config/http-client.gateway"
-import utils from "@/kernel/utils";
 
 const get_doctors = async () => {
     try {
@@ -13,8 +12,9 @@ const get_doctors = async () => {
 
 const save_doctor = async (data) => {
     try {
-        const response = await api.doPost('/doctor/', data, {        
-        });
+        const response = await api.doPost('/doctor/', data, {
+            headers: { 'Content-Type': 'text/plain' }
+        }).then(r => console.log(r))
         return response;
     } catch (error) {
         return error;

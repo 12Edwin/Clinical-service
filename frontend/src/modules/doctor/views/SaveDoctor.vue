@@ -41,7 +41,7 @@
                                 :class="{ 'invalid-field-custom': v$.lastname.$error }">
                                 <i class="pi pi-user" />
                                 <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
-                                <label for="field-lastname" class="form-label-required">Apellido paterno</label>
+                                <label for="field-lastname" class="form-label-required">1er Apellido</label>
                             </span>
                             <div class="text-danger text-start pt-1">
                                 <p class="error-messages" v-if="v$.lastname.$dirty && v$.lastname.required.$invalid">
@@ -59,11 +59,24 @@
                     </b-col>
                     <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
                         <div class="field">
-                            <span class="p-float-label p-input-icon-right">
+                            <span class="p-float-label p-input-icon-right"
+                                :class="{ 'invalid-field-custom': v$.surname.$error }">
                                 <i class="pi pi-user" />
-                                <InputText id="field-surname" type="text" />
-                                <label for="field-surname">Apellido materno</label>
+                                <InputText id="field-surname" type="text" v-model="v$.surname.$model" />
+                                <label for="field-surname" class="form-label-required">2do Apellido</label>
                             </span>
+                            <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.required.$invalid">
+                                    {{ v$.surname.required.$message }}
+                                </p>
+                                <p class="error-messages"
+                                    v-if="v$.surname.$dirty && v$.surname.onlyLettersAndAccents.$invalid">
+                                    {{ v$.surname.onlyLettersAndAccents.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.minLength.$invalid">
+                                    {{ v$.surname.minLength.$message }}
+                                </p>
+                            </div>
                         </div>
                     </b-col>
 
@@ -76,12 +89,9 @@
                                 <i class="pi pi-id-card" />
                                 <InputText id="field-curp" type="text" v-model="v$.curp.$model"
                                     @input="() => v$.curp.$model = v$.curp.$model.toUpperCase()" />
-                                <label for="field-curp" class="form-label-required">CURP</label>
+                                <label for="field-curp">CURP</label>
                             </span>
                             <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.required.$invalid">
-                                    {{ v$.curp.required.$message }}
-                                </p>
                                 <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.curpFormmat.$invalid">
                                     {{ v$.curp.curpFormmat.$message }}
                                 </p>
@@ -120,12 +130,9 @@
                             <i class="pi pi-id-card" />
                             <InputText id="field-rfc" type="text" v-model="v$.rfc.$model"
                                 @input="() => v$.rfc.$model = v$.rfc.$model.toUpperCase()" />
-                            <label for="field-rfc" class="form-label-required">RFC</label>
+                            <label for="field-rfc">RFC</label>
                         </span>
                         <div class="text-danger text-start pt-1">
-                            <p class="error-messages" v-if="v$.rfc.$dirty && v$.rfc.required.$invalid">
-                                {{ v$.rfc.required.$message }}
-                            </p>
                             <p class="error-messages" v-if="v$.rfc.$dirty && v$.rfc.rfcFormmat.$invalid">
                                 {{ v$.rfc.rfcFormmat.$message }}
                             </p>
@@ -139,6 +146,21 @@
                     </b-col>
                 </b-row>
                 <b-row>
+                    <b-col class="mt-4" cols="12" md="6" lg="4">
+                        <div class="field">
+                            <Dropdown :class="{ 'invalid-field-custom': v$.sex.$error }"
+                                class="form-label-required text-start" v-model="v$.sex.$model" :options="gneres"
+                                optionLabel="value" placeholder="Seleccione un Género" />
+                            <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.sex.$dirty && v$.sex.required.$invalid">
+                                    {{ v$.sex.required.$message }}
+                                </p>
+                            </div>
+                        </div>
+                    </b-col>
+
+                </b-row>
+                <b-row>
                     <b-col class="d-flex align-items-lelft mt-4">
                         <h5 class="border-none pb-2 mb-2">Dirección</h5>
                     </b-col>
@@ -149,7 +171,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-map" />
                                 <InputText id="field-street" type="text" />
-                                <label for="field-street" class="form-label-required">Calle</label>
+                                <label for="field-street">Calle</label>
                             </span>
                         </div>
                     </b-col>
@@ -158,7 +180,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-map-marker" />
                                 <InputText id="field-town" type="text" />
-                                <label for="field-town" class="form-label-required">Colonia</label>
+                                <label for="field-town" >Colonia</label>
                             </span>
                         </div>
                     </b-col>
@@ -166,8 +188,8 @@
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-home" />
-                                <InputNumber id="field-zip" :useGrouping="false" />
-                                <label for="field-zip" class="form-label-required">Codigo postal</label>
+                                <InputText type="number" id="field-zip" :useGrouping="false" />
+                                <label for="field-zip" >Codigo postal</label>
                             </span>
                         </div>
                     </b-col>
@@ -175,8 +197,8 @@
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-home" />
-                                <InputNumber id="field-internal-number" :useGrouping="false" />
-                                <label for="field-internal-number" class="form-label-required">Número interior</label>
+                                <InputText type="number" id="field-internal-number" :useGrouping="false" />
+                                <label for="field-internal-number">Número interior</label>
                             </span>
                         </div>
                     </b-col>
@@ -184,7 +206,7 @@
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-hashtag" />
-                                <InputNumber id="field-external-number" :useGrouping="false" />
+                                <InputText type="number" id="field-external-number" :useGrouping="false" />
                                 <label for="field-external-number">Número exterior</label>
                             </span>
                         </div>
@@ -200,8 +222,13 @@
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-star" />
-                                <InputText id="field-speciality" type="text" />
+                                <InputText id="field-speciality" v-model="v$.speciality.$model" type="text" />
                                 <label for="field-speciality" class="form-label-required">Especialidad</label>
+                                <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                    {{ v$.speciality.required.$message }}
+                                </p>
+                            </div>
                             </span>
                         </div>
                     </b-col>
@@ -210,7 +237,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-id-card" />
                                 <InputText id="field-professional-id" type="text" />
-                                <label for="field-professional-id" class="form-label-required">Cédula
+                                <label for="field-professional-id">Cédula
                                     profesional</label>
                             </span>
                         </div>
@@ -224,19 +251,31 @@
                 <b-row>
                     <b-col class="mt-3" cols="12" md="6" lg="4">
                         <div class="field">
-                            <span class="p-float-label p-input-icon-right">
+                            <span class="p-float-label p-input-icon-right"
+                            :class="{ 'invalid-field-custom': v$.phone.$error }">
                                 <i class="pi pi-phone" />
-                                <InputNumber id="field-phone" :useGrouping="false" />
+                                <InputText type="number" v-model="v$.phone.$model" id="field-phone" :useGrouping="false" />
                                 <label for="field-phone" class="form-label-required">Número de teléfono</label>
                             </span>
+                            <div class="text-danger text-start pt-1">
+                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
+                                {{ v$.phone.rfcFormmat.$message }}
+                            </p>
+                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
+                                {{ v$.phone.minLength.$message }}
+                            </p>
+                            <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.maxLength.$invalid">
+                                {{ v$.phone.maxLength.$message }}
+                            </p>
+                        </div>
                         </div>
                     </b-col>
                     <b-col class="mt-3" cols="12" md="6" lg="4">
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-at" />
-                                <InputText id="field-email" type="email" :useGrouping="false" />
-                                <label for="field-email" class="form-label-required">Correo electrónico</label>
+                                <InputText id="field-email"  type="email" :useGrouping="false" />
+                                <label for="field-email">Correo electrónico</label>
                             </span>
                         </div>
                     </b-col>
@@ -246,7 +285,7 @@
         <template #footer>
             <b-row class="mt-2">
                 <b-col cols="12" class="d-flex justify-content-end">
-                    <Button icon="pi pi-check" @click="saveDoctors()" label="Guardar" class="p-button-rounded"
+                    <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
                         :loading="isLoading" />
                 </b-col>
             </b-row>
@@ -258,14 +297,16 @@
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import Card from 'primevue/card';
+import Dropdown from 'primevue/dropdown';
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength, maxLength } from '@vuelidate/validators'
-import { words, errorMessage, curp, rfc, text, dateFormat } from "@/utils/regex"
+import { words, errorMessage, curp, rfc, text, dateFormatA } from "@/utils/regex"
 import RadioButton from 'primevue/radiobutton';
 import InputMask from 'primevue/inputmask';
 import { decrypt, encrypt } from '@/config/security';
 import service from '@/modules/doctor/services/doctor-service';
+import InputText from 'primevue/inputtext/InputText';
 
 export default {
     name: 'SaveDoctor',
@@ -274,17 +315,18 @@ export default {
         InputNumber,
         Card,
         RadioButton,
-        InputMask
+        InputMask,
+        Dropdown
     },
     setup() {
         const doctor = reactive({
             name: '',
             lastname: '',
-            secondLastName: '',
-            curp: '',
-            rfc: '',
+            surname: '',
+            sex: '',
             birthDate: '',
-            street: '',
+            speciality: '',
+            phone: ''
         })
 
         const rules = {
@@ -298,74 +340,59 @@ export default {
                 onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
+            surname: {
+                required: helpers.withMessage("Debes agregar un apellido", required),
+                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
+                minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
+            },
             curp: {
-                required: helpers.withMessage("El campo CURP es obligatorio", required),
+
                 curpFormmat: helpers.withMessage("El CURP no es valido", (value) => curp.test(value)),
                 minLength: helpers.withMessage("El CURP debe de contener al menos 18 caracteres", minLength(18)),
                 maxLength: helpers.withMessage("El CURP debe de contener máximo 18 caracteres", maxLength(18))
             },
             rfc: {
-                required: helpers.withMessage("El campo RFC es obligatorio", required),
                 rfcFormmat: helpers.withMessage("El RFC no es valido", (value) => rfc.test(value)),
                 minLength: helpers.withMessage("El RFC debe de contener al menos 13 caracteres", minLength(13)),
                 maxLength: helpers.withMessage("El RFC debe de contener máximo 13 caracteres", maxLength(13))
             },
             birthDate: {
                 required: helpers.withMessage("Debes agregar una fecha de nacimiento", required),
-                dateFormat: helpers.withMessage("El formato ingresado no coincide con el requerido", (value) => dateFormat.test(value))
+                dateFormat: helpers.withMessage("El formato ingresado no coincide con el requerido", (value) => dateFormatA.test(value))
+            },
+            sex: {
+                required: helpers.withMessage("Debes seleccionar un género", required),
+
+            },
+            phone: {
+                required: helpers.withMessage("Debes seleccionar un género", required),
+                minLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", minLength(10)),
+                maxLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", maxLength(10))
+            },
+            speciality:{
+                required: helpers.withMessage("Debes seleccionar una especialidad", required)
             }
+
         }
         const v$ = useVuelidate(rules, doctor)
         return { doctor, v$ }
     },
     data() {
         return {
-            doctor: {
-                name: '',
-                lastName: '',
-                secondLastName: '',
-                curp: '',
-                rfc: '',
-                birthDate: ''
-            },
             isLoading: false,
+            selectedGender: null,
             gneres: [
                 {
-                    id: 'womenId',
-                    name: 'woman',
-                    value: 'Mujer'
+                    id: 'Femenino',
+                    name: 'Woman',
+                    value: 'Femenino'
                 },
                 {
-                    id: 'menId',
-                    name: 'man',
-                    value: 'Hombre'
+                    id: 'Masculino',
+                    name: 'Man',
+                    value: 'Masculino'
                 }
             ],
-            newDoctor: {
-                fullname: "Carlos Gonzalez",
-                name: "Carlos",
-                code: "949596",
-                password: "753159",
-                surname: "Gonzalez",
-                lastname: "Gonzalez",
-                birthday: "1990-01-01",
-                phone: "773531419",
-                sex: "Masculino",
-                speciality: "Cardiologia",
-                speciality_id: "19",
-                description: "Estudio del corazon y de sus funciones y enfermedades."
-            }
-            // newDoctor: {
-            //     name: "Yaret",
-            //     surname: "apellido",
-            //     lastname: "apellido",
-            //     birthday: "2006-03-20",
-            //     phone: "1234567895",
-            //     sex: "Femenino",
-            //     speciality_id: 18,
-            //     code: "1234567127",
-            //     password: "123"
-            // }
         }
     },
     methods: {
@@ -373,24 +400,85 @@ export default {
             return new Date()
         },
 
-        async saveDoctors() {
-            const objectToEncrypt = JSON.stringify(this.newDoctor)
+        generatePass() {
+            let codigo = '';
+
+            for (let i = 0; i < 3; i++) {
+                codigo += Math.floor(Math.random() * 10);
+            }
+
+            const letras = 'abcdefghijklmnopqrstuvwxyz';
+            for (let i = 0; i < 3; i++) {
+                const indice = Math.floor(Math.random() * letras.length);
+                codigo += letras.charAt(indice);
+            }
+
+            return codigo;
+        },
+
+        async verifyDoctors() {
+           
+            // Obtener todos los campos de entrada con la clase "form-label-required"
+            const inputFields = document.querySelectorAll('.form-label-required + .p-inputtext');
+
+            // Iterar sobre cada campo de entrada
+            let hasValue = false;
+            inputFields.forEach(input => {
+                console.log(inputFields);
+                // Verificar si el campo tiene algo escrito (y no es nulo)
+                if (input.value.trim() !== '') {
+                    hasValue = true;
+                    return; // Salir del bucle si al menos un campo tiene un valor
+                }
+            });
+
+            // Verificar el resultado
+            if (hasValue) {
+                console.log("Al menos un campo requerido tiene algo escrito");
+            } else {
+                console.log("Todos los campos requeridos están vacíos");
+
+            }
+
+            this.saveDoctor();
+
+        },
+
+
+        async saveDoctor() {
+            var pass = this.generatePass();
+            var selectedGender = "Masculino";
+            console.log(this.doctor);
+
+            const newData = {
+                name: this.doctor.name,
+                surname: this.doctor.surname,
+                lastname: this.doctor.lastname,
+                birthday: this.doctor.birthDate,
+                phone: this.doctor.phone,
+                sex: selectedGender,
+                speciality_id: this.doctor.speciality,
+                code: this.doctor.phone,
+                password: pass
+            }
+
+            console.log(newData);
+
+            const objectToEncrypt = JSON.stringify(newData);
             const chiperedObject = await encrypt(objectToEncrypt)
-            // const unzipObject = await decrypt(chiperedObject);
-            // console.log("=>", unzipObject)
             console.log("encryp =>", chiperedObject);
             const { data, status } = await service.save_doctor(chiperedObject)
             if (status === 200 || status === 201) {
                 console.log(data);
             }
-            console.log(data);
-        },
+        }
     }
 }
 </script>
-<!-- rgb(0 175 245) -->
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/colors.scss";
+
 .header {
     padding-left: 15px;
     padding-top: 15px;
@@ -406,24 +494,24 @@ export default {
 
 .error-messages::before {
     content: "* ";
-    color: red;
+    color: $red-validate;
 }
 
 .form-label-required::after {
     content: " *";
-    color: red;
+    color: $red-validate;
 }
 
 .invalid-field-custom .p-inputtext {
-    border-color: rgba(255, 0, 0, 1) !important;
+    border-color: $red-validate !important;
     box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
 }
 
 .invalid-field-custom label {
-    color: rgba(255, 0, 0, 1) !important;
+    color: $red-validate !important;
 }
 
 .invalid-field-custom .pi {
-    color: red !important;
+    color: $red-validate !important;
 }
 </style>
