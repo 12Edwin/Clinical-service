@@ -32,4 +32,9 @@ public class Space {
     @OneToMany(mappedBy = "space")
     @JsonIgnore
     private List<Appoint> appoints;
+
+    public Space(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
