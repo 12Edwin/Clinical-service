@@ -1,36 +1,35 @@
 package utez.edu.mx.backend.base_catalog.schedule.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name = "schedules")
-public class Schedule {
+@Entity(name = "spaces")
+public class Space {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "start_hour", nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date start_hour;
+    @Column(name = "name", columnDefinition = "VARCHAR(70) NOT NULL")
+    private String name;
 
-    @Column(name = "end_hour", nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date end_hour;
+    @Column(name = "description", columnDefinition = "VARCHAR(150) NOT NULL")
+    private String description;
 
     @Column(name = "busy_spaces", columnDefinition = "INT NOT NULL")
     private int busy_spaces;
 
-    @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "space")
+    @JsonIgnore
     private List<Appoint> appoints;
 }
