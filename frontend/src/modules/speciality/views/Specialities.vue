@@ -38,35 +38,28 @@
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
                                         @click="openModal(speciality)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
-                                        style="margin-left: .5em" v-tooltip.top="'Detalle'" />
-                                    <!-- <Button :icon="speciality.status ? 'pi pi-lock-open' : 'pi pi-lock'" v-tooltip.top="speciality.status ? 'Deshabilitar' : 'Habilitar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality()" /> -->
+                                        style="margin-left: .5em" v-tooltip.top="'Detalle'" @click="openModalDetail(speciality)"/>
+                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality(speciality.id)" />
                                 </template>
                             </Card>
                         </b-col>
                     </b-row>
                     <b-row>
-                        <!--                         <b-col cols="1" :style="{marginTop: '20px'}">
-                            <small style="">Registros: </small> 0
-                        </b-col> -->
+                        <b-col cols="1" :style="{marginTop: '20px'}">
+                            <small style="">Registros: </small> {{ totalRecords }}
+                        </b-col>
                         <b-col>
-                             <Paginator :rows="10" :totalRecords="2" :rowsPerPageOptions="[5,10,20]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
- <!--                            <Paginator :first="0" :rows="10" :totalRecords="5" :rowsPerPageOptions="[10,20,30]">
-                                <template #start="slotProps">
-                                    {{ slotProps.state }}
-                                </template>
-                                <template #end>
-                                    <Button type="button" icon="pi pi-search" />
-                                </template>
-                            </Paginator> -->
+                             <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
                         </b-col>
                     </b-row>
                 </panel>
+                <Toast/>
             </b-col>
             <ConfirmDialog></ConfirmDialog>
-
         </b-row>
         <ModalUpdateSpecialityVue :visible.sync="displayModal" :speciality="speciality" />
-        <ModalSaveSpeciality :visible.sync="displaySaveModal" y></ModalSaveSpeciality>
+        <ModalSaveSpeciality :visible.sync="displaySaveModal" />
+        <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
     </div>
 </template>
 <script>
@@ -76,45 +69,64 @@ import ModalUpdateSpecialityVue from './ModalUpdateSpeciality.vue';
 import ModalSaveSpeciality from './ModalSaveSpeciality.vue';
 import Paginator from 'primevue/paginator';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
-import {decrypt} from "@/config/security"
+import {decrypt, encrypt} from "@/config/security"
+import Toast from 'primevue/toast';
+import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
 export default {
     components: {
         AccordionTab,
         ConfirmDialog,
         ModalUpdateSpecialityVue,
         ModalSaveSpeciality,
-        Paginator
+        Paginator,
+        Toast,
+        ModalDetailSpeciality
     },	
     data(){
         return {
             specialities: [],
             displayModal: false,
             displaySaveModal: false,
+            displayDetailModal: false,
             speciality: {
                 name: '',
                 description: ''
             },
             pageable: {
                 page: 0,
-                size: 2
-            }
+                size: 10
+            },
+            totalRecords: 0
         }
     },
     methods:{
-        deleteSpeciality() {
+        deleteSpeciality(especialityId) {
             this.$confirm.require({
-                message: '¿Está seguro de cambiar el estado de esta especialidad?',
+                message: '¿Está seguro de eliminar esta especialidad?',
                 header: 'Confirmación',
                 icon: 'pi pi-info-circle',
                 acceptLabel: 'Sí',
                 acceptClass: 'p-button-danger',
-                accept: () => {},
+                accept: async () => {
+                    try {
+                        const encodedId  = await encrypt(especialityId)
+                        const {status} = await specialitiesServices.deleteSpeciality(encodedId)
+                        if(status === 200 || status === 201){
+                            this.pagination()
+                            this.$toast.add({severity:'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000});
+                        }
+                    } catch (error) {}
+                },
                 reject: () => {}
             });
         },
         openModal(speciality) {
             this.displayModal = true;
-            this.speciality = speciality;
+            this.speciality = JSON.stringify(speciality)
+        },
+        openModalDetail(speciality) {
+            this.displayDetailModal = true;
+            this.speciality = JSON.stringify(speciality)
         },
         openModalSaveSpeciality() {
             this.displaySaveModal = true;
@@ -129,7 +141,9 @@ export default {
             const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)          
             if(status === 200 || status === 201){
                 const decripted = await decrypt(result)
-                this.specialities = JSON.parse(decripted).content
+                const {content, totalElements} = JSON.parse(decripted)
+                this.totalRecords = totalElements
+                this.specialities = content
             }
            } catch (error) {}
            

@@ -20,6 +20,9 @@ import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.person.control.PersonService;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
+import utez.edu.mx.backend.base_catalog.schedule.control.SpaceService;
+import utez.edu.mx.backend.base_catalog.schedule.model.Space;
+import utez.edu.mx.backend.base_catalog.schedule.model.SpaceRepository;
 import utez.edu.mx.backend.base_catalog.service.control.ServiceService;
 import utez.edu.mx.backend.base_catalog.service.model.Service;
 import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
@@ -41,6 +44,7 @@ public class InitialDatabase implements CommandLineRunner {
     private final ServiceService serviceService;
     private final SpecialityService specialityService;
     private final PathologicalService pathologicalService;
+    private final SpaceService spaceService;
     private final PasswordEncoder passwordEncoder;
     @Override
     public void run(String... args) throws Exception {
@@ -264,6 +268,24 @@ public class InitialDatabase implements CommandLineRunner {
         optionalService = serviceService.findFirstByName("Evaluación y tratamiento de problemas ginecológicos");
         if (optionalService.isEmpty()){
             serviceService.saveInitial(new Service("Evaluación y tratamiento de problemas ginecológicos", "", 100, speciality3));
+        }
+
+        // SPACE  -- Urgencias 1 --
+        Optional<Space> optionalSpace = spaceService.findFirstByName("Urgencias 1");
+        if (optionalSpace.isEmpty()){
+            spaceService.saveInitial(new Space("Urgencias 1", "Segundo piso, puerta 3"));
+        }
+
+        // SPACE  -- Sala de cardiología --
+        optionalSpace = spaceService.findFirstByName("Sala de cardiología");
+        if (optionalSpace.isEmpty()){
+            spaceService.saveInitial(new Space("Sala de cardiología", "Segundo piso, puerta 6"));
+        }
+
+        // SPACE  -- Consultorio 1 --
+        optionalSpace = spaceService.findFirstByName("Consultorio 1");
+        if (optionalSpace.isEmpty()){
+            spaceService.saveInitial(new Space("Consultorio 1", "Primer piso, puerta 1"));
         }
         logger.info("Data pre-registered");
     }
