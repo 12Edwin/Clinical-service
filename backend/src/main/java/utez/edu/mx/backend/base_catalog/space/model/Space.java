@@ -1,4 +1,4 @@
-package utez.edu.mx.backend.base_catalog.schedule.model;
+package utez.edu.mx.backend.base_catalog.space.model;
 
 import javax.persistence.*;
 
