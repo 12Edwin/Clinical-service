@@ -76,7 +76,6 @@
                                     <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
                                         optionValue="id" v-model="selectedSpeciality"
                                         :class="{ 'invalid-field-custom': v$.speciality.$error }" />
-                                        <code>{{ selectedSpeciality }}</code>
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
                                 <div class="text-danger text-start pt-2">
@@ -182,16 +181,14 @@ export default {
         async saveService() {
             this.services.speciality = +this.selectedSpeciality
             this.services.price = +this.services.price
-            console.log("Respuesta: ",this.services);
             const encoded = await encrypt(JSON.stringify(this.services))
             try {
                 const { status, data } = await servicios.save_Service(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log("response del save: ", data);
                 } else {
-                    console.log("error en la peticion", data.result)
+                    return data.result
                 }
             } catch (error) {
                 return error
@@ -255,4 +252,4 @@ export default {
     content: " *";
     color: red;
 }
-</style>../service-services/Services
+</style>

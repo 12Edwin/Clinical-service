@@ -195,6 +195,7 @@ h1 {
 }
 
 h3 {
+    font-size: x-large!important;
     font-weight: bolder !important;
     font-family: Arial, Helvetica, sans-serif;
     color: black !important;

@@ -235,11 +235,9 @@ export default {
                 try {
                     this.newService.id = JSON.parse(this.service).id;
                     this.newService.speciality = +this.selectedSpeciality
-                    console.log("servicio: ", this.newService);
                     const encodedService = await encrypt(JSON.stringify(this.newService));
                     const { status } = await servicios.update_service(encodedService);
                     if (status === 200 || status === 201) {
-                        console.log("datos actualizados");
                         this.closeModal();
                         this.$toast.add({
                             severity: "success",
