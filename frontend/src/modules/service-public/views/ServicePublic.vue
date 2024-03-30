@@ -8,14 +8,14 @@
                 <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
                     <Card class="custom-card">
                         <template #header>
-                            <img :src="require(`@/assets/${service.image}`)" class="image" alt="">
+                            <img  src="https://picsum.photos/600/300/?image=25" class="image" alt="">
                         </template>
                         <template #title>
-                            <h2>{{ service.title }}</h2>
+                            <h2>{{ service.name }}</h2>
                         </template>
                         <template #content>
                             <p>{{ service.description }}</p>
-                            <p>{{ service.price }}</p>
+                            <p style="font-weight: bolder!important">${{ service.price }}</p>
                         </template>
                     </Card>
                 </b-col>
@@ -34,48 +34,12 @@
 <script>
 import Card from 'primevue/card';
 import Menubar from 'primevue/menubar';
-import servicios from  '@/modules/service-private/service-services/Services'
+import servicios from '@/modules/service-private/service-services/Services'
+import {decrypt} from "@/config/security"
 export default {
     data() {
         return {
-            services: [
-                {
-                    title: "Urgencias",
-                    description: "Los servicios de urgencias tienen como misión la prestación de la atención sanitaria urgente a las personas que la demanden, en el tiempo adecuado.",
-                    image: "img/urgencias.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Intervenciones Quirúrgicas",
-                    description: "Es la operación instrumental, total o parcial, de lesiones causadas por enfermedades o accidentes, con fines diagnósticos, de tratamiento o de rehabilitación de secuelas.",
-                    image: "img/intervenciones.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Atención del embarazo parto y puerperio.",
-                    description: "El embarazo, parto y puerperio constituye un proceso por el que atraviesan las mujeres que deciden tener hijos a lo largo de su vida reproductiva.",
-                    image: "img/parto.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Unidad de Cuidados Especiales Neonatales.",
-                    description: "Unidad Médica destinada a atender a todo recién nacido (0 a 28 días de vida) con cualquier proceso mórbido o enfermedad que ponga en peligro su vida.",
-                    image: "img/cuidado.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Vacunas",
-                    description: " La vacunación es una forma sencilla, inocua y eficaz de protegernos contra enfermedades dañinas antes de entrar en contacto con ellas.",
-                    image: "img/vacuna.jpg",
-                    price: "$4000"
-                },
-                {
-                    title: "Exámenes de audición y visión.",
-                    description: "Las pruebas de audición miden qué tan bien escucha. Pueden ayudar a diagnosticar pérdida de la audición, qué tan severa es y qué parte de su audición no está funcionando bien.",
-                    image: "img/vision.jpg",
-                    price: "$4000"
-                },
-            ],
+            services: [],
             navbarItems: [
                 {
                     label: 'Hospital San J',
@@ -115,22 +79,26 @@ export default {
         Menubar
     },
     mounted() {
-        // this.getServices();
+        this.pagination()
     },
     methods: {
-        async getServices() {
-            try {
-                console.log("si entra");
-                const { data, status } = await servicios.get_services();
-                if (status === 200 || status === 201) {
-                    console.log("aqui entra y aun no hay nada");
-                    console.log(data);
-                }
-
-            } catch (error) {
-                return error;
+        async pagination(event) {
+            if (event != undefined) {
+                const { page, rows } = event;
+                this.pageable.page = page;
+                this.pageable.size = rows;
             }
-        }
+            try {
+                const { status, data: { result } } = await servicios.get_services(this.pageable)
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result)
+                    const { content, totalElements } = JSON.parse(decripted)
+                    this.totalRecords = totalElements
+                    this.services = content
+                }
+            } catch (error) { }
+
+        },
     }
 };
 </script>

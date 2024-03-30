@@ -73,15 +73,16 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality_id" :options="specialities" optionLabel="name"
+                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
                                         optionValue="id" v-model="selectedSpeciality"
-                                        :class="{ 'invalid-field-custom': v$.speciality_id.$error }" />
+                                        :class="{ 'invalid-field-custom': v$.speciality.$error }" />
+                                        <code>{{ selectedSpeciality }}</code>
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
                                 <div class="text-danger text-start pt-2">
                                     <p class="error-messages"
-                                        v-if="v$.speciality_id.$dirty && v$.speciality_id.required.$invalid">
-                                        {{ v$.speciality_id.required.$message }}
+                                        v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                        {{ v$.speciality.required.$message }}
                                     </p>
                                 </div>
                             </div>
@@ -134,7 +135,7 @@ export default {
             name: '',
             description: '',
             price: '',
-            speciality_id: ''
+            speciality: ''
         })
 
         const rules = {
@@ -154,7 +155,7 @@ export default {
                 required: helpers.withMessage("Debes agregar un precio al servicio", required),
                 text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             },
-            speciality_id: {
+            speciality: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
                 text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             }
@@ -175,17 +176,20 @@ export default {
             this.v$.name.$model = ''
             this.v$.description.$model = ''
             this.v$.price.$model = ''
-            this.v$.speciality_id.$model = ''
+            this.v$.speciality.$model = ''
             this.v$.$reset()
         },
         async saveService() {
+            this.services.speciality = +this.selectedSpeciality
+            this.services.price = +this.services.price
+            console.log("Respuesta: ",this.services);
             const encoded = await encrypt(JSON.stringify(this.services))
             try {
                 const { status, data } = await servicios.save_Service(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log("response del save: ",data);
+                    console.log("response del save: ", data);
                 } else {
                     console.log("error en la peticion", data.result)
                 }

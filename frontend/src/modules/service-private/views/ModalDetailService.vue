@@ -43,7 +43,7 @@
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-pen" />
                                     <InputText id="field-description" type="text" rows="3"
-                                        v-model="serviceInfo.speciality.name" />
+                                        v-model="serviceInfo.speciality.name"/>
                                     <label for="field-description" class="form-label-required">Especialidad</label>
                                     <div class="text-danger text-start pt-2">
                                     </div>

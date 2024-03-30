@@ -16,8 +16,8 @@
                                         <p class="error-messages" v-if="v$.name.$dirty && v$.name.required.$invalid">
                                             {{ v$.name.required.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid
-                ">
+                                        <p class="error-messages"
+                                            v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
                                             {{ v$.name.onlyLettersAndAccents.$message }}
                                         </p>
                                         <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
@@ -43,18 +43,16 @@
                                             v-if="v$.description.$dirty && v$.description.required.$invalid">
                                             {{ v$.description.required.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.description.$dirty && v$.description.text.$invalid
-                ">
+                                        <p class="error-messages"
+                                            v-if="v$.description.$dirty && v$.description.text.$invalid">
                                             {{ v$.description.text.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.description.$dirty &&
-                v$.description.minLength.$invalid
-                ">
+                                        <p class="error-messages"
+                                            v-if="v$.description.$dirty && v$.description.minLength.$invalid">
                                             {{ v$.description.minLength.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.description.$dirty &&
-                v$.description.maxLength.$invalid
-                ">
+                                        <p class="error-messages"
+                                            v-if="v$.description.$dirty && v$.description.maxLength.$invalid">
                                             {{ v$.description.maxLength.$message }}
                                         </p>
                                     </div>
@@ -75,13 +73,23 @@
                                         <p class="error-messages" v-if="v$.price.$dirty && v$.price.text.$invalid">
                                             {{ v$.price.text.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.minLength.$invalid">
-                                            {{ v$.price.minLength.$message }}
+                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.precio.$invalid">
+                                            {{ v$.price.precio.$message }}
                                         </p>
                                         <p class="error-messages" v-if="v$.price.$dirty && v$.price.maxLength.$invalid">
                                             {{ v$.price.maxLength.$message }}
                                         </p>
                                     </div>
+                                </span>
+                            </div>
+                        </b-col>
+                        <b-col class="mt-3" lg="12">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right">
+                                    <i class="pi pi-bitcoin" />
+                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
+                                        optionValue="id" v-model="selectedSpeciality" />
+                                    <label for="field-speciality" class="form-label-required">Especialidad</label>
                                 </span>
                             </div>
                         </b-col>
@@ -108,10 +116,11 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, maxLength, minLength } from "@vuelidate/validators";
 import { newregex } from "@/utils/regex";
 import Toast from "primevue/toast";
-import { encrypt } from "@/config/security";
+import { encrypt, decrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import servicios from "@/modules/service-private/service-services/Services";
+import Dropdown from "primevue/dropdown/";
 export default {
     props: {
         visible: {
@@ -122,17 +131,24 @@ export default {
             required: true,
         },
     },
+    data() {
+        return {
+            specialities: [],
+            selectedSpeciality: null
+        }
+    },
     components: {
         Dialog,
         Textarea,
-        Toast
+        Toast,
+        Dropdown,
     },
     name: "ModalUpdateService",
     setup() {
         const newService = reactive({
             name: "",
             description: "",
-            price: "",
+            price: 0
         });
 
         const rules = {
@@ -173,16 +189,13 @@ export default {
             },
             price: {
                 required: helpers.withMessage(
-                    "Debes agregar una descripción para la especialidad",
+                    "Debes agregar una descripción para la servicio",
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
                     newregex.test(value)
                 ),
-                minLength: helpers.withMessage(
-                    "La descripción debe tener al menos 3 caracteres",
-                    minLength(3)
-                ),
+                precio: helpers.withMessage("EL precio debe ser mayor a 0", (value) => +value > 0),
                 maxLength: helpers.withMessage(
                     "La descripción debe tener menos de 60 caracteres",
                     maxLength(60)
@@ -204,8 +217,8 @@ export default {
         },
         disableButton() {
             if (
-                !this.v$.name.$dirty &&
-                !this.v$.description.$dirty &&
+                !this.v$.name.$dirty ||
+                !this.v$.description.$dirty ||
                 !this.v$.price.$dirty
             ) {
                 return true;
@@ -217,13 +230,12 @@ export default {
             );
         },
         async updateService() {
-            if (
-                !this.v$.name.$invalid &&
-                !this.v$.description.$invalid &&
-                !this.v$.price.$invalid
-            ) {
+            this.speciality = +this.selectedSpeciality
+            if (!this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$invalid && this.selectedSpeciality != null) {
                 try {
                     this.newService.id = JSON.parse(this.service).id;
+                    this.newService.speciality = +this.selectedSpeciality
+                    console.log("servicio: ", this.newService);
                     const encodedService = await encrypt(JSON.stringify(this.newService));
                     const { status } = await servicios.update_service(encodedService);
                     if (status === 200 || status === 201) {
@@ -249,16 +261,29 @@ export default {
                 });
             }
         },
+        async getSpecialities() {
+            try {
+                const { status, data: { result } } = await servicios.get_specialities();
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result);
+                    this.specialities = JSON.parse(decripted).content
+                }
+            } catch (error) {
+                console.log("error en la peticion", error);
+            }
+        }
     },
-
-
+    mounted() {
+        this.getSpecialities()
+    },
     watch: {
-        servicios: {
+        service: {
             handler() {
                 const oldService = JSON.parse(this.service);
                 this.newService.name = oldService.name;
                 this.newService.description = oldService.description;
                 this.newService.price = oldService.price;
+                this.newService.speciality = oldService.speciality;
             },
             deep: true,
         },
@@ -266,7 +291,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 @import "../../../styles/colors.scss";
 
 .button-style {
@@ -287,4 +312,6 @@ export default {
         max-width: 95%;
     }
 }
+
+
 </style>
