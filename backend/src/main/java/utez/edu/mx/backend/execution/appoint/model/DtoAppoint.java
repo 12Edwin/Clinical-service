@@ -6,11 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import utez.edu.mx.backend.access.user.model.User;
-import utez.edu.mx.backend.base_catalog.schedule.model.Space;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
+import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.execution.treatment.model.Treatment;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
