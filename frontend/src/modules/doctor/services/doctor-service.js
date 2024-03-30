@@ -1,14 +1,8 @@
 import api from "@/config/http-client.gateway"
-import utils from "@/kernel/utils";
 
-const get_doctors = async () => {
+const get_doctors = async (pagination) => {
     try {
-        const token = utils.getToken;
-        const response = await api.doGet('/doctor/', {
-            headers: {
-                Authorization: `Bearer ${token}` 
-            }
-        });
+        const response = await api.doGet('/doctor/', {params: pagination});
         return response;
     } catch (error) {
         return error;
@@ -17,14 +11,11 @@ const get_doctors = async () => {
 
 const save_doctor = async (data) => {
     try {
-        // const token = utils.getToken;
-        const token = localStorage.getItem('token');
-        // console.log(token);
         const response = await api.doPost('/doctor/', data, {
-            headers: {
-                Authorization: `Bearer ${token}` 
+            headers:{
+                'Content-Type': 'text/plain'
             }
-        });
+        })
         return response;
     } catch (error) {
         return error;
@@ -32,7 +23,32 @@ const save_doctor = async (data) => {
 }
 
 
+const deleteDoctor = async (doctorId) => {
+    try {
+        const response = await api.doDelete(`/doctor/${doctorId}`)
+        return response
+    } catch (error) {
+        return error
+    }
+}
+
+const updateDoctor = async (updatedDoctor) => {
+    try {
+        const response = await api.doPut("/doctor/", updatedDoctor, {
+            headers:{
+                'Content-Type': 'text/plain'
+            }
+        })
+        return response
+    } catch (error) {
+        return error
+    }
+}
+
+
 export default {
     get_doctors,
-    save_doctor
+    save_doctor,
+    updateDoctor,
+    deleteDoctor,
 }

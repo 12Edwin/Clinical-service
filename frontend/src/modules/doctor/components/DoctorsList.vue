@@ -1,5 +1,6 @@
 <template>
-    <Panel class="w-100 shadow-lg">
+    <div>
+        <Panel class="w-100 shadow-lg">
         <template #header>
             <div class="d-flex justify-content-between w-100 align-items-center">
                 <p class="h5 text-secondary"><b>Gestion de doctores</b></p>
@@ -13,7 +14,7 @@
         <b-row>
             <b-col>
                 <DataTable class="p-datatable-lg w-100" :value="doctors" :paginator="true" :rows="2"
-                    responsiveLayout="scroll" dataKey="id" :loading="loading" :selection.sync="selectedDoctors" :globalFilterFields="['name']"
+                    responsiveLayout="scroll" dataKey="id" :loading="loading" :selection.sync="selectedDoctors" :globalFilterFields="['fullname', 'speciality', 'phone', 'sex']"
                     :filters.sync="filters1" filterDisplay="menu">
                     <template #header>
                         <b-row>
@@ -36,82 +37,82 @@
                         </div>
                     </template>
                     <Column selectionMode="multiple" :styles="{ 'min-width': '3rem' }"></Column>
-                    <Column field="name" header="Nombre" sortable :styles="{ 'min-width': '14rem' }">
+                    <Column field="name" header="Doctor (a)" sortable :styles="{ 'min-width': '14rem' }">
                         <template #body="{ data }">
-                            {{ data.name }}
+                            {{ data.fullname }}
                         </template>
                     </Column>
-                    <Column field="lastName" header="Apellidos" sortable :styles="{ 'min-width': '14rem' }">
+                    <Column field="lastName" header="Género" sortable :styles="{ 'min-width': '14rem' }">
                         <template #body="{ data }">
-                            {{ data.lastName }} {{ data.secondLastName }}
+                            {{ data.sex }}
                         </template>
                     </Column>
-                    <Column field="curp" header="Clave Unica de Registro" sortable :styles="{ 'min-width': '14rem' }">
+                    <Column field="curp" header="Número de teléfono" sortable :styles="{ 'min-width': '14rem' }">
                         <template #body="{ data }">
-                            {{ data.curp }}
+                            {{ data.phone }}
                         </template>
                     </Column>
                     <Column field="specialty" header="Especialidad" sortable :styles="{ 'min-width': '14rem' }">
                         <template #body="{ data }">
-                            {{ data.specialty }}
+                            {{ data.speciality }}
                         </template>
                     </Column>
                     <Column header="Acciones" :headerStyle="{ 'min-width': '4rem', 'text-align': 'center' }"
                         :bodyStyle="{ 'text-align': 'center', overflow: 'visible' }">
-                        <template #body>
-                            <Button type="button" icon="pi pi-pencil" class="p-button-rounded "
-                                style="background-color: #368368; border: none;"></Button>
+                        <template #body="{ data }">
+                            <Button icon="pi pi-pencil" class="p-button-rounded button-style"
+                                        @click="openModalUpdate(data)"
+                                         v-tooltip.top="'Editar'" />
+                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteDoctor(data.id)" />
                         </template>
                     </Column>
                 </DataTable>
             </b-col>
         </b-row>
     </Panel>
+    <Toast/>
+    <ConfirmDialog></ConfirmDialog>
+    <ModalUpdateVue :visible.sync="displayUpdateModal" :doctor="doctor" />
+    </div>
 </template>
 
 <script>
 import DataTable from 'primevue/datatable/DataTable'
 import Column from 'primevue/column/Column'
+import AccordionTab from 'primevue/accordiontab';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Paginator from 'primevue/paginator';
+import Toast from 'primevue/toast';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
+import ModalUpdateVue from './ModalUpdate.vue'
 
 export default {
     components: {
         Column,
-        DataTable
+        DataTable,
+        AccordionTab,
+        ConfirmDialog,
+        Paginator,
+        Toast,
+        ModalUpdateVue
     },
     data() {
         return {
             loading: false,
-            doctors: [
-            {
-                    id:1,
-                    name: 'Juan',
-                    lastName: 'Pérez',
-                    secondLastName: 'García',
-                    curp: 'PEJG980101HDFRNN00',
-                    birthDate: '1998-01-01',
-                    specialty: 'Cardiología'
-                },
-                {
-                    id:2,
-                    name: 'María',
-                    lastName: 'González',
-                    secondLastName: 'García',
-                    curp: 'GOGM980101HDFRNN00',
-                    birthDate: '1998-01-01',
-                    specialty: 'Pediatría'
-                },
-                {
-                    id:3,
-                    name: 'José',
-                    lastName: 'García',
-                    secondLastName: 'García',
-                    curp: 'GOGG980101HDFRNN10',
-                    birthDate: '1998-01-01',
-                    specialty: 'Radiología'
-                }
-            ],
+            doctors: [],
+            displayUpdateModal: false,
+            doctor: {
+                name: '',
+                lastname: '',
+                surname: '',
+                phone: '',
+            },
+            pageable: {
+                page: 0,
+                size: 10
+            },
+            totalRecords: 0,
             selectedDoctors: null,
             filters1: {
                 global: { value: '' } // Inicializar el filtro global
@@ -122,16 +123,48 @@ export default {
         this.getDoctors();
     },
     methods: {
-        async getDoctors() {
+        async getDoctors(event) {
             this.loading = true;
-            const { status, data: { data } } = await service.get_doctors();
-            if (status === 200 || status === 201) {
-                // const { content, totalElements } = JSON.parse(await decrypt(data));
-                // console.log(content);
-                console.log(data);
+            if(event != undefined){
+            const {page, rows} = event;
+                this.pageable.page = page;
+                this.pageable.size = rows;
+           }
+           try {
+            const {status, data : { result } } = await service.get_doctors(this.pageable)          
+            if(status === 200 || status === 201){
+                const decripted = await decrypt(result)
+                const {content, totalElements} = JSON.parse(decripted)
+                this.totalRecords = totalElements
+                this.doctors = content;
             }
-            this.loading = false;
-            console.log(data);
+           } catch (error) {
+           }
+           this.loading = false
+        },
+        deleteDoctor(doctorId) {
+            this.$confirm.require({
+                message: '¿Está seguro de eliminar este Doctor?',
+                header: 'Confirmación',
+                icon: 'pi pi-info-circle',
+                acceptLabel: 'Sí',
+                acceptClass: 'p-button-danger',
+                accept: async () => {
+                    try {
+                        const encodedId  = await encrypt(doctorId)
+                        const {status} = await service.deleteDoctor(encodedId)
+                        if(status === 200 || status === 201){
+                            this.getDoctors();
+                            this.$toast.add({severity:'success', summary: 'Éxito', detail: 'Doctor eliminado correctamente', life: 3000});
+                        }
+                    } catch (error) {}
+                },
+                reject: () => {}
+            });
+        },
+        openModalUpdate(doctor){
+            this.displayUpdateModal = true;
+            this.doctor = JSON.stringify(doctor)
         },
     }
 } 
