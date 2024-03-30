@@ -59,9 +59,7 @@ public class DoctorController {
     @PostMapping("/")
     ResponseEntity<?> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
-            System.out.println(str_doctor);
             String decrypt = cryptService.decrypt(str_doctor);
-            System.out.println(decrypt);
             ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
 
             // Validations

@@ -1,7 +1,7 @@
 import router from "@/router";
 import axios from "axios";
 
-const SERVER_URL = "http://127.0.0.1:8081/api"
+const SERVER_URL = "http://127.0.0.1:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
