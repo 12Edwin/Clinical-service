@@ -261,7 +261,7 @@
                             </span>
                             <div class="text-danger text-start pt-1">
                                 <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
-                                    {{ v$.phone.rfcFormmat.$message }}
+                                    {{ v$.phone.required.$message }}
                                 </p>
                                 <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
                                     {{ v$.phone.minLength.$message }}
@@ -291,6 +291,7 @@
                         :loading="isLoading" />
                 </b-col>
             </b-row>
+            <Toast/>
         </template>
     </Card>
 </template>
@@ -457,8 +458,7 @@ export default {
 
         async saveDoctor() {
             var pass = this.generatePass();
-            var selectedGender = "Masculino";
-            console.log(this.doctor);
+            var selectedGender = "Femenino";
 
             const newData = {
                 name: this.doctor.name,
@@ -469,22 +469,22 @@ export default {
                 sex: selectedGender,
                 code: this.doctor.phone,
                 password: pass,
-                speciality_id: "46",
+                speciality_id: "20",
             }
 
-            console.log(newData);
-
             try {
-                const encoded = await encrypt(JSON.stringify(newData))
-                console.log("encryp =>", encoded);
+                const encoded = await encrypt(JSON.stringify(newData));
                 const { status } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    setTimeout(() => {
+                        this.$router.push('/doctors');
+                    }, 500);
                 } else {
-                    console.log("error en la peticion", error);
+                    console.log("error en la peticion");
                 }
             } catch (error) {
-                console.log(error);
+                this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
             }
         }
     }
