@@ -1,5 +1,5 @@
 import Doctors from "@/modules/doctor/views/Doctors.vue";
-import Area from "@/modules/area/views/Area.vue";
+import Pathology from "@/modules/pathology/views/Pathology.vue";
 import Specialities from "@/modules/speciality/views/Specialities.vue"
 import SaveDoctor from "@/modules/doctor/views/SaveDoctor.vue"
 import ServicePrivate from "@/modules/service-private/views/ServicePrivate.vue"
@@ -39,11 +39,11 @@ export default [
         ]
     },
     {
-        path: 'areas',
-        name: 'areas',
-        component: Area,
+        path: 'pathology',
+        name: 'pathology',
+        component: Pathology,
         meta: {
-            title:'Áreas'
+            title:'Pathology'
         }
     },
     {
