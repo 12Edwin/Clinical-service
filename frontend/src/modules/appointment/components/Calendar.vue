@@ -29,13 +29,21 @@ export default {
         ],
         weekends: false,
         dateClick: this.handleDateClick,
+        customButtons: {
+          appointment: {
+            text: `Nueva cita`,
+            click: () => {
+              this.$router.push({ name: 'NewAppoint' })
+            }
+          }
+        },
         headerToolbar: {
           start: 'title',
           center: '',
-          end: 'today prev,next'
+          end: 'appointment today prev,next'
         },
         views: {
-          dayGridMonth: { // Vista de mes
+          dayGridMonth: {
             titleFormat: { year: 'numeric', month: 'long' } // Ejemplo: Septiembre 2023
           }
         } 

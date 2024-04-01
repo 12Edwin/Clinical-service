@@ -44,6 +44,7 @@ import Card from 'primevue/card/Card';
 import Carousel from 'primevue/carousel';
 import services from "@/modules/auth-services/Auth"
 import InlineMessage from 'primevue/inlinemessage';
+import utils from '@/kernel/utils';
 export default {
   name: 'login',
   components: {
@@ -66,12 +67,17 @@ export default {
     }
   },
 
-  methods: {
+  methods: {     
     async login(credentials){
       const {data, status} = await services.login(credentials)
       if(status === 200 || status === 201){
         localStorage.setItem('token', data.token)
-        this.$router.push({name: 'doctors'})
+        const roleName = utils.getRoleNameBytoken(data.token)
+        if(roleName.toLowerCase() === 'admin'){
+          this.$router.push({name: 'doctors'})
+        }else{
+          this.$router.push({name: 'appoints'})
+        }
       }
     },
     setTypeInput(t) {

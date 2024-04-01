@@ -34,13 +34,13 @@ export default {
       items:[
         {
           label: 'Doctores',
-          icon: `heart`,
+          icon: 'people',
           route: 'doctors',
           role: 'admin'
         },
         {
           label: 'Citas',
-          icon: 'box',
+          icon: 'alarm',
           route: 'appoints',
           role: 'doctor'
         },
@@ -58,7 +58,7 @@ export default {
         },
         {
           label: 'Tratamientos',
-          icon: 'alarm',
+          icon: 'heart',
           route: 'treatments',
           role: 'doctor'
         },
