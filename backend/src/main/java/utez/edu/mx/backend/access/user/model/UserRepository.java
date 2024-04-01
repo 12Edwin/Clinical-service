@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int lockUser(@Param("id") Long id, @Param("status") boolean status);
 
     List<User> findAllBySpeciality(Speciality speciality);
+
+    Optional<User> findByPerson(Person person);
 }

@@ -17,6 +17,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.Set;
 
 @RestController
@@ -52,6 +53,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -73,6 +76,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -94,6 +99,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -115,6 +122,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -136,6 +145,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -157,6 +168,8 @@ public class AppointController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (ParseException ex){
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
         }
     }
 

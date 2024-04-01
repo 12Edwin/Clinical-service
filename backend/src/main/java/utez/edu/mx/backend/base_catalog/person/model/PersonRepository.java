@@ -26,4 +26,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             @Param("surname") String surname, @Param("lastname") String lastname,
             @Param("birthday") Date birthday, @Param("sex") SexType sex
             );
+
+    Optional<Person> findFirstByPhone(String phone);
 }

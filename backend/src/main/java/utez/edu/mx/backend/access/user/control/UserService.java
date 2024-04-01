@@ -3,6 +3,7 @@ package utez.edu.mx.backend.access.user.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backend.access.role.model.RoleRepository;
+import utez.edu.mx.backend.access.sms.control.SmsService;
+import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.access.user.model.UserDto;
 import utez.edu.mx.backend.access.user.model.UserRepository;
+import utez.edu.mx.backend.base_catalog.person.model.Person;
+import utez.edu.mx.backend.base_catalog.person.model.PersonRepository;
 import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -30,6 +37,10 @@ public class UserService {
     private final UserRepository repository;
     @Autowired
     private final RoleRepository roleRepository;
+    @Autowired
+    private final SmsService smsService;
+    @Autowired
+    private final PersonRepository personRepository;
     private final PasswordEncoder encoder;
 
     @Transactional(readOnly = true)
@@ -111,6 +122,65 @@ public class UserService {
             return new ResponseEntity<>(new Message("Cannot change user status", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new Message("User status changed", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ResponseEntity<?> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+        Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
+        if (person.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        Optional<User> user = repository.findByPerson(person.get());
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        User updatedUser = user.get();
+        if (!updatedUser.isAvailable()) {
+            return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
+        }
+        RandomString tickets = new RandomString(5);
+        updatedUser.setToken(tickets.nextString());
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE, 5);
+        date = calendar.getTime();
+        updatedUser.setExpiration(date);
+        User result = repository.saveAndFlush(updatedUser);
+        if (result.getToken() == null) {
+            return new ResponseEntity<>(new Message("Code not sent", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
+        }
+        return smsService.sendSMS(person.get().getPhone(), result.getToken());
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ResponseEntity<?> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+        Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
+        if (person.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        Optional<User> user = repository.findByPerson(person.get());
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        if (!user.get().isAvailable()) {
+            return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
+        }
+        if (!dto.getToken().equals(user.get().getToken())) {
+            return new ResponseEntity<>(new Message("The code has not matched", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        User updatedUser = user.get();
+        if (updatedUser.getExpiration().before(new Date())) {
+            updatedUser.setToken("");
+            updatedUser.setExpiration(null);
+            repository.saveAndFlush(updatedUser);
+            return new ResponseEntity<>(new Message("Expired code", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        updatedUser.setToken("");
+        updatedUser.setExpiration(null);
+        updatedUser.setPassword(encoder.encode(dto.getPassword()));
+        repository.saveAndFlush(updatedUser);
+        return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
 }

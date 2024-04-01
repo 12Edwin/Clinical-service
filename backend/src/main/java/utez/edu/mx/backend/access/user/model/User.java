@@ -12,6 +12,8 @@ import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,6 +37,10 @@ public class User {
     @Column(name = "available", nullable = false)
     private boolean available;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "expiration", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Date expiration;
+
     @OneToOne
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
@@ -51,11 +57,29 @@ public class User {
     @JoinColumn(name = "speciality_id", referencedColumnName = "id")
     private Speciality speciality;
 
+    @PrePersist
+    protected void onCreate() {
+        this.expiration = new Date();
+    }
+
     public User(String code, String password, String token, Long person, Role role, Speciality speciality) {
         this.code = code;
         this.password = password;
         this.token = token;
         this.available = true;
+        Person newPerson = new Person();
+        newPerson.setId(person);
+        this.person = newPerson;
+        this.role = role;
+        this.speciality = speciality;
+    }
+
+    public User(String code, String password, Date expiration, String token, Long person, Role role, Speciality speciality) {
+        this.code = code;
+        this.password = password;
+        this.token = token;
+        this.available = true;
+        this.expiration = expiration;
         Person newPerson = new Person();
         newPerson.setId(person);
         this.person = newPerson;
