@@ -13,6 +13,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Getter
@@ -31,12 +33,12 @@ public class DtoAppoint {
     private String status;
 
     @NotNull(groups = {Register.class, Modify.class, Reschedule.class, FindByDate.class})
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date start_hour;
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", groups = {Register.class, Modify.class, Reschedule.class, FindByDate.class}, message = "Invalid date format")
+    private String start_hour;
 
     @NotNull(groups = {Register.class, Modify.class, Reschedule.class, FindByDate.class})
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date end_hour;
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", groups = {Register.class, Modify.class, Reschedule.class, FindByDate.class}, message = "Invalid date format")
+    private String end_hour;
 
     @NotNull(groups = {Modify.class, Cancel.class, Complete.class, Reschedule.class})
     @Min(value = 1, groups = {Modify.class, Complete.class, Cancel.class})
@@ -61,7 +63,8 @@ public class DtoAppoint {
     public interface FindByDate{}
     public interface Delete{}
 
-    public Appoint cast(){
+    public Appoint cast() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Appoint appoint = new Appoint();
         appoint.setId(getId());
         appoint.setStatus(getStatus() == null ? null : StatusAppoint.valueOf(getStatus()));
@@ -74,8 +77,8 @@ public class DtoAppoint {
         Space space1 = new Space();
         space1.setId(getSpace());
         appoint.setSpace(space1);
-        appoint.setStartHour(getStart_hour());
-        appoint.setEndHour(getEnd_hour());
+        appoint.setStartHour(getStart_hour() == null ? null : sdf.parse(getStart_hour()));
+        appoint.setEndHour(getEnd_hour() == null ? null : sdf.parse(getEnd_hour()));
         return appoint;
     }
 }
