@@ -71,11 +71,11 @@ import Card from 'primevue/card/Card';
 import Carousel from 'primevue/carousel';
 import services from "@/modules/auth-services/Auth"
 import InlineMessage from 'primevue/inlinemessage';
+import utils from '@/kernel/utils';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers } from '@vuelidate/validators';
 import { reactive } from '@vue/composition-api'
 import { newregex } from "@/utils/regex"
-import utils from '@/kernel/utils';
 export default {
   name: 'login',
   components: {
