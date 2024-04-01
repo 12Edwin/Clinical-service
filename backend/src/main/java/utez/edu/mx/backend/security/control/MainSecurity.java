@@ -34,7 +34,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
     JwtEntryPoint entryPoint;
 
     private static final String[] AUTH_WHITELIST = {
-
+            "/api/twilio/**"
     };
 
     @Bean
@@ -72,6 +72,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeHttpRequests(req ->{
             req.antMatchers("/api/expedient").authenticated();
+            req.antMatchers(AUTH_WHITELIST).permitAll();
             req.anyRequest().permitAll();
         });
         http.logout(logout ->{
