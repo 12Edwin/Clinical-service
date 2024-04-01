@@ -67,6 +67,7 @@
         },
         {
           label: 'Servicios',
+          to: '/services'
         },
         {
           label: 'Nuestros Doctores',
