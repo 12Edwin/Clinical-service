@@ -138,7 +138,7 @@ export default {
                 this.pageable.size = rows;
            }
            try {
-            const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)          
+            const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)  
             if(status === 200 || status === 201){
                 const decripted = await decrypt(result)
                 const {content, totalElements} = JSON.parse(decripted)

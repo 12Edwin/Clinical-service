@@ -332,7 +332,9 @@ export default {
             sex: '',
             birthDate: '',
             speciality: '',
-            phone: ''
+            phone: '',
+            curp: '',
+            rfc: ''
         })
 
         const rules = {
@@ -421,7 +423,6 @@ export default {
                     const decripted = await decrypt(result)
                     const { content } = JSON.parse(decripted)
                     this.specialities = content
-                    console.log(this.specialities);
                 }
             } catch (error) { }
 
@@ -458,21 +459,22 @@ export default {
 
         async saveDoctor() {
             var pass = this.generatePass();
-            var selectedGender = "Femenino";
-
+            var selectedGender = "Masculino";
+            console.log("contraseña",pass)
             const newData = {
                 name: this.doctor.name,
                 surname: this.doctor.surname,
                 lastname: this.doctor.lastname,
-                birthday: "1997-10-10",
+                birthday: "2003-10-12",
                 phone: this.doctor.phone,
                 sex: selectedGender,
                 code: this.doctor.phone,
                 password: pass,
-                speciality_id: "20",
+                speciality_id: 20,
             }
 
             try {
+                console.log("newData",JSON.stringify(newData))
                 const encoded = await encrypt(JSON.stringify(newData));
                 const { status } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
