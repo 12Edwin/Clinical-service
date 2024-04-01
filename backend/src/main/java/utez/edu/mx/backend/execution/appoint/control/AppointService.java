@@ -48,7 +48,6 @@ public class AppointService {
 
     @Transactional
     public ResponseEntity<?> save(Appoint appoint) throws UnsupportedEncodingException, JsonProcessingException, IllegalArgumentException {
-        System.out.println(appoint.getStartHour());
         if (appoint.getSpace().getId() <= 0 || appoint.getStartHour() == null
             || appoint.getEndHour() == null || appoint.getTreatment().getId() <= 0
             ) throw new IllegalArgumentException();
