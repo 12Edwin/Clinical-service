@@ -5,11 +5,36 @@ export default [
     {
         path: 'appoints',
         name: 'appoints',
-        component: Appoints,
         meta:{
             title: 'Citas',
             role: "doctor"
-        }
+        },
+        component: {
+            render(c){
+                return c("router-view")
+            }
+        },
+        meta: { title: ""},
+        children:[
+            {
+                path: '',
+                name: 'appoints',
+                component: Appoints,
+                meta: {
+                    title:'Citas',
+                    role: "doctor"
+                }
+            },
+            {
+                path: "new-appoint",
+                name: "NewAppoint",
+                component: () => import("@/modules/appointment/views/NewAppoint.vue"),
+                meta: {
+                    title: "Nueva cita",
+                    role: "doctor"
+                }
+            }
+        ]
     },
     {
         path: 'treatments',

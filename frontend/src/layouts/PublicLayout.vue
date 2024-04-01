@@ -9,8 +9,6 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue';
-import {encrypt} from "@/config/security";
-import api from '@/config/http-client.gateway'
 export default {
   components: {
     Navbar
