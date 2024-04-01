@@ -21,9 +21,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class DtoAppoint {
 
-    @NotNull(groups = {Modify.class})
-    @Min(value = 1, groups = {Modify.class})
-    @Max(value = 1000000, groups = {Modify.class})
+    @NotNull(groups = {Modify.class, Complete.class, Cancel.class})
+    @Min(value = 1, groups = {Modify.class, Complete.class, Cancel.class})
+    @Max(value = 1000000, groups = {Modify.class, Complete.class, Cancel.class})
     private Long id;
 
     @NotNull(groups = {Modify.class})
@@ -39,18 +39,18 @@ public class DtoAppoint {
     private Date end_hour;
 
     @NotNull(groups = {Modify.class, Cancel.class, Complete.class, Reschedule.class})
-    @Min(value = 1, groups = {Modify.class})
-    @Max(value = 1000000, groups = {Modify.class})
+    @Min(value = 1, groups = {Modify.class, Complete.class, Cancel.class})
+    @Max(value = 1000000, groups = {Modify.class, Complete.class, Cancel.class})
     private Long user;
 
     @NotNull(groups = {Modify.class, Register.class})
-    @Min(value = 1, groups = {Modify.class})
-    @Max(value = 1000000, groups = {Modify.class})
+    @Min(value = 1, groups = {Modify.class, Register.class})
+    @Max(value = 1000000, groups = {Modify.class, Register.class})
     private Long treatment;
 
     @NotNull(groups = {Modify.class, Register.class})
-    @Min(value = 1, groups = {Modify.class})
-    @Max(value = 1000000, groups = {Modify.class})
+    @Min(value = 1, groups = {Modify.class, Register.class})
+    @Max(value = 1000000, groups = {Modify.class, Register.class})
     private Long space;
 
     public interface Register{}

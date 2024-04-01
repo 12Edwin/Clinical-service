@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import utez.edu.mx.backend.base_catalog.space.model.Space;
 
 import java.util.Date;
 import java.util.List;
@@ -23,4 +24,6 @@ public interface AppointRepository extends JpaRepository<Appoint, Long> {
     @Modifying
     @Query(value = "UPDATE appoints SET status = :status, user_id = :user WHERE id = :id")
     int changeStatus(@Param("status") StatusAppoint status, @Param("user") Long user, @Param("id") Long id);
+
+    List<Appoint> findAllBySpace(Space space);
 }
