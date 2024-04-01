@@ -68,6 +68,12 @@ export default {
           route: 'specialities',
           role: 'admin'
         },
+        {
+          label: 'Servicios',
+          icon: 'globe',
+          route: 'service',
+          role: 'admin'
+        },
       ],
       role: null,
     }

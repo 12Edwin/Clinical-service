@@ -2,6 +2,7 @@ import Doctors from "@/modules/doctor/views/Doctors.vue";
 import Area from "@/modules/area/views/Area.vue";
 import Specialities from "@/modules/speciality/views/Specialities.vue"
 import SaveDoctor from "@/modules/doctor/views/SaveDoctor.vue"
+import ServicePrivate from "@/modules/service-private/views/ServicePrivate.vue"
 export default [
     {
         path: 'doctors',
@@ -53,5 +54,12 @@ export default [
             title:'Especialidades',
         }
     },
-
+    {
+        path: 'privateService',
+        name: 'service',
+        component: ServicePrivate,
+        meta: {
+            title:'Servicios Clinicos',
+        }
+    },
 ]
