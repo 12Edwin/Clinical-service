@@ -129,6 +129,7 @@ export default {
     const v$ = useVuelidate(rules, credentials)
     return { credentials, v$ }
   },
+
   methods: {     
     async login(credentials){
       const {data, status} = await services.login(credentials)
@@ -136,7 +137,7 @@ export default {
         localStorage.setItem('token', data.token)
         const roleName = utils.getRoleNameBytoken(data.token)
         if(roleName.toLowerCase() === 'admin'){
-          this.$router.push({name: 'doctors'})
+          this.$router.push({ name: 'doctors' })
         }else{
           this.$router.push({name: 'appoints'})
         }

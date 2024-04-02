@@ -12,18 +12,61 @@
                         <b-col cols="12">
                             <div class="p-fluid grid form-container">
                                 <b-row>
-                                    <b-col class="mb-2" cols="12">
-                                        <div class="field text-start">
-                                            <label for="space-selector" class="form-label-required">Espacio:</label>
-                                            <Dropdown id="space-selector" class="text-center" v-model="selectedSpace" :options="spaces"
-                                                optionLabel="name" placeholder="Seleccione un espacio" />
+                                    <b-col cols="12" md="6" lg="6" sm="12">
+                                        <div class="p-fluid grid form-container mb-3">
+                                            <b-row>
+                                                <b-col class="mt-3 mb-2" cols="12">
+                                                    <div class="field text-start">
+                                                        <label for="space-selector" class="form-label-required">Espacio:</label>
+                                                        <Dropdown id="space-selector" class="text-center" v-model="selectedSpace" :options="spaces"
+                                                            optionLabel="name" placeholder="Seleccione un espacio" @change="onSpaceSelected()" />
+                                                    </div>
+                                                </b-col>
+                                            </b-row>
+                                            <b-row>
+                                                <b-col cols="12" sm="12">
+                                                    <div class="field text-start mt-3">
+                                                        <span class="p-float-label p-input-icon-right">
+                                                            <InputText id="start-hour-field" :timeOnly="true" hourFormat="12" showTime :manualInput="false" v-model="newAppoint.startHour" />
+                                                            <label for="start-hour-field" class="form-label-required">Fecha seleccionada: </label>
+                                                        </span>
+                                                    </div>
+                                                </b-col>
+                                            </b-row>
+                                            <b-row>
+                                                <b-col cols="12" md="6" lg="6" sm="12">
+                                                    <div class="field text-start mt-3">
+                                                        <span class="p-float-label p-input-icon-right">
+                                                            <Calendar id="start-hour-field" :timeOnly="true" hourFormat="12" showTime :manualInput="false" v-model="newAppoint.startHour" />
+                                                            <label for="start-hour-field" class="form-label-required">Hora
+                                                                inicio</label>
+                                                        </span>
+                                                    </div>
+                                                </b-col>
+                                                <b-col cols="12" md="6" lg="6" sm="12">
+                                                    <div class="field text-start mt-3">
+                                                        <span class="p-float-label p-input-icon-right">
+                                                            <Calendar id="start-hour-field" :timeOnly="true" hourFormat="12" />
+                                                            <label for="start-hour-field" class="form-label-required">Hora
+                                                                fin</label>
+                                                        </span>
+                                                    </div>
+                                                </b-col>
+                                            </b-row>
+                                            <b-row class="mt-3">
+                                                <b-col cols="12" class="d-flex justify-content-end">
+                                                    <Button icon="pi pi-times" label="Cancelar" class="p-button-rounded p-button-secondary w-25" />
+                                                    <Button label="Registrar" icon="pi pi-plus" class="p-button-rounded button-style w-25" @click="saveAppoint()" />
+                                                </b-col>
+                                            </b-row>
                                         </div>
                                     </b-col>
-                                </b-row>
-                                <b-row>
-                                    <b-col cols="12" sm="12">
+                                    <b-col cols="12" md="6" lg="6" sm="12">
                                         <div class="p-1">
                                             <FullCalendar :options="calendarOptions" id="myCustomCalendar">
+                                                <template v-slot:eventContent='arg'>
+                                                    <b>{{ arg.event.title }}</b>
+                                                </template>
                                             </FullCalendar>
                                         </div>
                                     </b-col>
@@ -32,6 +75,7 @@
                         </b-col>
                     </b-row>
                 </panel>
+                <Toast/>
             </b-col>
         </b-row>
     </div>
@@ -46,13 +90,21 @@ import Dropdown from 'primevue/dropdown';
 import Divider from 'primevue/divider';
 import Calendar from 'primevue/calendar';
 import ModalSaveAppoint from './ModalSaveAppoint.vue';
+import spaceServices from "@/modules/spaces/services/spaces-services"
+import appointServices from "@/modules/appointment/services/appoint-services"
+import { decrypt, encrypt } from '@/config/security';
+import Toast from 'primevue/toast';
+import InputText from 'primevue/inputtext/InputText';
+
 export default {
     components: {
         FullCalendar,
         Dropdown,
         Divider,
         Calendar,
-        ModalSaveAppoint
+        ModalSaveAppoint,
+        Toast,
+        InputText
     },
     name: 'NewAppoint',
     data(){
@@ -61,30 +113,11 @@ export default {
                 plugins: [ dayGridPlugin, interactionPlugin ],
                 initialView: 'dayGridMonth',
                 locale: esLocale,
-                events: [
-                    { title: 'Cita', date: '2024-03-01', backgroundColor: '#2a715a', borderColor: '#2a715a', textColor: '#ffffff'},
-                    { title: 'event 2', date: '2024-02-29' },
-                    {
-                        title: 'Revisión Médica',
-                        start: '2024-03-01T09:00:00',
-                        end: '2024-03-01T10:00:00'
-                    },
-                    // Evento al mediodía
-                    {
-                        title: 'Consulta Nutricional',
-                        start: '2024-03-01T12:00:00',
-                        end: '2024-03-01T13:00:00'
-                    },
-                    // Evento en la tarde
-                    {
-                        title: 'Cita de Seguimiento',
-                        start: '2024-03-01T15:00:00',
-                        end: '2024-03-01T16:00:00'
-                    },
-                ],
+                events: this.appoints,
                 selectable: true,
                 weekends: false,
                 dateClick: this.handleDateClick,
+                eventClick: this.handleEventClick,
                 headerToolbar: {
                     start: 'title',
                     center: '',
@@ -92,31 +125,86 @@ export default {
                 },
                 views: {
                     dayGridMonth: {
-                        titleFormat: { year: 'numeric', month: 'long' } // Ejemplo: Septiembre 2023
+                        titleFormat: { year: 'numeric', month: 'long' }
                     }
-                } 
+                },
+
             },
             selectedSpace: null,
-            spaces: [
-                { name: 'Espacio 1', code: '1' },
-                { name: 'Espacio 2', code: '2' },
-                { name: 'Espacio 3', code: '3' },
-                { name: 'Espacio 4', code: '4' }
-            ],
-            calendarEvents: [
-                { title: 'Evento 1', start: '2024-03-01' },
-                { title: 'Evento 2', start: '2024-03-02', end: '2024-03-03' },
-            ],
-            displaySaveModal: false
+            spaces: [],
+            displaySaveModal: false,
+            appoints: [],
+            newAppoint: {
+                startHour: '',
+                endHour: ''
+            }
         }
     },
     methods: {
+        saveAppoint(){
+            console.log('Save appoint', this.newAppoint);
+        },
         handleDateClick(arg) {
-            alert('date click! ' , arg.dateStr)
+            alert('date click! ' )
         },
         openModalSaveSpeciality() {
             this.displaySaveModal = true;
         },
+        async onSpaceSelected(){
+            if(this.selectedSpace != null){
+                try {
+                    this.appoints = []
+                    const {id} = JSON.parse(JSON.stringify(this.selectedSpace))
+                    const {status, data : {result}} = await appointServices.getAppointmentsBySpace(await encrypt(id))
+                    if(status === 200 || status === 201){
+                        const appointsDecryoted = JSON.parse(await decrypt(result))
+                        if(appointsDecryoted.length > 0){
+                            appointsDecryoted.map((appoint) => {
+                                const {endHour, startHour, space:{name}} = appoint
+                                this.appoints.push({
+                                    title: `${name}`,
+                                    start: new Date(startHour).toISOString(),
+                                    end: new Date(endHour).toISOString()
+                                })
+                            }) 
+                        }else{
+                            this.$toast.add({severity:'info', summary: 'Sin citas', detail:'¡Este espacio no contiene citas hasta ahora!', life: 3000});
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.log("Error: ", error)
+                }
+            }
+        },
+        getAppoints(){
+            return this.appoints
+        },
+        handleEventClick(arg) {
+            console.log('event click! ', arg.event)
+        },
+        async getAllSpaces(){
+            try {
+                const {status, data : {result}} = await spaceServices.getAllSpaces()
+                if(status === 200 || status === 201){
+                    const {content} = JSON.parse(await decrypt(result))
+                    this.spaces = content
+                }
+            }catch(error){
+                console.log("Error: ", error)
+            }
+        }
+    },
+    mounted(){
+        this.getAllSpaces()
+    },
+    watch: {
+        appoints: {
+            handler: function (newVal) {
+                this.calendarOptions.events = newVal
+            },
+            deep: true
+        }
     }
 }
 </script>
