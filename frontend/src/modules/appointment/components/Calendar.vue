@@ -34,7 +34,7 @@ export default {
             text: `Nueva cita`,
             click: () => {
               this.$router.push({ name: 'NewAppoint' })
-            }
+            },
           }
         },
         headerToolbar: {
