@@ -459,7 +459,6 @@ export default {
             var pass = this.generatePass();
             var selectedGender = this.doctor.sex.value;
             let selectedSpeciality = this.doctor.speciality.id;
-            console.log("contraseña", pass);
             var dateFormat = this.formatDate(this.doctor.birthDate);
 
             const newData = {
@@ -484,6 +483,7 @@ export default {
                     }, 500);
                 } else {
                     console.log("error en la peticion");
+                    this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal!!', life: 3000 });
                 }
             } catch (error) {
                 this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
