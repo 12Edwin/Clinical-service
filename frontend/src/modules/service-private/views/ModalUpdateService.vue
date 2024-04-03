@@ -62,7 +62,7 @@
                         <b-col class="mt-3" lg="12">
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-pen" />
+                                    <i class="pi pi-money-bill" />
                                     <InputText id="field-price" type="text" rows="3" v-model="v$.price.$model"
                                         :class="{ 'invalid-filed-custom': v$.price.$error }" />
                                     <label for="field-price">Precio</label>

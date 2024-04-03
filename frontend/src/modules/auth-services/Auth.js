@@ -9,7 +9,16 @@ const login = async (credentials) => {
     }
 }
 
+const captcha = async () => {
+    try {
+        const response = await api.doPost('/captcha/' )
+        return response
+    } catch (error) {
+        return error
+    }
+}
 
 export default {
-    login
+    login,
+    captcha
 }

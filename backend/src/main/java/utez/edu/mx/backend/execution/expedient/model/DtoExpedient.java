@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
@@ -78,6 +79,9 @@ public class DtoExpedient {
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$", groups = {Register.class, Modify.class}, message = "Ocupación inválido")
     @Length(min = 3, max = 70, groups = {Register.class, Modify.class})
     private String occupation;
+    @NotBlank(groups = {Register.class, Modify.class})
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", groups = {Register.class, Modify.class}, message = "Invalid email")
+    private String email;
 
     //Person
     @NotNull(groups = {Modify.class})
