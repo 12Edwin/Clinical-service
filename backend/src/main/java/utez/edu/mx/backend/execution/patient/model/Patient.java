@@ -28,6 +28,9 @@ public class Patient {
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date created_at;
 
+    @Column(name = "email", columnDefinition = "VARCHAR(100) UNIQUE NOT NULL")
+    private String email;
+
     @Column(name = "place_of_birth", columnDefinition = "VARCHAR(70) NOT NULL")
     private String place_of_birth;
 
