@@ -124,28 +124,6 @@
                             </div>
                         </div>
                     </b-col>
-                    <b-col class="mt-4">
-                        <span class="p-float-label p-input-icon-right"
-                            :class="{ 'invalid-field-custom': v$.rfc.$error }">
-                            <i class="pi pi-id-card" />
-                            <InputText id="field-rfc" type="text" v-model="v$.rfc.$model"
-                                @input="() => v$.rfc.$model = v$.rfc.$model.toUpperCase()" />
-                            <label for="field-rfc">RFC</label>
-                        </span>
-                        <div class="text-danger text-start pt-1">
-                            <p class="error-messages" v-if="v$.rfc.$dirty && v$.rfc.rfcFormmat.$invalid">
-                                {{ v$.rfc.rfcFormmat.$message }}
-                            </p>
-                            <p class="error-messages" v-if="v$.rfc.$dirty && v$.rfc.minLength.$invalid">
-                                {{ v$.rfc.minLength.$message }}
-                            </p>
-                            <p class="error-messages" v-if="v$.rfc.$dirty && v$.rfc.maxLength.$invalid">
-                                {{ v$.rfc.maxLength.$message }}
-                            </p>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row>
                     <b-col class="mt-4" cols="12" md="6" lg="4">
                         <div class="field">
                             <Dropdown :class="{ 'invalid-field-custom': v$.sex.$error }"
@@ -158,60 +136,8 @@
                             </div>
                         </div>
                     </b-col>
+                </b-row>
 
-                </b-row>
-                <b-row>
-                    <b-col class="d-flex align-items-lelft mt-4">
-                        <h5 class="border-none pb-2 mb-2">Dirección</h5>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-map" />
-                                <InputText id="field-street" type="text" />
-                                <label for="field-street">Calle</label>
-                            </span>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-map-marker" />
-                                <InputText id="field-town" type="text" />
-                                <label for="field-town">Colonia</label>
-                            </span>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-home" />
-                                <InputText type="number" id="field-zip" :useGrouping="false" />
-                                <label for="field-zip">Codigo postal</label>
-                            </span>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-4" cols="12" md="6" lg="6" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-home" />
-                                <InputText type="number" id="field-internal-number" :useGrouping="false" />
-                                <label for="field-internal-number">Número interior</label>
-                            </span>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-4" cols="12" md="6" lg="6" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-hashtag" />
-                                <InputText type="number" id="field-external-number" :useGrouping="false" />
-                                <label for="field-external-number">Número exterior</label>
-                            </span>
-                        </div>
-                    </b-col>
-                </b-row>
                 <b-row>
                     <b-col class="d-flex align-items-lelft mt-4">
                         <h5 class="border-none pb-2">Información profesional</h5>
@@ -222,24 +148,16 @@
                         <div class="field">
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-star" />
-                                <InputText id="field-speciality" v-model="v$.speciality.$model" type="text" />
-                                <label for="field-speciality" class="form-label-required">Especialidad</label>
+                                <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
+                                    class="form-label-required text-start" v-model="v$.speciality.$model"
+                                    :options="specialitys" optionLabel="name"
+                                    placeholder="Seleccione una especialidad" />
                                 <div class="text-danger text-start pt-1">
                                     <p class="error-messages"
                                         v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
                                         {{ v$.speciality.required.$message }}
                                     </p>
                                 </div>
-                            </span>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-id-card" />
-                                <InputText id="field-professional-id" type="text" />
-                                <label for="field-professional-id">Cédula
-                                    profesional</label>
                             </span>
                         </div>
                     </b-col>
@@ -282,6 +200,46 @@
                         </div>
                     </b-col>
                 </b-row>
+
+                <b-row>
+                    <b-col class="d-flex align-items-lelft mt-4">
+                        <h5 class="border-none pb-2">Acceso al sistema</h5>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col class="mt-3" cols="12" md="6" lg="4">
+                        <div class="field">
+                            <span class="p-float-label p-input-icon-right"
+                                :class="{ 'invalid-field-custom': v$.code.$error }">
+                                <i class="pi pi-phone" />
+                                <InputText type="text" v-model="v$.code.$model" id="field-phone"
+                                    :useGrouping="false" />
+                                <label for="field-phone" class="form-label-required">Código de acceso</label>
+                            </span>
+                            <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.required.$invalid">
+                                    {{ v$.code.required.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.minLength.$invalid">
+                                    {{ v$.code.minLength.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.maxLength.$invalid">
+                                    {{ v$.code.maxLength.$message }}
+                                </p>
+                            </div>
+                        </div>
+                    </b-col>
+                    <!-- <b-col class="mt-3" cols="12" md="6" lg="4">
+                        <div class="field">
+                            <span class="p-float-label p-input-icon-right">
+                                <i class="pi pi-at" />
+                                <InputText id="field-email" v-model="v$.pass.$model" type="password" :useGrouping="false" />
+                                <label for="field-email">Password</label>
+                            </span>
+                        </div>
+                    </b-col> -->
+                </b-row>
+
             </div>
         </template>
         <template #footer>
@@ -291,7 +249,7 @@
                         :loading="isLoading" />
                 </b-col>
             </b-row>
-            <Toast/>
+            <Toast />
         </template>
     </Card>
 </template>
@@ -334,7 +292,9 @@ export default {
             speciality: '',
             phone: '',
             curp: '',
-            rfc: ''
+            rfc: '',
+            code: '',
+            pass: ''
         })
 
         const rules = {
@@ -379,6 +339,16 @@ export default {
             },
             speciality: {
                 required: helpers.withMessage("Debes seleccionar una especialidad", required)
+            },
+            code: {
+                required: helpers.withMessage("Agrega un código de acceso", required),
+                minLength: helpers.withMessage("El código debe de contar con mímino 10 digitos", minLength(10)),
+                maxLength: helpers.withMessage("El código debe de contar con maximo 10 digitos", maxLength(10))
+            },
+            password: {
+                required: helpers.withMessage("Debes de agregar una constraseña", required),
+                minLength: helpers.withMessage("La contraseña debe de contar con mínimo 6 digitos", minLength(6)),
+                maxLength: helpers.withMessage("La contraseña debe de contar con maximo 20 digitos", maxLength(20))
             }
 
         }
@@ -422,7 +392,7 @@ export default {
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content } = JSON.parse(decripted)
-                    this.specialities = content
+                    this.specialitys = content
                 }
             } catch (error) { }
 
@@ -444,6 +414,32 @@ export default {
             return codigo;
         },
 
+        generateCode() {
+            let codigo = 'DOC';
+
+            if (this.doctor.speciality.id != "") {
+                codigo += this.doctor.speciality.id;
+            } else {
+                for (let i = 0; i < 2; i++) {
+                    codigo += Math.floor(Math.random() * 10);
+                }
+            }
+
+            if (this.doctor.curp != "") {
+                let curp = this.doctor.curp;
+                let substring = curp.substr(-4);
+                codigo += substring;
+            } else {
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+                for (let i = 0; i < 4; i++) {
+                    const indice = Math.floor(Math.random() * letras.length);
+                    codigo += letras.charAt(indice);
+                }
+            }
+
+            return codigo;
+        },
+
         async verifyDoctors() {
             if (this.doctor.name || this.doctor.lastname
                 || this.doctor.surname || this.doctor.birthDate
@@ -459,35 +455,52 @@ export default {
 
         async saveDoctor() {
             var pass = this.generatePass();
-            var selectedGender = "Masculino";
-            console.log("contraseña",pass)
+            var selectedGender = this.doctor.sex.value;
+            let selectedSpeciality = this.doctor.speciality.id;
+            console.log("contraseña", pass);
+            var dateFormat = this.formatDate(this.doctor.birthDate);
+
             const newData = {
                 name: this.doctor.name,
                 surname: this.doctor.surname,
                 lastname: this.doctor.lastname,
-                birthday: "2003-10-12",
+                birthday: dateFormat,
                 phone: this.doctor.phone,
                 sex: selectedGender,
                 code: this.doctor.phone,
                 password: pass,
-                speciality_id: 20,
+                speciality_id: selectedSpeciality,
             }
 
-            try {
-                console.log("newData",JSON.stringify(newData))
-                const encoded = await encrypt(JSON.stringify(newData));
-                const { status } = await service.save_doctor(encoded)
-                if (status === 200 || status === 201) {
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    setTimeout(() => {
-                        this.$router.push('/doctors');
-                    }, 500);
-                } else {
-                    console.log("error en la peticion");
-                }
-            } catch (error) {
-                this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
-            }
+            console.log(newData);
+
+            // try {
+            //     console.log("newData",JSON.stringify(newData))
+            //     const encoded = await encrypt(JSON.stringify(newData));
+            //     const { status } = await service.save_doctor(encoded)
+            //     if (status === 200 || status === 201) {
+            //         this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+            //         setTimeout(() => {
+            //             this.$router.push('/doctors');
+            //         }, 500);
+            //     } else {
+            //         console.log("error en la peticion");
+            //     }
+            // } catch (error) {
+            //     this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
+            // }
+        },
+
+        formatDate(dateString) {
+            const date = new Date(dateString);
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // El mes es base 0, por lo que sumamos 1
+            const day = String(date.getDate()).padStart(2, '0');
+
+            const formattedDate = `${year}-${month}-${day}`;
+
+            return formattedDate;
         }
     }
 }
