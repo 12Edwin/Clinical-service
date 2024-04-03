@@ -69,6 +69,9 @@ public class ViewExpedients {
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$", groups = { Register.class,  Modify.class}, message = "Ocupación inválido")
     @Length(min = 3, max = 70, groups = { Register.class,  Modify.class})
     private String occupation;
+    @NotBlank(groups = {DtoExpedient.Register.class, DtoExpedient.Modify.class})
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", groups = {DtoExpedient.Register.class, DtoExpedient.Modify.class}, message = "Invalid email")
+    private String email;
 
     //Person
     @NotNull(groups = { Modify.class})
@@ -104,6 +107,6 @@ public class ViewExpedients {
     public DtoExpedient cast(){
         return new DtoExpedient(getId(), getFolio(), getPhysic_id(), getWeight(), getHeight(), getGender(), getAllergies(),
                 null, null, getPatient_id(), getPlace_of_birth(), getMarital_status(), getCreated_by(),
-                getOccupation(), getPerson_id(), getName(), getSurname(), getLastname(), getBirthday(), getSex(), getPhone());
+                getOccupation(), getEmail(), getPerson_id(), getName(), getSurname(), getLastname(), getBirthday(), getSex(), getPhone());
     }
 }
