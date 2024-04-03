@@ -18,10 +18,13 @@ import utez.edu.mx.backend.execution.treatment.model.Treatment;
 import utez.edu.mx.backend.execution.treatment.model.TreatmentRepository;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
+import utez.edu.mx.backend.utils.service.EmailService;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -37,6 +40,8 @@ public class AppointService {
     private final UserRepository userRepository;
     @Autowired
     private final TreatmentRepository treatmentRepository;
+    @Autowired
+    private final EmailService emailService;
 
     @Transactional
     public ResponseEntity<?> findByDate(Appoint appoint) throws UnsupportedEncodingException, JsonProcessingException {
@@ -90,6 +95,20 @@ public class AppointService {
 
         if (!repository.existsById(result.getId())){
             return new ResponseEntity<>(new Message("Unregistered appoint", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        SimpleDateFormat horFormat = new SimpleDateFormat("HH:mm a");
+        String start = horFormat.format(appoint.getStartHour());
+        String end = horFormat.format(appoint.getEndHour());
+        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+        String date = formatter.format(appoint.getStartHour());
+        date = date.substring(0, 1).toUpperCase() + date.substring(1).toLowerCase();
+        String res = repository.findPatientName(appoint.getId());
+        String name = res.split("~")[0];
+        String email = res.split("~")[1];
+        HtmlString html = new HtmlString(name, date, start, end, appoint.getSpace().getName(), appoint.getSpace().getDescription(), "777-376-0183", Integer.toString(java.time.Year.now().getValue()) );
+        ResponseEntity<?> response = emailService.sendSimpleMessage(email, "Cita médica", html.getHtml());
+        if (response.getStatusCode() != HttpStatus.OK){
+            return new ResponseEntity<>(new Message("Appoint not sent", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(new Message(result, "Appoint registered", TypeResponse.SUCCESS), HttpStatus.OK);
     }
