@@ -3,12 +3,49 @@
         <Menubar :model="navbarItems"
             style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;" />
         <h1>Nuestros Servicios</h1>
-        <div class="back">
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <div style=" margin-top: 50px;">
+                <Carousel style="margin-top: 20px;" :value="services" :numVisible="1" :numScroll="1"
+                    :responsiveOptions="responsiveOptions"  :autoplayInterval="3000">
+                    <template #header>
+                    </template>
+                    <template #item="slotProps">
+                        <div class="car-item">
+                            <div class="car-content">
+                                <div>
+                                    <img src="https://picsum.photos/600/300/?image=25" class="image-carrusel"
+                                        :alt="slotProps.data.title" />
+                                </div>
+                                <div style="padding-left: 10%; padding-right: 10%;">
+                                    <h3>
+                                        {{ slotProps.data.name }}
+                                    </h3>
+                                    <div style="font-size: larger;">
+                                        {{ slotProps.data.description }}
+                                    </div>
+                                    <div  style="font-size: larger;">
+                                        Especialidad: {{ slotProps.data.speciality.name }}
+                                    </div>
+                                    <div style="font-weight: bolder; font-size: larger;">
+                                        ${{ slotProps.data.price }}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </Carousel>
+            </div>
+        </div>
+
+
+
+        <!-- <div class="back">
             <b-row>
                 <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
                     <Card class="custom-card">
                         <template #header>
-                            <img  src="https://picsum.photos/600/300/?image=25" class="image" alt="">
+                            <img src="https://picsum.photos/600/300/?image=25" class="image" alt="">
                         </template>
                         <template #title>
                             <h2>{{ service.name }}</h2>
@@ -20,7 +57,7 @@
                     </Card>
                 </b-col>
             </b-row>
-        </div>
+        </div> -->
         <footer class="bg-white">
             <div class="text-center py-2 text-white" style="background-color: #2a715a;">
                 <p style="font-weight: bolder!important; color: white!important;">© Hospital San J 2024. Todos los
@@ -35,8 +72,16 @@
 import Card from 'primevue/card';
 import Menubar from 'primevue/menubar';
 import servicios from '@/modules/service-private/service-services/Services'
-import {decrypt} from "@/config/security"
+import { decrypt } from "@/config/security"
+import Carousel from 'primevue/carousel'
+import CarouselItem from 'primevue/carousel/Carousel'
 export default {
+    components: {
+        Card,
+        Menubar,
+        Carousel,
+        CarouselItem
+    },
     data() {
         return {
             services: [],
@@ -69,14 +114,28 @@ export default {
                     label: '',
                     icon: 'pi pi-fw pi-user',
                     to: "/login",
-                    end: true // Esto alinea este elemento a la derecha
+                    end: true
                 },
             ],
+            responsiveOptions: [
+                {
+                    breakpoint: '1024px',
+                    numVisible: 3,
+                    numScroll: 3
+                },
+                {
+                    breakpoint: '600px',
+                    numVisible: 2,
+                    numScroll: 2
+                },
+                {
+                    breakpoint: '480px',
+                    numVisible: 1,
+                    numScroll: 1
+                }
+            ],
+            activeIndex: 0,
         };
-    },
-    components: {
-        Card,
-        Menubar
     },
     mounted() {
         this.pagination()
