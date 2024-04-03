@@ -55,20 +55,22 @@ public class Patient {
     protected void onCreate() {
         this.created_at = new Date();
     }
-    public Patient(String place_of_birth, TypeMaritalStatus marital_status, String created_by, String occupation, Person person) {
+    public Patient(String place_of_birth, TypeMaritalStatus marital_status, String created_by, String occupation, String email, Person person) {
         this.place_of_birth = place_of_birth;
         this.marital_status = marital_status;
         this.created_by = created_by;
         this.occupation = occupation;
+        this.email = email;
         this.person = person;
     }
 
-    public Patient(Long id, String place_of_birth, TypeMaritalStatus marital_status, String created_by, String occupation, Person person) {
+    public Patient(Long id, String place_of_birth, TypeMaritalStatus marital_status, String created_by, String occupation, String email, Person person) {
         this.id = id;
         this.place_of_birth = place_of_birth;
         this.marital_status = marital_status;
         this.created_by = created_by;
         this.occupation = occupation;
+        this.email = email;
         this.person = person;
     }
 }

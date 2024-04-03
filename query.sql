@@ -1,6 +1,7 @@
 
 create or replace view view_doctors as select
                 us.id, concat(pe.name, ' ', pe.surname, ' ', pe.lastname) as fullname,
+                us.available,
                 pe.name, pe.surname, pe.lastname, null as password, null as code,
                 pe.birthday, pe.phone, pe.sex, s.name as speciality, s.description,
                 us.speciality_id
@@ -11,12 +12,13 @@ create or replace view view_doctors as select
                 WHERE us.speciality_id IS NOT NULL AND r.name like 'DOCTOR'
                 GROUP BY us.id, fullname, pe.name, pe.surname, pe.lastname,
                          pe.birthday, pe.phone, pe.sex, speciality, s.description,
-                         password, code, us.speciality_id;
+                         password, code, us.speciality_id, us.available::boolean;
+SELECT * FROM view_doctors;
 
 
 CREATE OR REPLACE VIEW  view_expedients as select
                 ex.id, ex.folio,
-                pa.id as patient_id, pa.created_by, pa.marital_status, pa.occupation, pa.place_of_birth,
+                pa.id as patient_id, pa.created_by, pa.marital_status, pa.occupation, pa.email, pa.place_of_birth,
                 pe.id as person_id, pe.name, pe.surname, pe.lastname, pe.sex, pe.phone, pe.birthday,
                 phy.id as physic_id, phy.allergies, phy.gender, phy.height, phy.weight
                 from expedients ex
