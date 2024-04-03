@@ -89,7 +89,7 @@
                                 <i class="pi pi-id-card" />
                                 <InputText id="field-curp" type="text" v-model="v$.curp.$model"
                                     @input="() => v$.curp.$model = v$.curp.$model.toUpperCase()" />
-                                <label for="field-curp">CURP</label>
+                                <label for="field-curp" class="form-label-required">CURP</label>
                             </span>
                             <div class="text-danger text-start pt-1">
                                 <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.curpFormmat.$invalid">
@@ -195,7 +195,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-at" />
                                 <InputText id="field-email" type="email" :useGrouping="false" />
-                                <label for="field-email">Correo electrónico</label>
+                                <label for="field-email" >Correo electrónico</label>
                             </span>
                         </div>
                     </b-col>
@@ -399,16 +399,18 @@ export default {
         },
 
         generatePass() {
-            let codigo = '';
+            let codigo = 'DOC';
 
-            for (let i = 0; i < 3; i++) {
-                codigo += Math.floor(Math.random() * 10);
-            }
-
-            const letras = 'abcdefghijklmnopqrstuvwxyz';
-            for (let i = 0; i < 3; i++) {
-                const indice = Math.floor(Math.random() * letras.length);
-                codigo += letras.charAt(indice);
+            if (this.doctor.curp != "") {
+                let curp = this.doctor.curp;
+                let substring = curp.substr(-4);
+                codigo += substring;
+            } else {
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+                for (let i = 0; i < 4; i++) {
+                    const indice = Math.floor(Math.random() * letras.length);
+                    codigo += letras.charAt(indice);
+                }
             }
 
             return codigo;
@@ -443,7 +445,7 @@ export default {
         async verifyDoctors() {
             if (this.doctor.name || this.doctor.lastname
                 || this.doctor.surname || this.doctor.birthDate
-                || this.doctor.phone != ""
+                || this.doctor.phone || this.doctor.curp != ""
             ) {
                 this.saveDoctor();
             } else {
@@ -467,28 +469,25 @@ export default {
                 birthday: dateFormat,
                 phone: this.doctor.phone,
                 sex: selectedGender,
-                code: this.doctor.phone,
+                code: this.doctor.code,
                 password: pass,
                 speciality_id: selectedSpeciality,
             }
 
-            console.log(newData);
-
-            // try {
-            //     console.log("newData",JSON.stringify(newData))
-            //     const encoded = await encrypt(JSON.stringify(newData));
-            //     const { status } = await service.save_doctor(encoded)
-            //     if (status === 200 || status === 201) {
-            //         this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-            //         setTimeout(() => {
-            //             this.$router.push('/doctors');
-            //         }, 500);
-            //     } else {
-            //         console.log("error en la peticion");
-            //     }
-            // } catch (error) {
-            //     this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
-            // }
+            try {
+                const encoded = await encrypt(JSON.stringify(newData));
+                const { status } = await service.save_doctor(encoded)
+                if (status === 200 || status === 201) {
+                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    setTimeout(() => {
+                        this.$router.push('/doctors');
+                    }, 500);
+                } else {
+                    console.log("error en la peticion");
+                }
+            } catch (error) {
+                this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
+            }
         },
 
         formatDate(dateString) {
