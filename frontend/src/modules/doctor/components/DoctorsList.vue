@@ -42,6 +42,12 @@
                             {{ data.fullname }}
                         </template>
                     </Column>
+                    <Column field="available" header="Disponibibilidad" sortable :styles="{ 'min-width': '14rem' }">
+                        <template #body="{ data }">
+                           <span v-if="data.available"> <Badge value="Activo" severity="success"></Badge></span>
+                            <span v-else="data.available"><Badge value="Inactivo" severity="warning"></Badge></span>
+                        </template>
+                    </Column>
                     <Column field="lastName" header="Género" sortable :styles="{ 'min-width': '14rem' }">
                         <template #body="{ data }">
                             {{ data.sex }}
@@ -83,6 +89,7 @@ import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
 import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
+import Badge from 'primevue/badge';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
@@ -95,7 +102,8 @@ export default {
         ConfirmDialog,
         Paginator,
         Toast,
-        ModalUpdateVue
+        ModalUpdateVue,
+        Badge
     },
     data() {
         return {
