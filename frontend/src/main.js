@@ -2,6 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Button from 'primevue/button';
+import Panel from 'primevue/panel';
+import InputText from "primevue/inputtext/InputText";
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -13,10 +16,6 @@ import 'primevue/resources/primevue.min.css'                 //core css
 import 'primeicons/primeicons.css'                           //icons
 import PrimeVue from 'primevue/config';
 Vue.use(PrimeVue);
-
-import Button from 'primevue/button';
-import Panel from 'primevue/panel';
-import InputText from "primevue/inputtext/InputText";
 
 Vue.component('InputText', InputText)
 Vue.component('Panel', Panel)
@@ -42,7 +41,6 @@ import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 
 import Tooltip from 'primevue/tooltip';
-
 Vue.directive('tooltip', Tooltip);
 
 import ToastService from 'primevue/toastservice';
