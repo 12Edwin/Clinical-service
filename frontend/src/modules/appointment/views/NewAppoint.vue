@@ -247,8 +247,8 @@ export default {
         formatHour(unfformatedHour){
             const format = new Date(unfformatedHour)
             let hour = format.getHours().toString().padStart(2, '0')
-            let minutes = format.getMinutes()
-            let seconds = format.getSeconds()
+            let minutes = format.getMinutes().toString().padStart(2, '0')
+            let seconds = format.getSeconds().toString().padStart(2, '0')
             return `${hour}:${minutes}:${seconds}`
         },
         formatDate(formmatedHour){
