@@ -45,12 +45,6 @@ export default {
           role: 'doctor'
         },
         {
-          label: 'Áreas',
-          icon: 'building',
-          route: 'areas',
-          role: 'admin'
-        },
-        {
           label: 'Historial clínico',
           icon: 'folder',
           route: 'clinical-history',

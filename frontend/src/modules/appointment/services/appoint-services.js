@@ -9,6 +9,22 @@ const getAppointmentsBySpace = async (spaceId) => {
     }
 }
 
+
+const saveAppointment = async (appointment) => {
+    try {
+        const response = await api.doPost(`/appoint/`, appointment, {
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+            }
+        )
+        return response
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 export default {
-    getAppointmentsBySpace
+    getAppointmentsBySpace,
+    saveAppointment
 }
