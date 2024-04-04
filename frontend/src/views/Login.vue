@@ -11,16 +11,13 @@
 
       <template #content>
         <b-row>
-          <form @submit.prevent="submitForm">
             <b-col class="mt-4 mb-2" lg="12">
-
               <div class="field w-100">
-
                 <span class="p-float-label p-input-icon-right">
                   <i class="pi pi-key"></i>
                   <InputText id="field-username" type="text" v-model="v$.username.$model"
                     :class="{ 'invalid-field-custom': v$.username.$error }" />
-                  <label for="field-username" class="form-label-required">Codigo de acceso</label>
+                  <label for="field-username" class="form-label-required">Código de acceso</label>
                 </span>
                 <b-row class="justify-content-center">
                   <b-col cols="6">
@@ -60,11 +57,9 @@
                 </b-row>
               </div>
             </b-col>
-          </form>
         </b-row>
-
-        <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Inicar sesion" @click="login(credentials)" />
-
+        <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Iniciar sesión"
+          @click="login(credentials)" />
       </template>
     </Card>
 
@@ -84,6 +79,7 @@ import { required, helpers } from '@vuelidate/validators';
 import { reactive, ref } from '@vue/composition-api'
 import { newregex } from "@/utils/regex"
 import { WidgetInstance } from 'friendly-challenge'
+import { decrypt, encrypt } from '@/config/security';
 export default {
   name: 'login',
   components: {
@@ -99,14 +95,9 @@ export default {
       isLoading: true,
       inputType: 'password',
       loginError: false,
-      formData: {
-        username: '',
-        password: '',
-        captchaToken: null,
-      },
-      
       container: ref(),
-      widget: ref()
+      widget: ref(),
+      captchaToken: ''
     }
   },
   setup() {
@@ -137,15 +128,12 @@ export default {
         this.$router.push({ name: 'doctors' })
       }
     },
-     async verifyCaptcha() {
-      let {response, status} = await services.captcha()
+    async verifyCaptcha(solution) {
+      const encoded = await encrypt(solution);
+      let { data: { result }, status } = await services.captcha(encoded)
       if (status === 200 || status === 201) {
-        console.log("Respuesta buena:",response);
+        this.captchaToken = result
       }
-      console.log("respuesta mala: ",response.data);
-    },
-    doneCallback() {
-      this.verifyCaptcha();
     },
     setTypeInput(t) {
       if (t === 'text') {
@@ -154,13 +142,15 @@ export default {
       }
       this.inputType = 'text';
     },
-    disbaleButton(){
-      if (!this.v$.username.$dirty && !this.v$.password.$dirty) {
+    disbaleButton() {
+      if (!this.v$.username.$dirty && !this.v$.password.$dirty && !this.captchaToken) {
         return false;
       }
-      return !this.v$.username.$invalid && !this.v$.password.$invalid
-    } ,  
-
+      return !this.v$.username.$invalid && !this.v$.password.$invalid  && this.captchaToken
+    },
+    doneCallback(solution) {
+      this.verifyCaptcha(solution);
+    },
     errorCallback: (err) => {
       console.log("There was an error when trying to solve the Captcha.");
       console.log(err);
@@ -199,8 +189,8 @@ export default {
 
 
 img {
-  max-width: 100%;
-  max-height: 350px;
+  max-width: 90%;
+  max-height: 300px;
   width: auto;
   height: auto;
 }
