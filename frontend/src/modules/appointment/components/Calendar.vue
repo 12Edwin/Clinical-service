@@ -46,8 +46,7 @@ export default {
           dayGridMonth: {
             titleFormat: { year: 'numeric', month: 'long' } // Ejemplo: Septiembre 2023
           }
-        } 
-
+        },
       }
     }
   },

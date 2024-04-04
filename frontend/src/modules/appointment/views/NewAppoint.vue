@@ -21,7 +21,7 @@
                                                             class="form-label-required">Espacio:</label>
                                                         <Dropdown id="space-selector" class="text-center"
                                                             v-model="selectedSpace" :options="spaces" optionLabel="name"
-                                                            placeholder="Seleccione un espacio"  optionValue="id"
+                                                            placeholder="Seleccione un espacio" optionValue="id"
                                                             @change="onSpaceSelected()" />
                                                     </div>
                                                 </b-col>
@@ -38,27 +38,23 @@
                                                     <b-col cols="12" md="6" lg="6" sm="12" class="mb-4">
                                                         <div class="field text-start">
                                                             <span class="p-float-label p-input-icon-right">
-                                                                <Calendar 
-                                                                    id="start-hour-field" 
-                                                                    :timeOnly="true"
-                                                                    hourFormat="24" 
-                                                                    showTime 
-                                                                    :manualInput="false"
+                                                                <Calendar id="start-hour-field" :timeOnly="true"
+                                                                    hourFormat="24" showTime :manualInput="false"
                                                                     v-model="newAppoint.startHour"
                                                                     @input="datesAreFilled()"
-                                                                    :inputStyle="{ 'border-color': areSame || isBeforeEnd ? '#ff0000' : ''}"
-                                                                />
+                                                                    :inputStyle="{ 'border-color': areSame || isBeforeEnd ? '#ff0000' : ''}" />
                                                                 <label for="start-hour-field"
                                                                     class="form-label-required">
                                                                     Hora inicio</label>
-                                                                
+
                                                             </span>
                                                             <div class="text-danger text-danger text-start pt-2">
                                                                 <p class="error-messages" v-if="areSame">
                                                                     Las hora de incio no pueden ser iguales
                                                                 </p>
                                                                 <p class="error-messages" v-if="isBeforeEnd">
-                                                                    La hora de inicio no puede ser mayor a la hora de fin
+                                                                    La hora de inicio no puede ser mayor a la hora de
+                                                                    fin
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -66,22 +62,17 @@
                                                     <b-col cols="12" md="6" lg="6" sm="12">
                                                         <div class="field text-start ">
                                                             <span class="p-float-label p-input-icon-right">
-                                                                <Calendar 
-                                                                    id="end-hour-field" 
-                                                                    :timeOnly="true"
-                                                                    showTime
-                                                                    :manualInput="false"
-                                                                    hourFormat="24" 
+                                                                <Calendar id="end-hour-field" :timeOnly="true" showTime
+                                                                    :manualInput="false" hourFormat="24"
                                                                     v-model="newAppoint.endHour"
                                                                     @input="datesAreFilled()"
-                                                                    :inputStyle="{ 'border-color': areSame ? '#ff0000' : ''}"
-                                                                />
+                                                                    :inputStyle="{ 'border-color': areSame ? '#ff0000' : ''}" />
                                                                 <label for="end-hour-field"
                                                                     class="form-label-required">Hora fin</label>
                                                             </span>
                                                             <div class="text-danger text-danger text-start pt-2">
                                                                 <p class="error-messages" v-if="areSame">
-                                                                    Las horas no pueden ser iguales  
+                                                                    Las horas no pueden ser iguales
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -89,21 +80,35 @@
                                                 </b-row>
                                                 <b-row class="mt-2 justify-content-end mt-3">
                                                     <b-col cols="12" lg="4" md="6" sm="6">
-                                                        <Button icon="pi pi-times" label="Cancelar" class="p-button-rounded p-button-secondary" />
+                                                        <Button icon="pi pi-times" label="Cancelar"
+                                                            class="p-button-rounded p-button-secondary" />
                                                     </b-col>
                                                     <b-col cols="12" lg="4" md="6" sm="6">
-                                                        <Button icon="pi pi-save" label="Guardar" class="p-button-rounded button-style" @click="saveAppoint" :disabled="!isFormValid"/>
+                                                        <Button icon="pi pi-save" label="Guardar"
+                                                            class="p-button-rounded button-style" @click="saveAppoint"
+                                                            :disabled="!isFormValid" />
                                                     </b-col>
-
                                                 </b-row>
                                             </div>
+                                            
                                         </div>
                                     </b-col>
                                     <b-col cols="12" md="6" lg="6" sm="12">
                                         <div class="p-1" v-if="selectedSpace != null">
                                             <FullCalendar :options="calendarOptions" id="myCustomCalendar">
-                                                <template v-slot:eventContent='arg'>
-                                                    <b>{{ arg.event.title }}</b>
+                                                <template v-slot:eventContent='{event}'>
+                                                    <b-row>
+                                                        <b-col cols="12" lg="12" md="4" sm="3">
+                                                            <div class="my-custom-event">
+                                                                <span class="my-event-dot"></span>
+                                                                <div class="my-event-info text-center">
+                                                                    <span class="my-event-title"><b>{{ event.title }}</b></span>
+                                                                    <span class="my-event-time">{{ formatCalendarDate(event._instance.range.start) }} - {{ formatCalendarDate(event._instance.range.end) }}</span>
+                                                                </div>
+    
+                                                            </div>
+                                                        </b-col>
+                                                    </b-row>
                                                 </template>
                                             </FullCalendar>
                                         </div>
@@ -161,16 +166,17 @@ export default {
                 weekends: false,
                 dateClick: this.handleDateClick,
                 headerToolbar: {
-                    start: 'title',
-                    center: '',
-                    end: 'today prev,next'
+                start: 'title',
+                center: '',
+                end: 'today prev,next'
                 },
+                dayMaxEventRows: 2,
+                eventLimitText: "Ver más",
                 views: {
-                    dayGridMonth: {
-                        titleFormat: { year: 'numeric', month: 'long' }
-                    }
+                dayGridMonth: {
+                    titleFormat: { year: 'numeric', month: 'long' }
                 },
-
+                },
             },
             selectedSpace: null,
             spaces: [],
@@ -187,6 +193,10 @@ export default {
         }
     },
     methods: {
+        formatCalendarDate(pop){
+            const format = new Date(pop)
+            return moment(format).format('HH:mm')
+        },
         datesAreFilled(){
             if(this.newAppoint.startHour !== '' && this.newAppoint.endHour !== ''){
                 this.validateHours(this.newAppoint.startHour, this.newAppoint.endHour)
@@ -198,14 +208,12 @@ export default {
                     const {startHour, endHour} = this.newAppoint
                     const start = this.formatHour(startHour)
                     const end = this.formatHour(endHour)
-
                     const appoint = {
                         start_hour: this.formatDate(start),
-                        end_hour: this.formatDate(end),
+                        end_hour: this.formatDate(end), 
                         treatment: 57,
                         space: this.selectedSpace
                     }
-                    console.log("appoint =>", appoint)
                     const appointEncrypted = await encrypt(JSON.stringify(appoint))
                     try {
                         const {status} = await appointServices.saveAppointment(appointEncrypted)
@@ -253,6 +261,7 @@ export default {
         },
         formatDate(formmatedHour){
             const date = JSON.parse(JSON.stringify(this.dateSelected))
+            console.log("Date: ", date)
             return `${date}T${formmatedHour}`
         },
         handleDateClick(arg) {
@@ -360,5 +369,35 @@ export default {
 .form-label-required::after{
     content: " *";
     color: #ff0000;
+}
+
+.my-custom-event {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.my-event-dot {
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.my-event-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.my-event-title {
+    font-size: 14px;
+    margin-bottom: 2px;
+    color: #000;
+}
+
+.my-event-time {
+    font-size: 12px;
+    color: #000;
 }
 </style>
