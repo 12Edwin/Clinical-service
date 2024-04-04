@@ -25,20 +25,36 @@ public class Expedient {
     @Column(name = "folio", columnDefinition = "VARCHAR(10) NOT NULL")
     private String folio;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date created_at;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "physical_id", referencedColumnName = "id")
     private Physical_record physicalRecord;
 
     @OneToMany(mappedBy = "expedient")
     private List<Pathological_record> pathologicalRecord;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
     @OneToMany(mappedBy = "expedient")
     private List<Treatment> treatments;
+
+    @PrePersist
+    protected void onCreate() {
+        this.created_at = new Date();
+    }
+    public Expedient(Physical_record physicalRecord, Patient patient) {
+        this.physicalRecord = physicalRecord;
+        this.patient = patient;
+    }
+
+    public Expedient(Long id, Physical_record physicalRecord, Patient patient) {
+        this.id = id;
+        this.physicalRecord = physicalRecord;
+        this.patient = patient;
+    }
 }

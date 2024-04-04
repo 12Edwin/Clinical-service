@@ -8,7 +8,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-
 import 'primevue/resources/themes/saga-blue/theme.css'       //theme
 import 'primevue/resources/primevue.min.css'                 //core css
 import 'primeicons/primeicons.css'                           //icons
@@ -37,6 +36,18 @@ Vue.config.productionTip = false
 
 import VueCompositionAPI from '@vue/composition-api'
 Vue.use(VueCompositionAPI)
+
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
+
+import Tooltip from 'primevue/tooltip';
+
+Vue.directive('tooltip', Tooltip);
+
+import ToastService from 'primevue/toastservice';
+
+Vue.use(ToastService);
 
 new Vue({
     router,

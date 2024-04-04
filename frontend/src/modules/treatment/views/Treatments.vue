@@ -26,7 +26,7 @@ export default {
   components: {Loader, CardTreatment},
   data(){
     return{
-      isLoading: true
+      isLoading: false
     }
   },
 
