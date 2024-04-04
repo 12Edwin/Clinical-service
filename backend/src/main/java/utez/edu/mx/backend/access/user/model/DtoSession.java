@@ -19,7 +19,7 @@ public class DtoSession {
     private Long id;
 
     @NotBlank(groups = {ChangePassword.class, VerifyCode.class})
-    @Pattern(regexp = "^(\\d{10}|\\d{3}-\\d{3}-\\d{4}|\\d{3} \\d{3} \\d{4}|\\(\\d{3}\\) \\d{3}-\\d{4})$", message = "Invalid phone number format")
+    @Pattern(regexp = "^(\\d{10}|\\d{3}-\\d{3}-\\d{4}|\\d{3} \\d{3} \\d{4}|\\(\\d{3}\\) \\d{3}-\\d{4})$", groups = {ChangePassword.class, VerifyCode.class}, message = "Invalid phone number format")
     private String phone;
 
     @NotBlank(groups = {VerifyCode.class})

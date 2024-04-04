@@ -52,6 +52,7 @@ public class ViewDoctors {
     @Min(value = 1, groups = {Register.class, Modify.class})
     private int speciality_id;
     private String description;
+    private boolean available;
 
     public interface Register{}
     public interface Modify{}

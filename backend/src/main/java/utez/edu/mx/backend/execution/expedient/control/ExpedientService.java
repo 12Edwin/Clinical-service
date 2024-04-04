@@ -94,13 +94,16 @@ public class ExpedientService {
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (patientRepository.existsByEmail(expedient.getEmail())){
+            return new ResponseEntity<>(new Message("email already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         if (personRepository.existsByPhone(expedient.getPhone())){
             return new ResponseEntity<>(new Message("phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Physical_record record = recordRepository.save(new Physical_record(expedient.getWeight(), expedient.getHeight(), TypeGender.valueOf(expedient.getGender()), expedient.getAllergies()));
         Person person = personRepository.save(new Person(expedient.getName(), expedient.getSurname(), expedient.getLastname(), expedient.getBirthday(), SexType.valueOf(expedient.getSex()), expedient.getPhone()));
-        Patient patient = patientRepository.save(new Patient(expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), person));
+        Patient patient = patientRepository.save(new Patient(expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), expedient.getEmail(), person));
         Expedient exp = repository.save(new Expedient(record, patient));
         if (!expedient.getPathologicalRecords().isEmpty()){
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
@@ -137,13 +140,16 @@ public class ExpedientService {
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        System.out.println(optionalExpedient.get().getPatient().getEmail());
         if (personRepository.existsByPhoneAndPhoneNot(expedient.getPhone(), optionalExpedient.get().getPatient().getPerson().getPhone())){
             return new ResponseEntity<>(new Message("phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-
+        if (patientRepository.existsByEmailAndEmailNot(expedient.getEmail(), optionalExpedient.get().getPatient().getEmail())){
+            return new ResponseEntity<>(new Message("email already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Physical_record record = recordRepository.saveAndFlush(new Physical_record(expedient.getPhysic_id(), expedient.getWeight(), expedient.getHeight(), TypeGender.valueOf(expedient.getGender()), expedient.getAllergies()));
         Person person = personRepository.saveAndFlush(new Person(expedient.getPerson_id(), expedient.getName(), expedient.getSurname(), expedient.getLastname(), expedient.getBirthday(), SexType.valueOf(expedient.getSex()), expedient.getPhone()));
-        Patient patient = patientRepository.saveAndFlush(new Patient(expedient.getPatient_id(), expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), person));
+        Patient patient = patientRepository.saveAndFlush(new Patient(expedient.getPatient_id(), expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), expedient.getEmail(), person));
         if (!expedient.getPathologicalRecords().isEmpty()){
             pathologicalRepository.deletePathological_recordByExpedient(optionalExpedient.get());
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
