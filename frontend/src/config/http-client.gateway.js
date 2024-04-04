@@ -33,6 +33,7 @@ AxiosClient.interceptors.response.use(
     async (error) => {
         if(!error.response){
             alert('El servidor no respondió')
+            console.log('Error: ', error)
             localStorage.removeItem('token')
 
             return Promise.reject(error)
