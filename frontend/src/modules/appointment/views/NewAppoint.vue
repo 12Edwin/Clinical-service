@@ -17,57 +17,99 @@
                                             <b-row>
                                                 <b-col class="mt-3 mb-2" cols="12">
                                                     <div class="field text-start">
-                                                        <label for="space-selector" class="form-label-required">Espacio:</label>
-                                                        <Dropdown id="space-selector" class="text-center" v-model="selectedSpace" :options="spaces"
-                                                            optionLabel="name" placeholder="Seleccione un espacio" @change="onSpaceSelected()" />
+                                                        <label for="space-selector"
+                                                            class="form-label-required">Espacio:</label>
+                                                        <Dropdown id="space-selector" class="text-center"
+                                                            v-model="selectedSpace" :options="spaces" optionLabel="name"
+                                                            placeholder="Seleccione un espacio"  optionValue="id"
+                                                            @change="onSpaceSelected()" />
                                                     </div>
                                                 </b-col>
                                             </b-row>
-                                            <b-row>
-                                                <b-col cols="12" sm="12">
-                                                    <div class="field text-start mt-3">
-                                                        <span class="p-float-label p-input-icon-right">
-                                                            <InputText id="start-hour-field" :timeOnly="true" hourFormat="12" showTime :manualInput="false" v-model="newAppoint.startHour" />
-                                                            <label for="start-hour-field" class="form-label-required">Fecha seleccionada: </label>
-                                                        </span>
-                                                    </div>
-                                                </b-col>
-                                            </b-row>
-                                            <b-row>
-                                                <b-col cols="12" md="6" lg="6" sm="12">
-                                                    <div class="field text-start mt-3">
-                                                        <span class="p-float-label p-input-icon-right">
-                                                            <Calendar id="start-hour-field" :timeOnly="true" hourFormat="12" showTime :manualInput="false" v-model="newAppoint.startHour" />
-                                                            <label for="start-hour-field" class="form-label-required">Hora
-                                                                inicio</label>
-                                                        </span>
-                                                    </div>
-                                                </b-col>
-                                                <b-col cols="12" md="6" lg="6" sm="12">
-                                                    <div class="field text-start mt-3">
-                                                        <span class="p-float-label p-input-icon-right">
-                                                            <Calendar id="start-hour-field" :timeOnly="true" hourFormat="12" />
-                                                            <label for="start-hour-field" class="form-label-required">Hora
-                                                                fin</label>
-                                                        </span>
-                                                    </div>
-                                                </b-col>
-                                            </b-row>
-                                            <b-row class="mt-3">
-                                                <b-col cols="12" class="d-flex justify-content-end">
-                                                    <Button icon="pi pi-times" label="Cancelar" class="p-button-rounded p-button-secondary w-25" />
-                                                    <Button label="Registrar" icon="pi pi-plus" class="p-button-rounded button-style w-25" @click="saveAppoint()" />
-                                                </b-col>
-                                            </b-row>
+                                            <div v-if="dateSelected != null">
+                                                <b-row>
+                                                    <b-col cols="12" sm="12" class="d-flex justify-content-end mt-1">
+                                                        <div>
+                                                            <p>Fecha: <small class="text-muted">{{ dateSelected }}</small></p>
+                                                        </div>
+                                                    </b-col>
+                                                </b-row>
+                                                <b-row>
+                                                    <b-col cols="12" md="6" lg="6" sm="12" class="mb-4">
+                                                        <div class="field text-start">
+                                                            <span class="p-float-label p-input-icon-right">
+                                                                <Calendar 
+                                                                    id="start-hour-field" 
+                                                                    :timeOnly="true"
+                                                                    hourFormat="24" 
+                                                                    showTime 
+                                                                    :manualInput="false"
+                                                                    v-model="newAppoint.startHour"
+                                                                    @input="datesAreFilled()"
+                                                                    :inputStyle="{ 'border-color': areSame || isBeforeEnd ? '#ff0000' : ''}"
+                                                                />
+                                                                <label for="start-hour-field"
+                                                                    class="form-label-required">
+                                                                    Hora inicio</label>
+                                                                
+                                                            </span>
+                                                            <div class="text-danger text-danger text-start pt-2">
+                                                                <p class="error-messages" v-if="areSame">
+                                                                    Las hora de incio no pueden ser iguales
+                                                                </p>
+                                                                <p class="error-messages" v-if="isBeforeEnd">
+                                                                    La hora de inicio no puede ser mayor a la hora de fin
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </b-col>
+                                                    <b-col cols="12" md="6" lg="6" sm="12">
+                                                        <div class="field text-start ">
+                                                            <span class="p-float-label p-input-icon-right">
+                                                                <Calendar 
+                                                                    id="end-hour-field" 
+                                                                    :timeOnly="true"
+                                                                    showTime
+                                                                    :manualInput="false"
+                                                                    hourFormat="24" 
+                                                                    v-model="newAppoint.endHour"
+                                                                    @input="datesAreFilled()"
+                                                                    :inputStyle="{ 'border-color': areSame ? '#ff0000' : ''}"
+                                                                />
+                                                                <label for="end-hour-field"
+                                                                    class="form-label-required">Hora fin</label>
+                                                            </span>
+                                                            <div class="text-danger text-danger text-start pt-2">
+                                                                <p class="error-messages" v-if="areSame">
+                                                                    Las horas no pueden ser iguales  
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </b-col>
+                                                </b-row>
+                                                <b-row class="mt-2 justify-content-end mt-3">
+                                                    <b-col cols="12" lg="4" md="6" sm="6">
+                                                        <Button icon="pi pi-times" label="Cancelar" class="p-button-rounded p-button-secondary" />
+                                                    </b-col>
+                                                    <b-col cols="12" lg="4" md="6" sm="6">
+                                                        <Button icon="pi pi-save" label="Guardar" class="p-button-rounded button-style" @click="saveAppoint" :disabled="!isFormValid"/>
+                                                    </b-col>
+
+                                                </b-row>
+                                            </div>
                                         </div>
                                     </b-col>
                                     <b-col cols="12" md="6" lg="6" sm="12">
-                                        <div class="p-1">
+                                        <div class="p-1" v-if="selectedSpace != null">
                                             <FullCalendar :options="calendarOptions" id="myCustomCalendar">
                                                 <template v-slot:eventContent='arg'>
                                                     <b>{{ arg.event.title }}</b>
                                                 </template>
                                             </FullCalendar>
+                                        </div>
+                                        <div v-else
+                                            class="p-1 d-flex justify-content-center align-items-center alert-container">
+                                            <p>Seleccione un espacio para visualizar las citas.</p>
                                         </div>
                                     </b-col>
                                 </b-row>
@@ -75,7 +117,7 @@
                         </b-col>
                     </b-row>
                 </panel>
-                <Toast/>
+                <Toast />
             </b-col>
         </b-row>
     </div>
@@ -95,7 +137,7 @@ import appointServices from "@/modules/appointment/services/appoint-services"
 import { decrypt, encrypt } from '@/config/security';
 import Toast from 'primevue/toast';
 import InputText from 'primevue/inputtext/InputText';
-
+import moment from 'moment'
 export default {
     components: {
         FullCalendar,
@@ -107,6 +149,7 @@ export default {
         InputText
     },
     name: 'NewAppoint',
+
     data(){
         return{ 
             calendarOptions: {
@@ -117,7 +160,6 @@ export default {
                 selectable: true,
                 weekends: false,
                 dateClick: this.handleDateClick,
-                eventClick: this.handleEventClick,
                 headerToolbar: {
                     start: 'title',
                     center: '',
@@ -134,18 +176,87 @@ export default {
             spaces: [],
             displaySaveModal: false,
             appoints: [],
+            dateSelected: null,
             newAppoint: {
                 startHour: '',
                 endHour: ''
-            }
+            },
+            areSame: false,
+            isBeforeEnd: false,
+            isFormValid: false,
         }
     },
     methods: {
-        saveAppoint(){
-            console.log('Save appoint', this.newAppoint);
+        datesAreFilled(){
+            if(this.newAppoint.startHour !== '' && this.newAppoint.endHour !== ''){
+                this.validateHours(this.newAppoint.startHour, this.newAppoint.endHour)
+            }
+        },
+        async saveAppoint(){
+            if(this.newAppoint.startHour && this.newAppoint.startHour !== '' && this.newAppoint.endHour && this.newAppoint.endHour !== ''){
+                if(this.isFormValid){
+                    const {startHour, endHour} = this.newAppoint
+                    const start = this.formatHour(startHour)
+                    const end = this.formatHour(endHour)
+
+                    const appoint = {
+                        start_hour: this.formatDate(start),
+                        end_hour: this.formatDate(end),
+                        treatment: 57,
+                        space: this.selectedSpace
+                    }
+                    console.log("appoint =>", appoint)
+                    const appointEncrypted = await encrypt(JSON.stringify(appoint))
+                    try {
+                        const {status} = await appointServices.saveAppointment(appointEncrypted)
+                        if(status === 200 || status === 201){ 
+                            this.$toast.add({severity:'success', summary: '¡Éxito!', detail: '¡Cita guardada con éxito!', life: 3000});
+                            this.newAppoint = {
+                                startHour: '',
+                                endHour: ''
+                            }
+                            this.areSame = false;
+                            this.isBeforeEnd = false;
+                            this.isFormValid = false;
+                        }
+                    } catch (error) {
+                        console.log("Error: ", error)
+                    }
+                }else{
+                    this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: '¡Parece que las horas ingresadas no son válidas!', life: 3000});
+                }
+            }else{
+                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: '¡Asegurate de llenar todos los campos!', life: 3000});
+            }
+        },
+        validateHours(start, end) {
+            const startTime = moment(this.formatHour(start), 'HH:mm')
+            const endTime = moment(this.formatHour(end), 'HH:mm')
+            this.areSame = false;
+            this.isBeforeEnd = false;
+
+             if (startTime.isSame(endTime)) {
+                this.areSame = true;
+            }
+            if (startTime.isAfter(endTime)) {
+                this.isBeforeEnd = true;
+            }
+
+            this.isFormValid = !this.areSame && !this.isBeforeEnd;
+        },
+        formatHour(unfformatedHour){
+            const format = new Date(unfformatedHour)
+            let hour = format.getHours().toString().padStart(2, '0')
+            let minutes = format.getMinutes()
+            let seconds = format.getSeconds()
+            return `${hour}:${minutes}:${seconds}`
+        },
+        formatDate(formmatedHour){
+            const date = JSON.parse(JSON.stringify(this.dateSelected))
+            return `${date}T${formmatedHour}`
         },
         handleDateClick(arg) {
-            alert('date click! ' )
+            this.dateSelected = arg.dateStr
         },
         openModalSaveSpeciality() {
             this.displaySaveModal = true;
@@ -154,7 +265,7 @@ export default {
             if(this.selectedSpace != null){
                 try {
                     this.appoints = []
-                    const {id} = JSON.parse(JSON.stringify(this.selectedSpace))
+                    const id = JSON.parse(JSON.stringify(this.selectedSpace))
                     const {status, data : {result}} = await appointServices.getAppointmentsBySpace(await encrypt(id))
                     if(status === 200 || status === 201){
                         const appointsDecryoted = JSON.parse(await decrypt(result))
@@ -170,7 +281,7 @@ export default {
                         }else{
                             this.$toast.add({severity:'info', summary: 'Sin citas', detail:'¡Este espacio no contiene citas hasta ahora!', life: 3000});
                         }
-                    }
+                    } 
                     
                 } catch (error) {
                     console.log("Error: ", error)
@@ -204,7 +315,7 @@ export default {
                 this.calendarOptions.events = newVal
             },
             deep: true
-        }
+        },
     }
 }
 </script>
@@ -214,16 +325,36 @@ export default {
 .button-style{
     background: #2a715a;
     border: none;
-/*     top: 410px; */
 }
 
-/* .button-cancel{
-    border: none;
-    top: 410px;
-
-} */
 .button-style:hover{
     background-color: #368368 !important;
+}
+
+.form-label-required::after{
+    content: " *";
+    color: #ff0000;
+}
+
+.alert-container{
+    width: 100%; 
+    height: 100%;
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.invalid-field-custom{
+    border-color:  #ff0000 !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
+
+.error-messages{
+    margin-bottom: 0; font-weight: 350; font-size: 15px;
+}
+
+.error-messages::before{
+    content: "* ";
+    color: #ff0000;
 }
 
 .form-label-required::after{

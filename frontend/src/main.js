@@ -49,6 +49,9 @@ import ToastService from 'primevue/toastservice';
 
 Vue.use(ToastService);
 
+import VueMoment from 'vue-moment'
+Vue.use(VueMoment)
+
 new Vue({
     router,
     store,
