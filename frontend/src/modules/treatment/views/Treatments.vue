@@ -3,7 +3,7 @@
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div v-else key="main">
-        <div class="head-title"></div>
+        <Header :title="'Expediente Médico, folio: ' + expedient.folio"/>
         <b-row>
           <b-col lg="5" md="12" class="mt-4">
             <div class="left"
@@ -131,12 +131,13 @@ import {getExpedient} from "@/modules/treatment/services/teatment-service";
 import {decrypt} from "@/config/security";
 import Tooltip from "primevue/tooltip";
 import InputText from 'primevue/inputtext';
+import Header from "@/components/Header.vue";
 
 export default {
   directives: {
     'tooltip': Tooltip
   },
-  components: {Loader, CardTreatment, InputText},
+  components: {Header, Loader, CardTreatment, InputText},
   data() {
     return {
       expedient: {},
@@ -178,15 +179,6 @@ export default {
   padding-top: 10px;
 }
 .left {
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
-  background-color: white;
-  height: 100%;
-  text-align: left;
-}
-
-.head-title {
   padding: 20px;
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
