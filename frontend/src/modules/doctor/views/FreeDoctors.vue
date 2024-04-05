@@ -67,7 +67,7 @@
         },
         {
           label: 'Servicios',
-          to: '/services'
+          to: '/publicServices'
         },
         {
           label: 'Nuestros Doctores',

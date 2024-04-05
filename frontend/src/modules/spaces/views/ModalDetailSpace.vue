@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Detalle de servicios medicos" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Detalle de patologias" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
@@ -9,7 +9,7 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
-                                    <InputText id="field-name" type="text" v-model="serviceInfo.name" />
+                                    <InputText id="field-name" type="text" v-model="spaceInfo.name" />
                                     <label for="field-name" class="form-label-required">Nombre</label>
                                 </span>
                             </div>
@@ -19,7 +19,7 @@
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-pen" />
                                     <Textarea id="field-description" type="text" rows="3"
-                                        v-model="serviceInfo.description" />
+                                        v-model="spaceInfo.description" />
                                     <label for="field-description" class="form-label-required">Descripción</label>
                                     <div class="text-danger text-start pt-2">
                                     </div>
@@ -30,21 +30,9 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-pen" />
-                                    <InputText id="field-description" type="text" rows="3"
-                                        v-model="serviceInfo.price" />
-                                    <label for="field-description" class="form-label-required">Precio</label>
-                                    <div class="text-danger text-start pt-2">
-                                    </div>
-                                </span>
-                            </div>
-                        </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-pen" />
-                                    <InputText id="field-description" type="text" rows="3"
-                                        v-model="serviceInfo.speciality.name"/>
-                                    <label for="field-description" class="form-label-required">Especialidad</label>
+                                    <Textarea id="field-busy_spaces" type="text" rows="3"
+                                        v-model="spaceInfo.busy_spaces" />
+                                    <label for="field-busy_spaces" class="form-label-required">Espacios ocupados</label>
                                     <div class="text-danger text-start pt-2">
                                     </div>
                                 </span>
@@ -82,38 +70,35 @@ export default {
             type: Boolean,
             required: true
         },
-        service: {
+        space: {
             required: true
         }
     },
     data() {
         return {
-            serviceInfo: {
+            spaceInfo: {
                 name: '',
                 description: '',
-                price: '',
-                speciality: ''
+                busy_spaces: ''
             }
         }
     },
     methods: {
         closeModal() {
-            const oldService = JSON.parse(this.service)
-            this.serviceInfo.name = oldService.name
-            this.serviceInfo.description = oldService.description
-            this.serviceInfo.price = oldService.price
-            this.serviceInfo.speciality = oldService.speciality
+            const oldspace = JSON.parse(this.space)
+            this.spaceInfo.name = oldspace.name
+            this.spaceInfo.description = oldspace.description
+            this.spaceInfo.busy_spaces = oldspace.busy_spaces
             this.$emit('update:visible', false);
         }
     },
     watch: {
-        service: {
+        space: {
             handler() {
-                const oldService = JSON.parse(this.service)
-                this.serviceInfo.name = oldService.name
-                this.serviceInfo.description = oldService.description
-                this.serviceInfo.price = oldService.price
-                this.serviceInfo.speciality = oldService.speciality
+                const oldspace = JSON.parse(this.space)
+                this.spaceInfo.name = oldspace.name
+                this.spaceInfo.description = oldspace.description
+                this.spaceInfo.busy_spaces = oldspace.busy_spaces
             },
             deep: true
         }

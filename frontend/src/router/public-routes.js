@@ -42,7 +42,7 @@ export default [
                 },
             },
             {
-                path: 'services',
+                path: 'publicServices',
                 name: 'services',
                 component: Service,
                 meta:{
