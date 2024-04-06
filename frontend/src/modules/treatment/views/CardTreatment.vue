@@ -1,22 +1,60 @@
 <template>
   <div class="right">
+    <div class="d-flex w-100 justify-content-between">
+      <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Tratamientos</h2>
+      <BButton variant="success" style="width:200px" pill class="mt-0 mb-4 d-inline-block"><BIcon icon="plus-circle"/> Crear tratamiento</BButton>
+    </div>
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div key="content" v-else>
-        <div v-for="(treatment, ind) in treatments" :style="{'z-index': (99-ind)}" class="shape"
-             @click="calcHeight(ind)">
-          <div class="content-card" :key="ind">
-            <div class="header-acc">
-              <div class="head"><b> Tratamiento: </b></div>
-              <div class="head">{{ treatment.recommendation }}</div>
+        <Accordion>
+          <AccordionTab v-for="treatment in treatments" class="mb-4">
+            <template v-slot:header>
+              <label for="service"> <b> Servicio: </b> <span> {{ treatment.service.name }} </span></label>
+
+            </template>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                 data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="row mb-3">
+                  <div class="col-sm-6 mb-2">
+                    <label for="recommendation" class="form-label">Recomendación:</label>
+                    <input type="text" id="recommendation" class="form-control" v-model="treatment.recommendation"
+                           readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="price" class="form-label">Precio:</label>
+                    <input type="text" id="price" class="form-control" v-model="treatment.service.price" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="speciality" class="form-label">Especialidad:</label>
+                    <input type="text" id="speciality" class="form-control" v-model="treatment.service.speciality.name"
+                           readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="studies_description" class="form-label">Descripción de Estudios:</label>
+                    <input type="text" id="studies_description" class="form-control"
+                           v-model="treatment.studies_description" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="support_home" class="form-label">Soporte en Casa:</label>
+                    <input type="text" id="support_home" class="form-control" v-model="treatment.support_home" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2 d-flex align-items-end">
+                    <button class="w-100 btn btn-success rounded justify-content-center">Crear Cita</button>
+                  </div>
+                  <div class="col">
+                    <label for="appoints"> <b> Citas Terminadas: </b>
+                      <span class=""> {{ calcTotalCompletedAppoints }} citas completadas / {{ calcTotalAppoints }} totales </span>
+                    </label>
+                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0"
+                                 :aria-valuemax="100"/>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <p>Estudios de laboratorio</p>
-              <p>Tratamiento en casa</p>
-              <p>Recomendaciones</p>
-            </div>
-          </div>
-        </div>
+          </AccordionTab>
+        </Accordion>
       </div>
     </transition-group>
   </div>
@@ -25,15 +63,20 @@
 <script>
 import {decrypt} from "@/config/security";
 import {getTreatments} from "@/modules/treatment/services/teatment-service";
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
+import ProgressBar from 'primevue/progressbar';
 import Loader from "@/components/loader.vue";
 
 export default {
-  components: {Loader},
+  components: {Loader, Accordion, AccordionTab, ProgressBar},
 
   data() {
     return {
       treatments: [],
-      isLoading: true
+      isLoading: true,
+      selected: 0
+
     }
   },
   methods: {
@@ -77,6 +120,18 @@ export default {
       this.isLoading = false
     },
   },
+  
+  computed: {
+    calcProgress() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length / this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length * 100
+    },
+    calcTotalAppoints() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length
+    },
+    calcTotalCompletedAppoints() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length
+    }
+  },
 
   mounted() {
     this.findTreatments();
@@ -88,14 +143,15 @@ export default {
 
 <style scoped>
 
-.right{
-  text-align:left;
-  position:relative;
+.right {
+  text-align: left;
+  position: relative;
   height: 100%;
   background-color: #f5f5f5;
   padding: 20px;
   overflow-y: scroll;
 }
+
 .shape {
   padding: 40px 20px 20px;
   border-radius: 5px;
@@ -157,6 +213,7 @@ export default {
     height: calc(var(--initial-height) + 0px);
     box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
   }
+
 }
 
 .content-card {
@@ -164,7 +221,6 @@ export default {
   box-sizing: content-box;
   display: inline-block;
 }
-
 
 
 .header-acc {
@@ -178,4 +234,45 @@ export default {
   font-size: 14pt;
 }
 
+.accordion-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.accordion-button:hover {
+  background-color: #0056b3;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+.progress-bar {
+  background-color: #28a745;
+}
 </style>
+
+<style>
+.p-accordion-header-link {
+  box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2);
+}
+
+.p-accordion-header-link:hover {
+  animation-name: hoverAccordion;
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s;
+}
+
+@keyframes hoverAccordion {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: #76cdec;
+    border-radius: 15px;
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.4);
+    transform: scale(1.03);
+  }
+}
+</style>
+
