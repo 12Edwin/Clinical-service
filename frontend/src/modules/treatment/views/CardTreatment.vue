@@ -76,6 +76,7 @@ export default {
       treatments: [],
       isLoading: true,
       selected: 0
+
     }
   },
   methods: {
@@ -119,7 +120,7 @@ export default {
       this.isLoading = false
     },
   },
-
+  
   computed: {
     calcProgress() {
       return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length / this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length * 100
@@ -212,6 +213,7 @@ export default {
     height: calc(var(--initial-height) + 0px);
     box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
   }
+
 }
 
 .content-card {
@@ -273,3 +275,4 @@ export default {
   }
 }
 </style>
+

@@ -138,6 +138,7 @@ export default {
     'tooltip': Tooltip
   },
   components: {Header, Loader, CardTreatment, InputText},
+
   data() {
     return {
       expedient: {},
