@@ -6,7 +6,7 @@
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
                             <h5>Gestion de Espacios</h5>
-                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSavePathology()">
+                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpace()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
                         </div>
@@ -60,6 +60,7 @@
             <ConfirmDialog></ConfirmDialog>
         </b-row>
         <ModalDetailSpace :visible.sync="displayDetailModal" :space="space" />
+        <ModalSaveSpace :visible.sync="displaySaveModal" />
     </div>
 </template>
 
@@ -72,7 +73,8 @@ import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
 import spaceService from '../services/spaces-services'
 import ModalDetailSpace from './ModalDetailSpace.vue'
-import { decrypt, encrypt } from "@/config/security"
+import ModalSaveSpace from './ModalSaveSpace.vue'
+import { decrypt } from "@/config/security"
 export default {
     components: {
         Card,
@@ -81,7 +83,8 @@ export default {
         ConfirmDialog,
         Paginator,
         Toast,
-        ModalDetailSpace
+        ModalDetailSpace,
+        ModalSaveSpace
     },
     data() {
         return {
