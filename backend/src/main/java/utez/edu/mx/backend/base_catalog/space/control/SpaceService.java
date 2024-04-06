@@ -68,10 +68,10 @@ public class SpaceService {
         if (oldSpace.isEmpty()) {
             return new ResponseEntity<>(new Message("Space not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        if (repository.findFirstByName(space.getName()).isPresent()) {
+        if (repository.findFirstByNameAndIdNot(space.getName(), space.getId()).isPresent()) {
             return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
         }
-        Space newSpace = repository.save(space);
+        Space newSpace = repository.saveAndFlush(space);
         if (repository.findFirstByName(space.getName()).isEmpty()) {
             return new ResponseEntity<>(new Message("Unregistered space", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
