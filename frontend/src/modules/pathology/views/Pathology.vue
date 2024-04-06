@@ -150,7 +150,7 @@ export default {
                         const { status } = await pathologyService.delete_Pathology(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Patología eliminada correctamente', life: 3000 });
                         }
                     } catch (error) { }
                 },

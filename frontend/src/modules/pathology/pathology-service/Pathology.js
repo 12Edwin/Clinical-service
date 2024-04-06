@@ -23,31 +23,30 @@ const save_pathology = async (encodedPayload) => {
 };
 
 const update_pathology = async (updatedPathology) => {
-    try {
-        const response = await api.doPut("/pathology/" , updatedPathology, {
-            headers: {
-                "Content-Type": "text/plain"
-            }
-        })
-        return response
-    } catch (error) {
-        return error
-    }
+  try {
+    const response = await api.doPut("/pathology/", updatedPathology, {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
 };
 
 const delete_Pathology = async (pathologyId) => {
-    try {
-        const response = await api.doDelete(`/pathology/${pathologyId}`);
-        return response
-    } catch (error) {
-        return error
-    }
-}
-
+  try {
+    const response = await api.doDelete(`/pathology/${pathologyId}`);
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
 
 export default {
-    get_pathology,
-    save_pathology,
-    update_pathology,
-    delete_Pathology
-}
+  get_pathology,
+  save_pathology,
+  update_pathology,
+  delete_Pathology,
+};

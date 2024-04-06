@@ -25,7 +25,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/space")
-@CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET})
+@CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 @AllArgsConstructor
 public class SpaceController {
 

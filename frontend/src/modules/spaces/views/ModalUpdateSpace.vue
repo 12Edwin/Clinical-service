@@ -66,7 +66,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Actualizar" icon="pi pi-pencil" @click="updatePathology()"
+                            <Button label="Actualizar" icon="pi pi-pencil" @click="updateSpace()"
                                 :disabled="!disableButton()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -85,16 +85,16 @@ import Toast from "primevue/toast";
 import { encrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
-import pathologyService from '../pathology-service/Pathology'
 import Dropdown from "primevue/dropdown/";
+import spacesServices from '../services/spaces-services';
 export default {
-    name: "ModalUpdatePathology",
+    name: "ModalUpdateSpace",
     props: {
         visible: {
             type: Boolean,
             required: true,
         },
-        pathology: {
+        space: {
             required: true,
         },
     },
@@ -105,15 +105,15 @@ export default {
         Dropdown,
     },
     setup() {
-        const newPathology = reactive({
+        const newSpace = reactive({
             name: "",
-            description: "",
+            description: ""
         });
 
         const rules = {
             name: {
                 required: helpers.withMessage(
-                    "Debes agregar un nombre para la patología",
+                    "Debes agregar un nombre para el espacio medico",
                     required
                 ),
                 onlyLettersAndAccents: helpers.withMessage(
@@ -126,12 +126,12 @@ export default {
                 ),
                 maxLength: helpers.withMessage(
                     "El nombre debe tener menos de 70 caracteres",
-                    maxLength(60)
+                    maxLength(70)
                 ),
             },
             description: {
                 required: helpers.withMessage(
-                    "Debes agregar una descripción para la patología",
+                    "Debes agregar una descripción para el espacio medico",
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
@@ -147,16 +147,15 @@ export default {
                 ),
             },
         };
-        const v$ = useVuelidate(rules, newPathology);
-        return { newPathology, v$ };
+        const v$ = useVuelidate(rules, newSpace);
+        return { newSpace, v$ };
     },
     methods: {
         closeModal() {
             this.$emit("update:visible", false);
-            const oldPathology = JSON.parse(this.pathology);
-            this.newPathology.id;
-            this.newPathology.name = oldPathology.name
-            this.newPathology.description = oldPathology.description
+            const oldSpace = JSON.parse(this.space);
+            this.newSpace.id;
+            this.newSpace.name = oldSpace.name
             this.v$.$reset();
         },
         disableButton() {
@@ -171,18 +170,18 @@ export default {
                 !this.v$.description.$invalid
             );
         },
-        async updatePathology() {
+        async updateSpace() {
             if (!this.v$.name.$invalid && !this.v$.description.$invalid) {
                 try {
-                    this.newPathology.id = JSON.parse(this.pathology).id;
-                    const encodedPathology = await encrypt(JSON.stringify(this.newPathology));
-                    const { status } = await pathologyService.update_pathology(encodedPathology);
+                    this.newSpace.id = JSON.parse(this.space).id;
+                    const encodedSpace = await encrypt(JSON.stringify(this.newSpace));
+                    const { status } = await spacesServices.update_space(encodedSpace);
                     if (status === 200 || status === 201) {
                         this.closeModal();
                         this.$toast.add({
                             severity: "success",
                             summary: "Éxito",
-                            detail: "Patología actualizada correctamente",
+                            detail: "Patologia actualizada correctamente",
                             life: 3000,
                         });
                     }
@@ -201,11 +200,11 @@ export default {
         },
     },
     watch: {
-        pathology: {
+        space: {
             handler() {
-                const oldPathology = JSON.parse(this.pathology);
-                this.newPathology.name = oldPathology.name;
-                this.newPathology.description = oldPathology.description;
+                const oldSpace = JSON.parse(this.space);
+                this.newSpace.name = oldSpace.name;
+                this.newSpace.description = oldSpace.description;
             },
             deep: true,
         },

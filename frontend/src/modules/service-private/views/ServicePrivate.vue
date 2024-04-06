@@ -153,7 +153,7 @@ export default {
                         const { status } = await servicios.delete_service(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Servicio eliminado correctamente', life: 3000 });
                         }
                     } catch (error) { }
                 },

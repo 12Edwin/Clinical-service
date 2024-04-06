@@ -40,7 +40,7 @@
                                         @click="openModalDetail(space)" />
                                     <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'"
                                         class="p-button-rounded p-button-secondary" style="margin-left: .5em"
-                                        @click="deletePathology(space.id)" />
+                                        @click="deleteSpace(space.id)" />
                                 </template>
                             </Card>
                         </b-col>
@@ -59,8 +59,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalDetailSpace :visible.sync="displayDetailModal" :space="space" />
         <ModalSaveSpace :visible.sync="displaySaveModal" />
+        <ModalDetailSpace :visible.sync="displayDetailModal" :space="space" />
+        <ModalUpdateSpace :visible.sync="displayModal" :space="space" />
     </div>
 </template>
 
@@ -74,7 +75,8 @@ import Toast from 'primevue/toast';
 import spaceService from '../services/spaces-services'
 import ModalDetailSpace from './ModalDetailSpace.vue'
 import ModalSaveSpace from './ModalSaveSpace.vue'
-import { decrypt } from "@/config/security"
+import { decrypt, encrypt } from "@/config/security"
+import ModalUpdateSpace from './ModalUpdateSpace.vue';
 export default {
     components: {
         Card,
@@ -84,7 +86,8 @@ export default {
         Paginator,
         Toast,
         ModalDetailSpace,
-        ModalSaveSpace
+        ModalSaveSpace,
+        ModalUpdateSpace
     },
     data() {
         return {
@@ -94,8 +97,7 @@ export default {
             displayDetailModal: false,
             space: {
                 name: '',
-                description: '',
-                busy_spaces: ''
+                description: ''
             },
             pageable: {
                 page: 0,
@@ -131,40 +133,30 @@ export default {
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.spaces = content
-                    console.log(this.spaces);
                 }
             } catch (error) { }
 
         },
-        // deletePathology(pathologyId) {
-        //     this.$confirm.require({
-        //         message: '¿Está seguro de eliminar esta patología?',
-        //         header: 'Confirmación',
-        //         icon: 'pi pi-info-circle',
-        //         acceptLabel: 'Sí',
-        //         acceptClass: 'p-button-danger',
-        //         accept: async () => {
-        //             try {
-        //                 const encodedId = await encrypt(pathologyId)
-        //                 const { status } = await pathologyService.delete_Pathology(encodedId)
-        //                 if (status === 200 || status === 201) {
-        //                     this.pagination()
-        //                     this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000 });
-        //                 }
-        //             } catch (error) { }
-        //         },
-        //         reject: () => { }
-        //     });
-        // },
-        // limitDescription(description) {
-        //     const words = description.split(' ');
-        //     if (words.length === 8 && words.length < 8) {
-        //         return description;
-        //     } else {
-        //         const limitedWords = words.slice(0, 8);
-        //         return limitedWords.join(' ') + '...';
-        //     }
-        // }
+        deleteSpace(spaceId) {
+            this.$confirm.require({
+                message: '¿Está seguro de eliminar este espacio?',
+                header: 'Confirmación',
+                icon: 'pi pi-info-circle',
+                acceptLabel: 'Sí',
+                acceptClass: 'p-button-danger',
+                accept: async () => {
+                    try {
+                        const encodedId = await encrypt(spaceId)
+                        const { status } = await spaceService.delete_space(encodedId)
+                        if (status === 200 || status === 201) {
+                            this.pagination()
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Espacio medico eliminado correctamente', life: 3000 });
+                        }
+                    } catch (error) { }
+                },
+                reject: () => { }
+            });
+        },
     },
     mounted() {
         this.pagination()

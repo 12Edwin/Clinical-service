@@ -131,9 +131,7 @@ export default {
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log(data.result);
-                } else {
-                    return data.result
+                    console.log(data);
                 }
             } catch (error) {
                 return error

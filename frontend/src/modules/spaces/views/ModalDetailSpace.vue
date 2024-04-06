@@ -26,18 +26,6 @@
                                 </span>
                             </div>
                         </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-pen" />
-                                    <Textarea id="field-busy_spaces" type="text" rows="3"
-                                        v-model="spaceInfo.busy_spaces" />
-                                    <label for="field-busy_spaces" class="form-label-required">Espacios ocupados</label>
-                                    <div class="text-danger text-start pt-2">
-                                    </div>
-                                </span>
-                            </div>
-                        </b-col>
                     </b-row>
                 </div>
                 <template #footer>
@@ -78,8 +66,7 @@ export default {
         return {
             spaceInfo: {
                 name: '',
-                description: '',
-                busy_spaces: ''
+                description: ''
             }
         }
     },
@@ -88,7 +75,6 @@ export default {
             const oldspace = JSON.parse(this.space)
             this.spaceInfo.name = oldspace.name
             this.spaceInfo.description = oldspace.description
-            this.spaceInfo.busy_spaces = oldspace.busy_spaces
             this.$emit('update:visible', false);
         }
     },
@@ -98,7 +84,6 @@ export default {
                 const oldspace = JSON.parse(this.space)
                 this.spaceInfo.name = oldspace.name
                 this.spaceInfo.description = oldspace.description
-                this.spaceInfo.busy_spaces = oldspace.busy_spaces
             },
             deep: true
         }
