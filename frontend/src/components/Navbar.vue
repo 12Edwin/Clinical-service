@@ -6,7 +6,7 @@
 
       <div style="margin-right:20px; display: flex;">
         <SplitButton 
-          :label="'admin'" 
+          :label="usernameRole()" 
           :model="options" 
           class="p-splitbutton p-button-rounded p-button-secondary mb-1"
         ></SplitButton>
@@ -80,12 +80,16 @@ export default {
         }
       ],
       isLogged: false,
+      userRole: ''
     }
   },
   methods: {
     logout(){
       utils.removeToken()
       this.$router.push('/login')
+    },
+    usernameRole(){
+      return utils.getRoleNameBytoken().toLowerCase()
     }
   }
 

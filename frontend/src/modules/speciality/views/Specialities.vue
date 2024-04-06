@@ -46,7 +46,7 @@
                     </b-row>
                     <b-row>
                         <b-col cols="1" :style="{marginTop: '20px'}">
-                            <small style="">Registros: </small> {{ totalRecords }}
+                            <small >Registros: </small> {{ totalRecords }}
                         </b-col>
                         <b-col>
                              <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 

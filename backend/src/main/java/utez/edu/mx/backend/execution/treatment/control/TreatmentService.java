@@ -37,6 +37,16 @@ public class TreatmentService {
     }
 
     @Transactional(readOnly = true)
+    public ResponseEntity<?> findByExpedient(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        Optional<Expedient> expedient = expedientRepository.findById(id);
+        if (expedient.isEmpty()){
+            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new Message(repository.findAllByExpedient(expedient.get()), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
     public ResponseEntity<?> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Treatment> treatment = repository.findById(id);
