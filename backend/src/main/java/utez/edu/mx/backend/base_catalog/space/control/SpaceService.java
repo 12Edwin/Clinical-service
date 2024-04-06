@@ -33,8 +33,62 @@ public class SpaceService {
         return repository.findFirstByName(name);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<>(new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        Optional<Space> space = repository.findById(id);
+        if (space.isEmpty()){
+            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new Message(space.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> save(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+        if (space.getName() == null || space.getDescription() == null) throw new IllegalArgumentException("missing fields");
+        if (repository.findFirstByName(space.getName()).isPresent()) {
+            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
+        }
+        Space newSpace = repository.save(space);
+        if (repository.findFirstByName(space.getName()).isEmpty()) {
+            return new ResponseEntity<>(new Message("Unregistered space", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new Message(newSpace, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> update(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+        if (space.getId() <= 0 || space.getName() == null || space.getDescription() == null) throw new IllegalArgumentException("missing fields");
+        Optional<Space> oldSpace = repository.findById(space.getId());
+        if (oldSpace.isEmpty()) {
+            return new ResponseEntity<>(new Message("Space not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        if (repository.findFirstByNameAndIdNot(space.getName(), space.getId()).isPresent()) {
+            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
+        }
+        Space newSpace = repository.saveAndFlush(space);
+        if (repository.findFirstByName(space.getName()).isEmpty()) {
+            return new ResponseEntity<>(new Message("Unregistered space", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new Message(newSpace, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> delete(Long id) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        Optional<Space> space = repository.findById(id);
+        if (space.isEmpty()) {
+            return new ResponseEntity<>(new Message("Space not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        repository.deleteById(id);
+        if (repository.findById(id).isPresent()) {
+            return new ResponseEntity<>(new Message("Space not deleted", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new Message("Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 }

@@ -37,7 +37,7 @@ export default [
         ]
     },
     {
-        path: 'treatments',
+        path: 'treatments/:idExpedient',
         name: 'treatments',
         component: Treatments,
         meta:{

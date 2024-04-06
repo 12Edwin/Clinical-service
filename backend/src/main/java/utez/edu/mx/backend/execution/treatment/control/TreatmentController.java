@@ -59,6 +59,18 @@ public class TreatmentController {
         }
     }
 
+    @GetMapping("/findByExp/{str_id}")
+    ResponseEntity<?> findByExpedient (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+        try {
+            String id = cryptService.decrypt(str_id);
+            return service.findByExpedient(Long.valueOf(id));
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_treatment) throws IllegalArgumentException {
         try {

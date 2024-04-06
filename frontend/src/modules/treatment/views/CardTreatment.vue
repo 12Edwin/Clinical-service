@@ -1,129 +1,278 @@
 <template>
-  <div style="text-align:left">
-  <div v-for="(treatment, ind) in treats" :style="{'z-index': (99-ind)}"  class="shape" @click="calcHeight(ind)">
-    <div class="content-card" :key="ind">
-      <div class="header-acc">
-        <div class="head"><b> Tratamiento: </b></div>
-        <div class="head">{{ treatment.name }}</div>
-      </div>
-      <div>
-      <p>Estudios de laboratorio</p>
-      <p>Tratamiento en casa</p>
-      <p>Recomendaciones</p>
-      </div>
+  <div class="right">
+    <div class="d-flex w-100 justify-content-between">
+      <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Tratamientos</h2>
+      <BButton variant="success" style="width:200px" pill class="mt-0 mb-4 d-inline-block"><BIcon icon="plus-circle"/> Crear tratamiento</BButton>
     </div>
-  </div>
+    <transition-group name="fade" type="transition">
+      <loader v-if="isLoading" key="load"/>
+      <div key="content" v-else>
+        <Accordion>
+          <AccordionTab v-for="treatment in treatments" class="mb-4">
+            <template v-slot:header>
+              <label for="service"> <b> Servicio: </b> <span> {{ treatment.service.name }} </span></label>
+
+            </template>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                 data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="row mb-3">
+                  <div class="col-sm-6 mb-2">
+                    <label for="recommendation" class="form-label">Recomendación:</label>
+                    <input type="text" id="recommendation" class="form-control" v-model="treatment.recommendation"
+                           readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="price" class="form-label">Precio:</label>
+                    <input type="text" id="price" class="form-control" v-model="treatment.service.price" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="speciality" class="form-label">Especialidad:</label>
+                    <input type="text" id="speciality" class="form-control" v-model="treatment.service.speciality.name"
+                           readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="studies_description" class="form-label">Descripción de Estudios:</label>
+                    <input type="text" id="studies_description" class="form-control"
+                           v-model="treatment.studies_description" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2">
+                    <label for="support_home" class="form-label">Soporte en Casa:</label>
+                    <input type="text" id="support_home" class="form-control" v-model="treatment.support_home" readonly>
+                  </div>
+                  <div class="col-sm-6 mb-2 d-flex align-items-end">
+                    <button class="w-100 btn btn-success rounded justify-content-center">Crear Cita</button>
+                  </div>
+                  <div class="col">
+                    <label for="appoints"> <b> Citas Terminadas: </b>
+                      <span class=""> {{ calcTotalCompletedAppoints }} citas completadas / {{ calcTotalAppoints }} totales </span>
+                    </label>
+                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0"
+                                 :aria-valuemax="100"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AccordionTab>
+        </Accordion>
+      </div>
+    </transition-group>
   </div>
 </template>
 
 <script>
-export default {
+import {decrypt} from "@/config/security";
+import {getTreatments} from "@/modules/treatment/services/teatment-service";
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
+import ProgressBar from 'primevue/progressbar';
+import Loader from "@/components/loader.vue";
 
-  data (){
-    return{
-      treats:[
-        {name: "name"},{name: "name"},{name: "name"}
-      ]
+export default {
+  components: {Loader, Accordion, AccordionTab, ProgressBar},
+
+  data() {
+    return {
+      treatments: [],
+      isLoading: true,
+      selected: 0
+
     }
   },
-  methods:{
-    calcHeight(index){
+  methods: {
+    calcHeight(index) {
       let targetDiv = document.getElementsByClassName("shape")[index]
       let contentDiv = document.getElementsByClassName("content-card")[index]
+      console.log(targetDiv.classList)
+
       let finalHeight = contentDiv.clientHeight + 40;
       let initialHeight = targetDiv.clientHeight;
       targetDiv.style.setProperty("--final-height", finalHeight + "px");
       if (!targetDiv.classList.contains("increase")) {
         targetDiv.style.setProperty("--initial-height", initialHeight + "px");
         targetDiv.classList.toggle("increase")
-      }else{
+      } else {
         targetDiv.classList.toggle("decrement")
       }
 
+    },
+
+    async findTreatments() {
+      try {
+        this.isLoading = true
+        const encrypted = this.$route.params.idExpedient
+        const id = await decrypt(encrypted)
+        if (isNaN(id)) {
+          this.$router.replace({name: '404'})
+        }
+        const {status, data} = await getTreatments(id)
+        console.log(status)
+        if (status === 404) {
+          this.$router.replace({name: '404'})
+        }
+        if (status === 200) {
+          this.treatments = JSON.parse(await decrypt(data.result))
+          console.log(this.treatments)
+        }
+      } catch (e) {
+        this.$router.replace({name: '404'})
+      }
+      this.isLoading = false
+    },
+  },
+  
+  computed: {
+    calcProgress() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length / this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length * 100
+    },
+    calcTotalAppoints() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length
+    },
+    calcTotalCompletedAppoints() {
+      return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length
     }
+  },
+
+  mounted() {
+    this.findTreatments();
+
   }
 }
 
 </script>
 
 <style scoped>
-  .shape{
-    padding: 40px 20px 20px;
-    border-radius: 5px;
+
+.right {
+  text-align: left;
+  position: relative;
+  height: 100%;
+  background-color: #f5f5f5;
+  padding: 20px;
+  overflow-y: scroll;
+}
+
+.shape {
+  padding: 40px 20px 20px;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
+  background-color: white;
+  height: auto;
+  overflow: hidden;
+  text-align: left;
+  position: relative;
+  animation-name: resize2;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  cursor: pointer;
+}
+
+.shape:not(:first-of-type) {
+  margin-top: -20px;
+}
+
+.increase {
+  animation-name: expand;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in;
+  animation-duration: 0.5s;
+}
+
+
+@keyframes expand {
+  0% {
     box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
-    background-color: white;
-    height: 90px;
-    overflow: hidden;
-    text-align: left;
-    position: relative;
-    animation-name: resize2;
-    animation-duration: 0.7s;
-    animation-fill-mode: forwards;
-    cursor: pointer;
+    height: calc(var(--initial-height) + 0px);
+  }
+  60% {
+    height: calc(var(--final-height) - 30px);
+  }
+  100% {
+    height: calc(var(--final-height) + 0px);
+    box-shadow: rgb(118, 205, 236, 0.5) 0 8px 12px 0;
+  }
+}
+
+.decrement {
+  animation-name: decrease;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in;
+  animation-duration: 0.7s;
+}
+
+@keyframes decrease {
+  0% {
+    box-shadow: rgb(118, 205, 236, 0.5) 0 8px 12px 0;
+    height: calc(var(--final-height) + 0px);
+  }
+  60% {
+    height: calc(var(--initial-height) + 30px);
   }
 
-  .shape:not(:first-of-type){
-    margin-top: -20px;
+  100% {
+    height: calc(var(--initial-height) + 0px);
+    box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
   }
 
-  .content-card{
-    width: auto;
-    box-sizing: content-box;
-    display:inline-block;
-  }
+}
 
-  .increase{
-    animation-name: expand;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in;
-    animation-duration: 0.7s;
-  }
+.content-card {
+  width: auto;
+  box-sizing: content-box;
+  display: inline-block;
+}
 
 
-  @keyframes expand {
-    0%{
-      box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
-      height: calc(var(--initial-height) + 0px);
-    }
-    60%{
-      height: calc(var(--final-height) - 30px);
-    }
-    100%{
-      height: calc(var(--final-height) + 0px);
-      box-shadow: rgb(118, 205, 236, 0.5) 0 8px 12px 0;
-    }
-  }
+.header-acc {
+  height: 90px;
+}
 
-  .decrement{
-    animation-name: decrease;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in;
-    animation-duration: 0.7s;
-  }
+.head {
+  display: inline-block;
+  margin-right: 10px;
+  margin-left: 10px;
+  font-size: 14pt;
+}
 
-  @keyframes decrease {
-    0%{
-      box-shadow: rgb(118, 205, 236, 0.5) 0 8px 12px 0;
-      height: calc(var(--final-height) + 0px);
-    }
-    60%{
-      height: calc(var(--initial-height) + 30px);
-    }
+.accordion-button {
+  background-color: #007bff;
+  color: white;
+}
 
-    100%{
-      height: calc(var(--initial-height) + 0px);
-      box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
-     }
-  }
+.accordion-button:hover {
+  background-color: #0056b3;
+}
 
-  .header-acc{
-    height: 90px;
-  }
-  .head{
-    display: inline-block;
-    margin-right: 10px;
-    margin-left: 10px;
-    font-size: 14pt;
-  }
+.form-label {
+  font-weight: bold;
+}
 
+.progress-bar {
+  background-color: #28a745;
+}
 </style>
+
+<style>
+.p-accordion-header-link {
+  box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2);
+}
+
+.p-accordion-header-link:hover {
+  animation-name: hoverAccordion;
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s;
+}
+
+@keyframes hoverAccordion {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: #76cdec;
+    border-radius: 15px;
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.4);
+    transform: scale(1.03);
+  }
+}
+</style>
+

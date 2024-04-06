@@ -34,7 +34,8 @@ public class Patient {
     @Column(name = "place_of_birth", columnDefinition = "VARCHAR(70) NOT NULL")
     private String place_of_birth;
 
-    @Column(name = "marital_status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "marital_status", columnDefinition = "VARCHAR(50) NOT NULL")
     private TypeMaritalStatus marital_status;
 
     @Column(name = "created_by", columnDefinition = "VARCHAR(50) NOT NULL")
