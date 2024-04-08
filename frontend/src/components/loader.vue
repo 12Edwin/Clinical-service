@@ -12,45 +12,64 @@
 <style scoped>
 
 .loader {
-  width: 70px;
-  aspect-ratio: 1;
-  display: grid;
-  grid: 50%/50%;
-  color: #25b09b;
-  --_g: no-repeat linear-gradient(currentColor 0 0);
-  background: var(--_g),var(--_g),var(--_g);
-  background-size: 50.1% 50.1%;
-  animation:
-      l6-0   1.5s infinite steps(1) alternate,
-      l6-0-0 3s   infinite steps(1);
+  position: relative;
+  width: 180px;
+  height: 130px;
+  margin: 0 auto;
 }
-.loader::before {
+.loader:before {
   content: "";
-  background: currentColor;
-  transform: perspective(150px) rotateY(0deg) rotateX(0deg);
-  transform-origin: bottom right;
-  animation: l6-1 1.5s infinite linear alternate;
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background: white;
+  animation: loading-bounce 0.5s ease-in-out infinite alternate;
 }
-@keyframes l6-0 {
-  0%  {background-position: 0    100%,100% 100%,100% 0}
-  33% {background-position: 100% 100%,100% 100%,100% 0}
-  66% {background-position: 100% 0   ,100% 0   ,100% 0}
-}
-@keyframes l6-0-0 {
-  0%  {transform: scaleX(1)  rotate(0deg)}
-  50% {transform: scaleX(-1) rotate(-90deg)}
-}
-@keyframes l6-1 {
-  16.5%{transform:perspective(150px) rotateX(-90deg)  rotateY(0deg)    rotateX(0deg);filter:grayscale(0.8)}
-  33%  {transform:perspective(150px) rotateX(-180deg) rotateY(0deg)    rotateX(0deg)}
-  66%  {transform:perspective(150px) rotateX(-180deg) rotateY(-180deg) rotateX(0deg)}
-  100% {transform:perspective(150px) rotateX(-180deg) rotateY(-180deg) rotateX(-180deg);filter:grayscale(0.8)}
+.loader:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 17px;
+  width: 100px;
+  border-radius: 4px;
+  box-shadow: 0 70px 0 #fff, -75px 50px 0 #fff, -70px 95px 0 #fff;
+  animation: loading-step 1s ease-in-out infinite;
 }
 
+@keyframes loading-bounce {
+  0% { transform: scale(1, 0.7)}
+  40% { transform: scale(0.8, 1.2)}
+  60% { transform: scale(1, 1)}
+  100% { bottom: 140px }
+}
+@keyframes loading-step {
+  0% {
+    box-shadow: 0 70px 0 rgba(0,0,0,0),
+    0 20px 0 #fff,
+    -75px 50px 0 #fff,
+    -130px 90px 0 #fff;
+  }
+  100% {
+    box-shadow: 0 20px 0 #fff,
+    -75px 50px 0 #fff,
+    -130px 90px 0 #fff,
+    -150px 90px 0 rgba(0,0,0,0);
+  }
+}
+
+
 .back-loader{
-  background-color: #dad7d7;
   position:absolute;
+  background-color: rgba(0,0,0, 0.06);
+  display:flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
+  opacity: 40%;
 }
 </style>

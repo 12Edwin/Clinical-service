@@ -5,7 +5,7 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5 style="font-weight: bolder!important; color: black;">Gestion de Servicios</h5>
+                            <h5>Gestion de Servicios</h5>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -21,17 +21,20 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col sm="6" md="4" lg="4" v-for="(service, index) in services" :key="index" class="mt-4">
+                        <b-col cols="12" md="6" lg="3" v-for="(service, index) in services" :key="index"
+                            class="d-flex justify-content-center align-items-center">
                             <Card class="mb-1 mt-2 custom-card">
-                                <template #header>
-                                    <img style="border-radius: 10px 10px; width: 100%; height: 120px!important;"
-                                        src="https://picsum.photos/600/300/?image=25"
-                                        :alt="`medical-service-${service.name}`">
-                                </template>
                                 <template #title>
-                                    <h3>{{ service.name }}</h3>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        {{ service.name }}
+                                    </div>
+                                    <p style="font-weight: normal; color: black; padding-top: 10px;">
+                                        {{ limitDescription(service.description) }}
+                                    </p>
+                                    <p style="font-weight: normal; color: black; ">${{ service.price
+                                        }}</p>
                                 </template>
-                                <template #footer>
+                                <template #content>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
                                         @click="openModal(service)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
@@ -49,9 +52,9 @@
                             <small style="">Registros: </small> {{ totalRecords }}
                         </b-col>
                         <b-col>
-                            <Paginator :rows="pageable.size" :totalRecords="totalRecords" :rowsPerPageOptions="[5, 10, 15]"
-                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }"
-                                @page="pagination($event)" />
+                            <Paginator :rows="pageable.size" :totalRecords="totalRecords"
+                                :rowsPerPageOptions="[5, 10, 15]" :first="0" :pageLinkSize="1"
+                                :style="{ marginTop: '20px' }" @page="pagination($event)" />
                         </b-col>
                     </b-row>
                 </panel>
@@ -157,18 +160,38 @@ export default {
                 reject: () => { }
             });
         },
+        limitDescription(description) {
+            const words = description.split(' ');
+            if (words.length === 10 && words.length < 10) {
+                return description;
+            } else {
+                const limitedWords = words.slice(0, 10);
+                return limitedWords.join(' ') + '...';
+            }
+        }
     },
     mounted() {
-        this.pagination();
+        this.pagination()
     },
-
 };
 </script>
 
 <style scoped>
+.p-inputtext {
+    width: 550px;
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .p-inputtext {
+        width: 100%;
+    }
+
+}
+
 .p-card {
     width: 100%;
-    height: 400px !important;
+    height: 300px !important;
     border-radius: 10px;
     overflow: hidden;
     padding: 10px;
@@ -180,42 +203,24 @@ export default {
     transform: scale(1.05);
 }
 
-
-.image {
-    height: 200px !important;
-    width: 95% !important;
-    margin-top: 15px;
-    border-radius: 10px 10px;
+.label {
+    text-align: justify;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 10;
+    color: #000;
 }
 
-h1 {
-    font-weight: bolder !important;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black !important;
+.button-style {
+    background: #2a715a;
+    border: none;
 }
 
-h3 {
-    font-size: x-large!important;
-    font-weight: bolder !important;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black !important;
+.button-style:hover {
+    background-color: #368368 !important;
 }
 
-p {
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 300 !important;
-    padding: 30px;
-    font-size: larger !important;
-    color: black !important;
-}
-
-.back {
-    padding: 20px;
-}
-
-Button {
-    margin: 30px;
-    background-color: #2a715a;
-    size: 50px !important;
+.p-button.p-button-icon-only {
+    border-radius: 0;
 }
 </style>

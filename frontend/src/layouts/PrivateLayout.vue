@@ -2,7 +2,6 @@
   <div>
     <Navbar/>
     <div class="d-flex">
-
       <Sidebar></Sidebar>
       <div class="content">
         <router-view></router-view>
