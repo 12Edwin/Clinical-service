@@ -83,7 +83,7 @@ public class ExpedientService {
     public ResponseEntity<?> save(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
             || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
-            || expedient.getLastname() == null || expedient.getOccupation() == null || expedient.getMarital_status() == null
+            || expedient.getOccupation() == null || expedient.getMarital_status() == null
             || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
             || expedient.getSurname() == null || expedient.getWeight() <= 0
             || expedient.getPathologicalRecords() == null) throw new IllegalArgumentException();
@@ -123,7 +123,7 @@ public class ExpedientService {
     public ResponseEntity<?> update(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
                 || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
-                || expedient.getLastname() == null || expedient.getOccupation() == null || expedient.getMarital_status() == null
+                || expedient.getOccupation() == null || expedient.getMarital_status() == null
                 || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
                 || expedient.getSurname() == null || expedient.getWeight() <= 0 || expedient.getPathologicalRecords() == null
                 || expedient.getId() <= 0 || expedient.getPhysic_id() <= 0 || expedient.getPatient_id() <= 0
