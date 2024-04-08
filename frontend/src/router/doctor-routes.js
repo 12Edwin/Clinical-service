@@ -1,6 +1,7 @@
 import Appoints from "@/modules/appointment/views/Appoints.vue";
 import Treatments from "@/modules/treatment/views/Treatments.vue";
 import ClinicalHistory from "@/modules/expedient/views/ClinicalHistory.vue";
+import CreateExpedient from "@/modules/expedient/views/CreateExpedient.vue";
 export default [
     {
         path: 'appoints',
@@ -42,6 +43,15 @@ export default [
         component: Treatments,
         meta:{
             title: 'Tratamientos',
+            role: "doctor"
+        }
+    },
+    {
+        path: 'create_expedient',
+        name: 'create-expedient',
+        component: CreateExpedient,
+        meta:{
+            title: 'Crear expediente',
             role: "doctor"
         }
     },
