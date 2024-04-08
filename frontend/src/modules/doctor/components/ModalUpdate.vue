@@ -93,6 +93,23 @@
                             </div>
                         </div>
                         </b-col>
+                        <b-col class="mt-3" lg="12">
+                        <div class="field">
+                            <span class="p-float-label p-input-icon-right">
+                                <i class="pi pi-star" />
+                                <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
+                                    class="form-label-required text-start" v-model="v$.speciality.$model"
+                                    :options="specialitys" optionLabel="name"
+                                    placeholder="Seleccione una especialidad" />
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages"
+                                        v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                        {{ v$.speciality.required.$message }}
+                                    </p>
+                                </div>
+                            </span>
+                        </div>
+                    </b-col>
                     </b-row>
                 </div>
                 <template #footer>
@@ -120,7 +137,10 @@ import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
 import { newregex } from "@/utils/regex"
 import Toast from 'primevue/toast';
 import services from "../services/doctor-service"
-import { encrypt } from '@/config/security';
+import { encrypt, decrypt } from '@/config/security';
+import Dropdown from 'primevue/dropdown';
+import specialityServices from '@/modules/speciality/services/speciality-services';
+
 export default {
     props: {
         visible: {
@@ -165,6 +185,9 @@ export default {
                 minLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", minLength(10)),
                 maxLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", maxLength(10))
             },
+            speciality: {
+                required: helpers.withMessage("Debes seleccionar una especialidad", required)
+            },
         }
         const v$ = useVuelidate(rules, newDoctor )
         return { newDoctor, v$ }
@@ -172,9 +195,13 @@ export default {
     components:{
         Dialog,
         Textarea,
-        Toast
+        Toast,
+        Dropdown
     },
     name: 'ModalUpdateDoctor',
+    mounted() {
+        this.getSpecialities();
+    },
     methods:{
         closeModal() {
             this.$emit('update:visible', false);
@@ -194,6 +221,17 @@ export default {
                 return true;
             }
             return !this.v$.name.$invalid && !this.v$.lastname.$invalid && !this.v$.surname.$invalid && !this.v$.phone.$invalid;
+        },
+        async getSpecialities() {
+            try {
+                const { status, data: { result } } = await specialityServices.getSpecialities(this.pageable)
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result)
+                    const { content } = JSON.parse(decripted)
+                    this.specialitys = content
+                }
+            } catch (error) { }
+
         },
         async updateDoctor(){
             if(!this.v$.name.$invalid && !this.v$.lastname.$invalid && !this.v$.surname.$invalid && !this.v$.phone.$invalid){
