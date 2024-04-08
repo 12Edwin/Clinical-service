@@ -32,9 +32,7 @@ export default {
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
   background-color: white;
-  height: 100%;
   text-align: left;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
