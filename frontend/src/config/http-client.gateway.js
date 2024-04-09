@@ -2,7 +2,7 @@ import router from "@/router";
 import axios from "axios";
 import {onError} from "@/kernel/alerts";
 
-const SERVER_URL = "http://192.168.137.1:8080/api"
+const SERVER_URL = "http://localhost:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000

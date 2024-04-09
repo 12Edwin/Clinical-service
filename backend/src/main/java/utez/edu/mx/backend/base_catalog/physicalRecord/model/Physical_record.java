@@ -22,7 +22,8 @@ public class Physical_record {
     @Column(name = "height", columnDefinition = "FLOAT NOT NULL")
     private float height;
 
-    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", columnDefinition = "VARCHAR(50) NOT NULL")
     private TypeGender gender;
 
     @Column(name = "allergies", columnDefinition = "VARCHAR(150) NOT NULL")

@@ -62,4 +62,5 @@ export const getExpedientById = async (id) => {
     }catch (error){
         return error.response
     }
+
 }
