@@ -5,6 +5,11 @@ const getRoleNameBytoken = () => {
     return name
 }
 
+export const getNamesByToken = () => {
+    const { name } = jwtDecode(localStorage.getItem("token"))
+    return name
+}
+
 const getToken = () => {
     return localStorage.getItem("token")
 }
@@ -26,5 +31,5 @@ export default {
     getRoleNameBytoken,
     getToken,
     removeToken,
-    encodeBase64
+    encodeBase64,
 }

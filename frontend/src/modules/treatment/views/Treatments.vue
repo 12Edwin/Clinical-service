@@ -3,14 +3,19 @@
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div v-else key="main">
-        <div class="head-title"></div>
+        <Header :title="'Expediente Médico, folio: ' + expedient.folio"/>
         <b-row>
           <b-col lg="5" md="12" class="mt-4">
             <div class="left"
                  style="background-color: #f5f5f5; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
 
-              <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Información del
-                Paciente</h2>
+              <div class="d-flex justify-content-between">
+                <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Información del
+                  Paciente</h2>
+                <Button class="p-button-rounded p-button-outlined px-3" @click="goToEdit">
+                  <BIcon icon="pencil-fill"/>
+                </Button>
+              </div>
 
               <div class="row">
                 <div class="cols-12">
@@ -110,7 +115,10 @@
                   </div>
                 </div>
               </div>
-
+              <BButton class="p-button-rounded px-3 w-auto" variant="outline-danger" @click="goBack">
+                <BIcon icon="arrow-left"/>
+                <span class="me-3"> Regresar </span>
+              </BButton>
             </div>
 
           </b-col>
@@ -131,12 +139,14 @@ import {getExpedient} from "@/modules/treatment/services/teatment-service";
 import {decrypt} from "@/config/security";
 import Tooltip from "primevue/tooltip";
 import InputText from 'primevue/inputtext';
+import Header from "@/components/Header.vue";
 
 export default {
   directives: {
     'tooltip': Tooltip
   },
-  components: {Loader, CardTreatment, InputText},
+  components: {Header, Loader, CardTreatment, InputText},
+
   data() {
     return {
       expedient: {},
@@ -165,6 +175,14 @@ export default {
       }
       this.isLoading = false
     },
+
+    async goToEdit() {
+      this.$router.push({name: 'modify-expedient', params: {idExpedient: this.$route.params.idExpedient}})
+    },
+
+    goBack() {
+      this.$router.go(-1)
+    }
   },
 
   mounted() {
@@ -178,15 +196,6 @@ export default {
   padding-top: 10px;
 }
 .left {
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;
-  background-color: white;
-  height: 100%;
-  text-align: left;
-}
-
-.head-title {
   padding: 20px;
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 8px 12px 0;

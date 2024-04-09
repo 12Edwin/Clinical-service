@@ -1,7 +1,8 @@
 import router from "@/router";
 import axios from "axios";
+import {onError} from "@/kernel/alerts";
 
-const SERVER_URL = "http://192.168.137.1:8080/api"
+const SERVER_URL = "http://localhost:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
@@ -45,10 +46,13 @@ AxiosClient.interceptors.response.use(
                     console.log(error.response.data)
                     break;
                 case 401:
-                    console.log('Error 401')
-                    console.log(error.response.data)
-                    break;
-                case 403: 
+                    await onError('Su sesión ha expirado', 'Por favor vuelva a iniciar sesión')
+                        .then(() => {
+                            localStorage.removeItem('token')
+                            router.push({name: 'login'})
+                        })
+                    return Promise.resolve()
+                case 403:
                     console.log('Error 403')
                     console.log(error.response.data)
                     break;
@@ -57,8 +61,7 @@ AxiosClient.interceptors.response.use(
                     console.log(error.response.data)
                     break;
                 case 500:
-                    console.log('Error 500')
-                    console.log(error.response.data)
+                    await onError('Error interno del servidor', 'Por favor contacte a soporte técnico')
                     break;
             }
             return Promise.reject(error)

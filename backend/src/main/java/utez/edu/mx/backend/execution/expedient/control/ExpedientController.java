@@ -15,6 +15,7 @@ import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
 import utez.edu.mx.backend.execution.expedient.model.DtoExpedient;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
+import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
 
 import javax.validation.ConstraintViolation;
@@ -37,14 +38,17 @@ public class ExpedientController {
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;
+    private final JwtProvider provider;
     private final CustomRestExceptionHandler<DtoExpedient> exceptionHandler;
     private final CustomRestExceptionHandler<DtoPathological_record> exceptionHandler_pathology;
     private final CustomRestExceptionHandler<DtoDisease> exceptionHandler_disease;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) {
+    ResponseEntity<?> findAllDoctors (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
-            return service.findAll(pageable);
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            return service.findAll(pageable, idUser);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
@@ -53,19 +57,70 @@ public class ExpedientController {
     }
 
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
             String id = cryptService.decrypt(str_id);
-            return service.findById(Long.valueOf(id));
+            return service.findById(Long.valueOf(id), idUser);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
             return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_expedient) throws IllegalArgumentException {
+
+    @PostMapping("/findByFolio/")
+    ResponseEntity<?> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            String decrypt = cryptService.decrypt(str_expedient);
+            DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
+
+            // Validations
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<DtoExpedient>> violations = validator.validate(expedient, DtoExpedient.FindByFolio.class);
+            if (!violations.isEmpty())
+                return exceptionHandler.handleViolations(violations);
+
+            return service.findAllByFolio(pageable, expedient, idUser);
+        }catch (UnsupportedEncodingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/findByEmail/")
+    ResponseEntity<?> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+        try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            String decrypt = cryptService.decrypt(str_expedient);
+            DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
+
+            // Validations
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<DtoExpedient>> violations = validator.validate(expedient, DtoExpedient.FindByEmail.class);
+            if (!violations.isEmpty())
+                return exceptionHandler.handleViolations(violations);
+
+            return service.findAllByEmail(pageable, expedient, idUser);
+        }catch (UnsupportedEncodingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/")
+    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
+        try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
 
@@ -88,7 +143,7 @@ public class ExpedientController {
                     return exceptionHandler_disease.handleViolations(violationsD);
             }
 
-            return service.save(expedient);
+            return service.save(expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
@@ -97,8 +152,10 @@ public class ExpedientController {
     }
 
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
 
@@ -121,7 +178,7 @@ public class ExpedientController {
                     return exceptionHandler_disease.handleViolations(violationsD);
             }
 
-            return service.update(expedient);
+            return service.update(expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {

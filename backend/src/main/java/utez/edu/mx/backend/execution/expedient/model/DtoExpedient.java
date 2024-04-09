@@ -26,7 +26,7 @@ public class DtoExpedient {
     @Max(value = 1000000, groups = {Modify.class})
     private Long id;
 
-    @Null
+    @NotBlank(groups = {FindByFolio.class})
     private String folio;
 
     //Physical records
@@ -71,15 +71,15 @@ public class DtoExpedient {
     @NotBlank(groups = {Register.class, Modify.class})
     @Pattern(regexp = "^(Casado|Soltero|Viudo)$", groups = {Register.class, Modify.class}, message = "Estado civil inválido")
     private String marital_status;
-    @NotBlank(groups = {Register.class, Modify.class})
-    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+)*$", groups = {Register.class, Modify.class}, message = "Responsable inválido")
-    @Length(min = 3, max = 50, groups = {Register.class, Modify.class})
-    private String created_by;
+    @NotNull(groups = { ViewExpedients.Register.class})
+    @Max(value = 1000000, groups = { ViewExpedients.Register.class })
+    @Min(value = 1, groups = { ViewExpedients.Register.class })
+    private Long createdBy;
     @NotBlank(groups = {Register.class, Modify.class})
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$", groups = {Register.class, Modify.class}, message = "Ocupación inválido")
     @Length(min = 3, max = 70, groups = {Register.class, Modify.class})
     private String occupation;
-    @NotBlank(groups = {Register.class, Modify.class})
+    @NotBlank(groups = {Register.class, Modify.class, FindByEmail.class})
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", groups = {Register.class, Modify.class}, message = "Invalid email")
     private String email;
 
@@ -112,5 +112,7 @@ public class DtoExpedient {
 
     public interface Register{}
     public interface Modify{}
+    public interface FindByEmail{}
+    public interface FindByFolio{}
     public interface Delete{}
 }
