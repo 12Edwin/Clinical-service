@@ -127,7 +127,7 @@ public class ExpedientService {
     @Transactional
     public ResponseEntity<?> save(DtoExpedient expedient, Long idUser) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
-            || expedient.getGender() == null || expedient.getCreatedBy() <= 0 || expedient.getHeight() <= 0
+            || expedient.getGender() == null || expedient.getHeight() <= 0
             || expedient.getOccupation() == null || expedient.getMarital_status() == null
             || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
             || expedient.getSurname() == null || expedient.getWeight() <= 0
