@@ -11,8 +11,10 @@ import utez.edu.mx.backend.access.role.model.Role;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
+import utez.edu.mx.backend.execution.patient.model.Patient;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -56,6 +58,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "speciality_id", referencedColumnName = "id")
     private Speciality speciality;
+
+    @OneToMany(mappedBy = "createdBy")
+    @JsonIgnore
+    private List<Patient> patients;
 
     @PrePersist
     protected void onCreate() {

@@ -15,6 +15,7 @@ import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
 import utez.edu.mx.backend.execution.expedient.model.DtoExpedient;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
+import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
 
 import javax.validation.ConstraintViolation;
@@ -37,14 +38,17 @@ public class ExpedientController {
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;
+    private final JwtProvider provider;
     private final CustomRestExceptionHandler<DtoExpedient> exceptionHandler;
     private final CustomRestExceptionHandler<DtoPathological_record> exceptionHandler_pathology;
     private final CustomRestExceptionHandler<DtoDisease> exceptionHandler_disease;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) {
+    ResponseEntity<?> findAllDoctors (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
-            return service.findAll(pageable);
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            return service.findAll(pageable, idUser);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
@@ -107,8 +111,10 @@ public class ExpedientController {
     }
 
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
 
@@ -131,7 +137,7 @@ public class ExpedientController {
                     return exceptionHandler_disease.handleViolations(violationsD);
             }
 
-            return service.save(expedient);
+            return service.save(expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {

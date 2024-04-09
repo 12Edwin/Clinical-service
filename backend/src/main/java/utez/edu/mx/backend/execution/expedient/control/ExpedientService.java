@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backend.access.user.model.User;
+import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.disease.model.Disease;
 import utez.edu.mx.backend.base_catalog.disease.model.DiseaseRepository;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
@@ -52,10 +54,17 @@ public class ExpedientService {
     private DiseaseRepository diseaseRepository;
     @Autowired
     private ViewExpedientRepository viewRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException {
-        Page<ViewExpedients> expedients = viewRepository.findAll(pageable);
+    public ResponseEntity<?> findAll(Pageable pageable, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
+        Optional<User> user = userRepository.findById(id_user);
+        if (user.isEmpty()){
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        List<Patient> patients = patientRepository.findAllByCreatedBy(user.get());
+        Page<ViewExpedients> expedients = viewRepository.findAllByCreatedByIn(pageable, patients.stream().map(p -> p.getCreatedBy().getId()).collect(Collectors.toList()));
         Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
         dtoExpedients.getContent().forEach((expedient) -> {
             Optional<Expedient> exp = repository.findById(expedient.getId());
@@ -102,9 +111,9 @@ public class ExpedientService {
     }
 
     @Transactional
-    public ResponseEntity<?> save(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<?> save(DtoExpedient expedient, Long idUser) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
-            || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
+            || expedient.getGender() == null || expedient.getCreatedBy() <= 0 || expedient.getHeight() <= 0
             || expedient.getOccupation() == null || expedient.getMarital_status() == null
             || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
             || expedient.getSurname() == null || expedient.getWeight() <= 0
@@ -113,6 +122,10 @@ public class ExpedientService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(expedient.getBirthday());
         cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+        Optional<User> user = userRepository.findById(idUser);
+        if (user.isEmpty()){
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
@@ -125,7 +138,7 @@ public class ExpedientService {
 
         Physical_record record = recordRepository.save(new Physical_record(expedient.getWeight(), expedient.getHeight(), TypeGender.valueOf(expedient.getGender()), expedient.getAllergies()));
         Person person = personRepository.save(new Person(expedient.getName(), expedient.getSurname(), expedient.getLastname(), expedient.getBirthday(), SexType.valueOf(expedient.getSex()), expedient.getPhone()));
-        Patient patient = patientRepository.save(new Patient(expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), expedient.getEmail(), person));
+        Patient patient = patientRepository.save(new Patient(expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getOccupation(), user.get(), expedient.getEmail(), person));
         Expedient exp = repository.save(new Expedient(record, patient));
         if (!expedient.getPathologicalRecords().isEmpty()){
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
@@ -144,7 +157,7 @@ public class ExpedientService {
     @Transactional
     public ResponseEntity<?> update(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
-                || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
+                || expedient.getGender() == null || expedient.getHeight() <= 0
                 || expedient.getOccupation() == null || expedient.getMarital_status() == null || expedient.getDiseases() == null
                 || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
                 || expedient.getSurname() == null || expedient.getWeight() <= 0 || expedient.getPathologicalRecords() == null
@@ -170,7 +183,7 @@ public class ExpedientService {
         }
         Physical_record record = recordRepository.saveAndFlush(new Physical_record(expedient.getPhysic_id(), expedient.getWeight(), expedient.getHeight(), TypeGender.valueOf(expedient.getGender()), expedient.getAllergies()));
         Person person = personRepository.saveAndFlush(new Person(expedient.getPerson_id(), expedient.getName(), expedient.getSurname(), expedient.getLastname(), expedient.getBirthday(), SexType.valueOf(expedient.getSex()), expedient.getPhone()));
-        Patient patient = patientRepository.saveAndFlush(new Patient(expedient.getPatient_id(), expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getCreated_by(), expedient.getOccupation(), expedient.getEmail(), person));
+        Patient patient = patientRepository.saveAndFlush(new Patient(expedient.getPatient_id(), expedient.getPlace_of_birth(), TypeMaritalStatus.valueOf(expedient.getMarital_status()), expedient.getOccupation(), expedient.getEmail(), person));
         if (!expedient.getPathologicalRecords().isEmpty()){
             pathologicalRepository.deletePathological_recordByExpedient(optionalExpedient.get());
             List<Pathological_record> pathologies = expedient.getPathologicalRecords().stream().map(DtoPathological_record::cast).toList();
