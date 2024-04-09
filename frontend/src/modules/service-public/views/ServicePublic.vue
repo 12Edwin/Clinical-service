@@ -5,7 +5,7 @@
         <h1>Nuestros Servicios</h1>
         <div style="display: flex; align-items: center; justify-content: center;">
             <div style=" margin-top: 50px;">
-                <Carousel style="margin-top: 20px;" :circular="true" :value="services" :numVisible="1" :numScroll="1"
+                <Carousel style="margin-top: 20px;" :value="services" :numVisible="1" :numScroll="1"
                     :responsiveOptions="responsiveOptions" :autoplayInterval="3000">
                     <template #header>
                     </template>
