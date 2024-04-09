@@ -32,6 +32,10 @@ public class JwtProvider {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    public Long getUserId(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get("user_id", Long.class);
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
