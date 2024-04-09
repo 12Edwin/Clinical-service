@@ -65,6 +65,28 @@ public class ExpedientService {
         return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> findAllByFolio(Pageable pageable, DtoExpedient data) throws JsonProcessingException, UnsupportedEncodingException {
+        Page<ViewExpedients> expedients = viewRepository.findAllByFolioIsContainingIgnoreCase(pageable, data.getFolio());
+        Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
+        dtoExpedients.getContent().forEach((expedient) -> {
+            Optional<Expedient> exp = repository.findById(expedient.getId());
+            expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+            expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        });
+        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> findAllByEmail(Pageable pageable, DtoExpedient data) throws JsonProcessingException, UnsupportedEncodingException {
+        Page<ViewExpedients> expedients = viewRepository.findAllByEmailIsContainingIgnoreCase(pageable, data.getEmail());
+        Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
+        dtoExpedients.getContent().forEach((expedient) -> {
+            Optional<Expedient> exp = repository.findById(expedient.getId());
+            expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+            expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        });
+        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
     @Transactional(readOnly = true)
     public ResponseEntity<?> findById(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
