@@ -9,8 +9,13 @@
             <div class="left"
                  style="background-color: #f5f5f5; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
 
-              <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Información del
-                Paciente</h2>
+              <div class="d-flex justify-content-between">
+                <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Información del
+                  Paciente</h2>
+                <Button class="p-button-rounded p-button-outlined px-3" @click="goToEdit">
+                  <BIcon icon="pencil-fill"/>
+                </Button>
+              </div>
 
               <div class="row">
                 <div class="cols-12">
@@ -110,7 +115,10 @@
                   </div>
                 </div>
               </div>
-
+              <BButton class="p-button-rounded px-3 w-auto" variant="outline-danger" @click="goBack">
+                <BIcon icon="arrow-left"/>
+                <span class="me-3"> Regresar </span>
+              </BButton>
             </div>
 
           </b-col>
@@ -167,6 +175,14 @@ export default {
       }
       this.isLoading = false
     },
+
+    async goToEdit() {
+      this.$router.push({name: 'modify-expedient', params: {idExpedient: this.$route.params.idExpedient}})
+    },
+
+    goBack() {
+      this.$router.go(-1)
+    }
   },
 
   mounted() {
