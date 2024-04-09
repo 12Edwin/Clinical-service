@@ -80,22 +80,6 @@ export default {
     }
   },
   methods: {
-    calcHeight(index) {
-      let targetDiv = document.getElementsByClassName("shape")[index]
-      let contentDiv = document.getElementsByClassName("content-card")[index]
-      console.log(targetDiv.classList)
-
-      let finalHeight = contentDiv.clientHeight + 40;
-      let initialHeight = targetDiv.clientHeight;
-      targetDiv.style.setProperty("--final-height", finalHeight + "px");
-      if (!targetDiv.classList.contains("increase")) {
-        targetDiv.style.setProperty("--initial-height", initialHeight + "px");
-        targetDiv.classList.toggle("increase")
-      } else {
-        targetDiv.classList.toggle("decrement")
-      }
-
-    },
 
     async findTreatments() {
       try {
@@ -106,13 +90,11 @@ export default {
           this.$router.replace({name: '404'})
         }
         const {status, data} = await getTreatments(id)
-        console.log(status)
         if (status === 404) {
           this.$router.replace({name: '404'})
         }
         if (status === 200) {
           this.treatments = JSON.parse(await decrypt(data.result))
-          console.log(this.treatments)
         }
       } catch (e) {
         this.$router.replace({name: '404'})

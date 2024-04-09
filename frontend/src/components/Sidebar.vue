@@ -56,9 +56,9 @@ export default {
           role: 'doctor'
         },
         {
-          label: 'Tratamientos',
+          label: 'Crear Expediente',
           icon: 'heart',
-          route: 'treatments',
+          route: 'create-expedient',
           role: 'doctor'
         },
         {

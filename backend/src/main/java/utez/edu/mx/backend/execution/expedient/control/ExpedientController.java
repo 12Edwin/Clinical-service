@@ -63,6 +63,49 @@ public class ExpedientController {
             return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/findByFolio/")
+    ResponseEntity<?> findByFolio (Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+        try {
+            String decrypt = cryptService.decrypt(str_expedient);
+            DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
+
+            // Validations
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<DtoExpedient>> violations = validator.validate(expedient, DtoExpedient.FindByFolio.class);
+            if (!violations.isEmpty())
+                return exceptionHandler.handleViolations(violations);
+
+            return service.findAllByFolio(pageable, expedient);
+        }catch (UnsupportedEncodingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/findByEmail/")
+    ResponseEntity<?> findByEmail (Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+        try {
+            String decrypt = cryptService.decrypt(str_expedient);
+            DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
+
+            // Validations
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<DtoExpedient>> violations = validator.validate(expedient, DtoExpedient.FindByEmail.class);
+            if (!violations.isEmpty())
+                return exceptionHandler.handleViolations(violations);
+
+            return service.findAllByEmail(pageable, expedient);
+        }catch (UnsupportedEncodingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_expedient) throws IllegalArgumentException {
         try {

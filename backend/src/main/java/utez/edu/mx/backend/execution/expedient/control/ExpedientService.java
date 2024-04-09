@@ -65,6 +65,28 @@ public class ExpedientService {
         return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> findAllByFolio(Pageable pageable, DtoExpedient data) throws JsonProcessingException, UnsupportedEncodingException {
+        Page<ViewExpedients> expedients = viewRepository.findAllByFolioIsContainingIgnoreCase(pageable, data.getFolio());
+        Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
+        dtoExpedients.getContent().forEach((expedient) -> {
+            Optional<Expedient> exp = repository.findById(expedient.getId());
+            expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+            expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        });
+        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> findAllByEmail(Pageable pageable, DtoExpedient data) throws JsonProcessingException, UnsupportedEncodingException {
+        Page<ViewExpedients> expedients = viewRepository.findAllByEmailIsContainingIgnoreCase(pageable, data.getEmail());
+        Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
+        dtoExpedients.getContent().forEach((expedient) -> {
+            Optional<Expedient> exp = repository.findById(expedient.getId());
+            expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
+            expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
+        });
+        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
     @Transactional(readOnly = true)
     public ResponseEntity<?> findById(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
@@ -83,7 +105,7 @@ public class ExpedientService {
     public ResponseEntity<?> save(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
             || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
-            || expedient.getLastname() == null || expedient.getOccupation() == null || expedient.getMarital_status() == null
+            || expedient.getOccupation() == null || expedient.getMarital_status() == null
             || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
             || expedient.getSurname() == null || expedient.getWeight() <= 0
             || expedient.getPathologicalRecords() == null) throw new IllegalArgumentException();
@@ -123,7 +145,7 @@ public class ExpedientService {
     public ResponseEntity<?> update(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
                 || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
-                || expedient.getLastname() == null || expedient.getOccupation() == null || expedient.getMarital_status() == null
+                || expedient.getOccupation() == null || expedient.getMarital_status() == null
                 || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
                 || expedient.getSurname() == null || expedient.getWeight() <= 0 || expedient.getPathologicalRecords() == null
                 || expedient.getId() <= 0 || expedient.getPhysic_id() <= 0 || expedient.getPatient_id() <= 0

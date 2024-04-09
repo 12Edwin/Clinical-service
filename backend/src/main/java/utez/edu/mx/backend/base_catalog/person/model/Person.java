@@ -31,7 +31,7 @@ public class Person {
     @Column(name = "surname", columnDefinition = "VARCHAR(70) NOT NULL")
     private String surname;
 
-    @Column(name = "lastname", columnDefinition = "VARCHAR(70) NOT NULL")
+    @Column(name = "lastname", columnDefinition = "VARCHAR(70)")
     private String lastname;
 
     @Column(name = "birthday", nullable = false)

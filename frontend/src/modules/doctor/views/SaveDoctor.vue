@@ -63,12 +63,9 @@
                                 :class="{ 'invalid-field-custom': v$.surname.$error }">
                                 <i class="pi pi-user" />
                                 <InputText id="field-surname" type="text" v-model="v$.surname.$model" />
-                                <label for="field-surname" class="form-label-required">2do Apellido</label>
+                                <label for="field-surname">2do Apellido</label>
                             </span>
                             <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.required.$invalid">
-                                    {{ v$.surname.required.$message }}
-                                </p>
                                 <p class="error-messages"
                                     v-if="v$.surname.$dirty && v$.surname.onlyLettersAndAccents.$invalid">
                                     {{ v$.surname.onlyLettersAndAccents.$message }}
@@ -85,41 +82,15 @@
                     <b-col class="mt-4" cols="12" md="6" lg="4">
                         <div class="field">
                             <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.curp.$error }">
-                                <i class="pi pi-id-card" />
-                                <InputText id="field-curp" type="text" v-model="v$.curp.$model"
-                                    @input="() => v$.curp.$model = v$.curp.$model.toUpperCase()" />
-                                <label for="field-curp" class="form-label-required">CURP</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.curpFormmat.$invalid">
-                                    {{ v$.curp.curpFormmat.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.minLength.$invalid">
-                                    {{ v$.curp.minLength.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.curp.$dirty && v$.curp.maxLength.$invalid">
-                                    {{ v$.curp.maxLength.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-4" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
                                 :class="{ 'invalid-field-custom': v$.birthDate.$error }">
                                 <i class="pi pi-calendar" />
                                 <Calendar id="field-birthdate" :maxDate="getNewDate()" v-model="v$.birthDate.$model"
-                                    dateFormat="yy-mm-dd" />
+                                    dateFormat="dd-mm-yy" style="cursor: pointer;" />
                                 <label for="field-birthdate" class="form-label-required">Fecha de nacimiento</label>
                             </span>
                             <div class="text-danger text-start pt-1">
                                 <p class="error-messages" v-if="v$.birthDate.$dirty && v$.birthDate.required.$invalid">
                                     {{ v$.birthDate.required.$message }}
-                                </p>
-                                <p class="error-messages"
-                                    v-if="v$.birthDate.$dirty && v$.birthDate.dateFormat.$invalid">
-                                    {{ v$.birthDate.dateFormat.$message }}
                                 </p>
                             </div>
                         </div>
@@ -195,7 +166,7 @@
                             <span class="p-float-label p-input-icon-right">
                                 <i class="pi pi-at" />
                                 <InputText id="field-email" type="email" :useGrouping="false" />
-                                <label for="field-email" >Correo electrónico</label>
+                                <label for="field-email">Correo electrónico</label>
                             </span>
                         </div>
                     </b-col>
@@ -212,8 +183,7 @@
                             <span class="p-float-label p-input-icon-right"
                                 :class="{ 'invalid-field-custom': v$.code.$error }">
                                 <i class="pi pi-phone" />
-                                <InputText type="text" v-model="v$.code.$model" id="field-phone"
-                                    :useGrouping="false" />
+                                <InputText type="text" v-model="v$.code.$model" id="field-phone" :useGrouping="false" />
                                 <label for="field-phone" class="form-label-required">Código de acceso</label>
                             </span>
                             <div class="text-danger text-start pt-1">
@@ -229,16 +199,24 @@
                             </div>
                         </div>
                     </b-col>
-                    <!-- <b-col class="mt-3" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-at" />
-                                <InputText id="field-email" v-model="v$.pass.$model" type="password" :useGrouping="false" />
-                                <label for="field-email">Password</label>
-                            </span>
-                        </div>
-                    </b-col> -->
                 </b-row>
+                <!-- <b-row>
+                    <b-col class="mt-3" cols="12" md="6" lg="4">
+                        <div class="field">
+                            <span class="p-float-label p-input-icon-right"
+                            :class="{ 'invalid-field-custom': v$.photo.$error }"
+                            >
+                                <FileUpload mode="basic" name="perfil_photo[]" :fileLimit="1"
+                                    accept="png, jpeg" v-model="v$.photo.$model" />
+                            </span>
+                            <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.photo.$dirty && v$.photo.file.$invalid">
+                                    {{ v$.photo.file.$message }}
+                                </p>
+                            </div>
+                        </div>
+                    </b-col>
+                </b-row> -->
 
             </div>
         </template>
@@ -246,7 +224,7 @@
             <b-row class="mt-2">
                 <b-col cols="12" class="d-flex justify-content-end">
                     <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
-                        :loading="isLoading" />
+                        :disabled="v$.$invalid" :loading="isLoading" />
                 </b-col>
             </b-row>
             <Toast />
@@ -262,7 +240,7 @@ import Dropdown from 'primevue/dropdown';
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength, maxLength } from '@vuelidate/validators'
-import { words, errorMessage, curp, rfc, text, dateFormatA } from "@/utils/regex"
+import { words, errorMessage, acceptedFormatsForImages } from "@/utils/regex"
 import RadioButton from 'primevue/radiobutton';
 import InputMask from 'primevue/inputmask';
 import { decrypt, encrypt } from '@/config/security';
@@ -270,6 +248,7 @@ import service from '@/modules/doctor/services/doctor-service';
 import InputText from 'primevue/inputtext/InputText';
 import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
+import FileUpload from 'primevue/fileupload';
 
 export default {
     name: 'SaveDoctor',
@@ -280,7 +259,8 @@ export default {
         RadioButton,
         InputMask,
         Dropdown,
-        Toast
+        Toast,
+        FileUpload
     },
     setup() {
         const doctor = reactive({
@@ -291,10 +271,8 @@ export default {
             birthDate: '',
             speciality: '',
             phone: '',
-            curp: '',
-            rfc: '',
             code: '',
-            pass: ''
+            photo: '',
         })
 
         const rules = {
@@ -309,24 +287,12 @@ export default {
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
             surname: {
-                required: helpers.withMessage("Debes agregar un apellido", required),
                 onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
-            curp: {
-
-                curpFormmat: helpers.withMessage("El CURP no es valido", (value) => curp.test(value)),
-                minLength: helpers.withMessage("El CURP debe de contener al menos 18 caracteres", minLength(18)),
-                maxLength: helpers.withMessage("El CURP debe de contener máximo 18 caracteres", maxLength(18))
-            },
-            rfc: {
-                rfcFormmat: helpers.withMessage("El RFC no es valido", (value) => rfc.test(value)),
-                minLength: helpers.withMessage("El RFC debe de contener al menos 13 caracteres", minLength(13)),
-                maxLength: helpers.withMessage("El RFC debe de contener máximo 13 caracteres", maxLength(13))
-            },
             birthDate: {
                 required: helpers.withMessage("Debes agregar una fecha de nacimiento", required),
-                dateFormat: helpers.withMessage("El formato ingresado no coincide con el requerido", (value) => dateFormatA.test(value))
+                // dateFormat: helpers.withMessage("El formato ingresado no coincide con el requerido", (value) => dateFormatRegex.test(value))
             },
             sex: {
                 required: helpers.withMessage("Debes seleccionar un género", required),
@@ -349,6 +315,19 @@ export default {
                 required: helpers.withMessage("Debes de agregar una constraseña", required),
                 minLength: helpers.withMessage("La contraseña debe de contar con mínimo 6 digitos", minLength(6)),
                 maxLength: helpers.withMessage("La contraseña debe de contar con maximo 20 digitos", maxLength(20))
+            },
+            photo: {
+                file: helpers.withMessage("La foto debe ser un archivo válido", file => {
+                    if (!file) return false;
+                    const maxFileSize = 10 * 1024 * 1024; // 10MB
+
+                    // Verificar el tipo de archivo
+                    const fileTypeValid = acceptedFormats.includes(file.type);
+
+                    // Verificar el tamaño del archivo
+                    const fileSizeValid = file.size <= maxFileSize;
+                    return fileTypeValid && fileSizeValid;
+                })
             }
 
         }
@@ -376,6 +355,8 @@ export default {
                 page: 0,
                 size: 100
             },
+            acceptedFormats: acceptedFormatsForImages,
+            acceptTypes: acceptedFormatsForImages.map(format => `image/${format === '.jpg' ? 'jpeg' : format.substr(1)}`)
         }
     },
     mounted() {
@@ -398,50 +379,6 @@ export default {
 
         },
 
-        generatePass() {
-            let codigo = 'DOC';
-
-            if (this.doctor.curp != "") {
-                let curp = this.doctor.curp;
-                let substring = curp.substr(-4);
-                codigo += substring;
-            } else {
-                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-                for (let i = 0; i < 4; i++) {
-                    const indice = Math.floor(Math.random() * letras.length);
-                    codigo += letras.charAt(indice);
-                }
-            }
-
-            return codigo;
-        },
-
-        generateCode() {
-            let codigo = 'DOC';
-
-            if (this.doctor.speciality.id != "") {
-                codigo += this.doctor.speciality.id;
-            } else {
-                for (let i = 0; i < 2; i++) {
-                    codigo += Math.floor(Math.random() * 10);
-                }
-            }
-
-            if (this.doctor.curp != "") {
-                let curp = this.doctor.curp;
-                let substring = curp.substr(-4);
-                codigo += substring;
-            } else {
-                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-                for (let i = 0; i < 4; i++) {
-                    const indice = Math.floor(Math.random() * letras.length);
-                    codigo += letras.charAt(indice);
-                }
-            }
-
-            return codigo;
-        },
-
         async verifyDoctors() {
             if (this.doctor.name || this.doctor.lastname
                 || this.doctor.surname || this.doctor.birthDate
@@ -456,7 +393,7 @@ export default {
 
 
         async saveDoctor() {
-            var pass = this.generatePass();
+            var pass = "root";
             var selectedGender = this.doctor.sex.value;
             let selectedSpeciality = this.doctor.speciality.id;
             var dateFormat = this.formatDate(this.doctor.birthDate);
