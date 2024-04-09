@@ -145,7 +145,7 @@ public class ExpedientService {
     public ResponseEntity<?> update(DtoExpedient expedient) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
                 || expedient.getGender() == null || expedient.getCreated_by() == null || expedient.getHeight() <= 0
-                || expedient.getOccupation() == null || expedient.getMarital_status() == null
+                || expedient.getOccupation() == null || expedient.getMarital_status() == null || expedient.getDiseases() == null
                 || expedient.getPhone() == null || expedient.getSex() == null || expedient.getPlace_of_birth() == null
                 || expedient.getSurname() == null || expedient.getWeight() <= 0 || expedient.getPathologicalRecords() == null
                 || expedient.getId() <= 0 || expedient.getPhysic_id() <= 0 || expedient.getPatient_id() <= 0
@@ -162,7 +162,6 @@ public class ExpedientService {
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-        System.out.println(optionalExpedient.get().getPatient().getEmail());
         if (personRepository.existsByPhoneAndPhoneNot(expedient.getPhone(), optionalExpedient.get().getPatient().getPerson().getPhone())){
             return new ResponseEntity<>(new Message("phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
@@ -178,7 +177,7 @@ public class ExpedientService {
             pathologicalRepository.saveAllAndFlush(pathologies.stream().peek(p -> p.setExpedient(optionalExpedient.get())).collect(Collectors.toList()));
         }
         if (!expedient.getDiseases().isEmpty()){
-            diseaseRepository.deleteByExpedient(optionalExpedient.get());
+            diseaseRepository.deleteDiseasesByExpedient(optionalExpedient.get().getId());
             List<Disease> diseases = expedient.getDiseases().stream().map(DtoDisease::cast).toList();
             diseaseRepository.saveAllAndFlush(diseases.stream().peek(d -> d.setExpedient(optionalExpedient.get())).collect(Collectors.toList()));
         }
