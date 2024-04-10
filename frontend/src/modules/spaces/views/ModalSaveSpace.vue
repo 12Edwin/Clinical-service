@@ -51,41 +51,6 @@
                                 </div>
                             </div>
                         </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-money-bill" />
-                                    <InputText id="field-price" type="number" rows="2" v-model="v$.price.$model"
-                                        :class="{ 'invalid-field-custom': v$.price.$error }" />
-                                    <label for="field-price" class="form-label-required">Precio</label>
-                                </span>
-                                <div class="text-danger text-start pt-2">
-                                    <p class="error-messages" v-if="v$.price.$dirty && v$.price.required.$invalid">
-                                        {{ v$.price.required.$message }}
-                                    </p>
-                                    <p class="error-messages" v-if="v$.price.$dirty && v$.price.text.$invalid">
-                                        {{ v$.price.text.$message }}
-                                    </p>
-                                </div>
-                            </div>
-                        </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
-                                        optionValue="id" v-model="selectedSpeciality"
-                                        :class="{ 'invalid-field-custom': v$.speciality.$error }" />
-                                    <label for="field-price" class="form-label-required">Especialidad</label>
-                                </span>
-                                <div class="text-danger text-start pt-2">
-                                    <p class="error-messages"
-                                        v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
-                                        {{ v$.speciality.required.$message }}
-                                    </p>
-                                </div>
-                            </div>
-                        </b-col>
                     </b-row>
                 </div>
                 <template #footer>
@@ -93,7 +58,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveService()"
+                            <Button label="Registrar" icon="pi pi-plus" @click="saveSpace()"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -111,12 +76,12 @@ import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
-import { decrypt, encrypt } from '@/config/security';
-import servicios from '../service-services/Services'
+import { encrypt } from '@/config/security';
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
+import spacesServices from '../services/spaces-services';
 export default {
-    name: 'ModalSaveService',
+    name: 'ModalSaveSpace',
     props: {
         visible: {
             type: Boolean,
@@ -130,85 +95,49 @@ export default {
         Toast
     },
     setup() {
-        const services = reactive({
+        const spaces = reactive({
             name: '',
             description: '',
-            price: '',
-            speciality: ''
         })
 
         const rules = {
             name: {
-                required: helpers.withMessage("Debes agregar un nombre para el servicio", required),
+                required: helpers.withMessage("Debes agregar un nombre para el espacio medico", required),
                 onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
-                maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
+                maxLength: helpers.withMessage("El nombre debe tener menos de 70 caracteres", maxLength(70))
             },
             description: {
-                required: helpers.withMessage("Debes agregar una descripción para el servicio", required),
+                required: helpers.withMessage("Debes agregar una descripción para el espacio medico", required),
                 text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },
-            price: {
-                required: helpers.withMessage("Debes agregar un precio al servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
-            },
-            speciality: {
-                required: helpers.withMessage("Debes agregar una especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
-            }
         }
-        const v$ = useVuelidate(rules, services)
-        return { services, v$ }
-    },
-
-    data() {
-        return {
-            specialities: [],
-            selectedSpeciality: null
-        }
+        const v$ = useVuelidate(rules, spaces)
+        return { spaces, v$ }
     },
     methods: {
         closeModal() {
             this.$emit('update:visible', false);
             this.v$.name.$model = ''
             this.v$.description.$model = ''
-            this.v$.price.$model = ''
-            this.v$.speciality.$model = ''
             this.v$.$reset()
         },
-        async saveService() {
-            this.services.speciality = +this.selectedSpeciality
-            this.services.price = +this.services.price
-            const encoded = await encrypt(JSON.stringify(this.services))
+        async saveSpace() {
+            const encoded = await encrypt(JSON.stringify(this.spaces))
             try {
-                const { status, data } = await servicios.save_Service(encoded);
+                const { status, data } = await spacesServices.save_space(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                } else {
-                    return data.result
+                    console.log(data);
                 }
             } catch (error) {
                 return error
             }
         },
-        async getSpecialities() {
-            try {
-                const { status, data: { result } } = await servicios.get_specialities();
-                if (status === 200 || status === 201) {
-                    const decripted = await decrypt(result);
-                    this.specialities = JSON.parse(decripted).content
-                }
-            } catch (error) {
-                console.log("error en la peticion", error);
-            }
-        }
     },
-    mounted() {
-        this.getSpecialities()
-    }
 }   
 </script>
 

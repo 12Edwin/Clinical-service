@@ -80,7 +80,7 @@ import { required, helpers } from '@vuelidate/validators';
 import { reactive, ref } from '@vue/composition-api'
 import { newregex } from "@/utils/regex"
 import { WidgetInstance } from 'friendly-challenge'
-import { decrypt, encrypt } from '@/config/security';
+import { encrypt } from '@/config/security';
 export default {
   name: 'login',
   components: {
