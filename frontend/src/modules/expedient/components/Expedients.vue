@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-between w-100 align-items-center">
           <p class="h5"><b>Expedientes</b></p>
           <Button class="p-button-rounded p-button-outlined px-2">
-            <BIcon icon="plus-circle" scale="2"/>
+            <BIcon icon="plus-circle" scale="2" @click="goToCreateExpedient()"/>
           </Button>
         </div>
       </template>
@@ -138,9 +138,10 @@ export default {
       this.params.page = resp.number
       this.params.total = resp.totalElements
       this.isLoading = false
-      console.log(this.expedients)
     },
-
+    goToCreateExpedient(){
+      this.$router.push({name: 'create-expedient'})
+    },
     async findByEmail(value) {
       if (value === '' || value === null || value === undefined) {
         await this.findAll()

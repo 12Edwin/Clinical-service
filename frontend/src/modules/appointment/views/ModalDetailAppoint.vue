@@ -1,17 +1,18 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Guardar nueva cita" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Detalle de cita" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
-                        <b-col class="mt-4 mb-2" lg="12">
+                        <b-col class="mt-4 mb-2" lg="6">
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-shield" />
-                                    <InputText id="field-name" type="text"/>
+                                    <InputText id="field-name" type="text" v-model="appointInfo.space.name"/>
                                     <label for="field-name" class="form-label-required">Nombre</label>
                                 </span>
+                                <code>{{ appointInfo.space.name }}</code>
                             </div>
                         </b-col>
                         <b-col class="mt-3" lg="12">
@@ -25,7 +26,7 @@
                         </b-col>
                     </b-row>
                 </div>
-                <template #footer>
+                <template #footer> 
                     <b-row>
                         <b-col cols="12">
                             <Button icon="pi pi-times" @click="closeModal()" label="Cancelar"
@@ -43,17 +44,41 @@
 
 
 <script>
+import Toast from 'primevue/toast';
+import Dialog from 'primevue/dialog';
+import Textarea from "primevue/textarea"
 export default {
-    name: 'ModalSaveAppoint',
+    name: 'ModalDetailAppoint',
+    components: {
+        Dialog,
+        Textarea,
+        Toast
+    },
     props: {
         visible: {
             type: Boolean,
+            required: true
+        },
+        appoint: {
             required: true
         }
     },
     data(){
         return {
-
+            appointInfo: {
+                created_at: 0,
+                endHour: 0,
+                id: 0,
+                startHour: 0,
+                space: {
+                    description: '',
+                    id: 0,
+                    name: '',
+                },
+                startHour: 0,
+                status: ''
+            },
+            
         }
     },
     methods: {
@@ -62,6 +87,20 @@ export default {
         },
         saveAppoint(){
             console.log('Save appoint');
+        }
+    },
+    watch:{
+        appoint:{
+            handler(){
+                const oldAppoint = JSON.parse(this.appoint)
+                console.log(oldAppoint)
+                this.appointInfo.created_at = oldAppoint.created_at
+                this.appointInfo.endHour = oldAppoint.endHour
+                this.appointInfo.id = oldAppoint.id
+                this.appointInfo.startHour = oldAppoint.startHour
+                this.appointInfo.space.description = oldAppoint.space.description
+            },
+            deep: true
         }
     }
 }

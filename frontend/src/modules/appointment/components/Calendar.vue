@@ -44,29 +44,56 @@ export default {
         },
         views: {
           dayGridMonth: {
-            titleFormat: { year: 'numeric', month: 'long' } // Ejemplo: Septiembre 2023
+            titleFormat: { year: 'numeric', month: 'long' }
           }
         },
-      }
+      },
+      isLoading: false,
+      appoints: [],
+      
     }
   },
   methods: {
     handleDateClick(arg) {
       alert('date click! ' + arg.dateStr)
-    }    
+    },
+    async onSpaceSelected(){
+            if(this.selectedSpace != null){
+                try {
+                    this.isLoading = true
+                    this.appoints = []
+                    const id = JSON.parse(JSON.stringify(this.selectedSpace))
+                    const {status, data : {result}} = await appointServices.getAppointmentsBySpace(await encrypt(id))
+                    if(status === 200 || status === 201){
+                        this.isLoading = false
+                        const appointsDecryoted = JSON.parse(await decrypt(result))
+                        if(appointsDecryoted.length > 0){
+                            appointsDecryoted.map((appoint) => {
+                                const {endHour, startHour, space:{name}, status} = appoint
+                                this.appoints.push({
+                                    title: `${name}`,
+                                    start: new Date(startHour).toISOString(),
+                                    end: new Date(endHour).toISOString(),
+                                    statusEvent: status
+                                })
+                            }) 
+                        }else{
+                            this.isLoading = false
+                            this.$toast.add({severity:'info', summary: 'Sin citas', detail:'¡Este espacio no contiene citas hasta ahora!', life: 3000});
+                        }
+                    } 
+                    
+                } catch (error) {
+                    console.log("Error: ", error)
+                }
+            }
+        }    
   }
 }
 </script>
 
 <style>
-#myCustomCalendar .fc-button {
-  background: #2a715a;
-  color: #fff;
-  border-color: #2a715a;;
-}
 
-#myCustomCalendar .fc-button:hover {
-  background-color: #368368;
-  border-color: #368368;
-}
+
+
 </style>
