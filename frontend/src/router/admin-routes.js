@@ -1,8 +1,9 @@
 import Doctors from "@/modules/doctor/views/Doctors.vue";
-import Area from "@/modules/area/views/Area.vue";
 import Specialities from "@/modules/speciality/views/Specialities.vue"
 import SaveDoctor from "@/modules/doctor/views/SaveDoctor.vue"
 import ServicePrivate from "@/modules/service-private/views/ServicePrivate.vue"
+import Pathology from "@/modules/pathology/views/Pathology.vue";
+import Space from "@/modules/spaces/views/Space.vue";
 export default [
     {
         path: 'doctors',
@@ -39,14 +40,6 @@ export default [
         ]
     },
     {
-        path: 'areas',
-        name: 'areas',
-        component: Area,
-        meta: {
-            title:'Áreas'
-        }
-    },
-    {
         path: 'specialities',
         name: 'specialities',
         component: Specialities,
@@ -60,6 +53,22 @@ export default [
         component: ServicePrivate,
         meta: {
             title:'Servicios Clinicos',
+        }
+    },
+    {
+        path: 'pathology',
+        name: 'pathology',
+        component: Pathology,
+        meta: {
+            title:'Patologias',
+        }
+    },
+    {
+        path: 'spaces',
+        name: 'space',
+        component: Space,
+        meta: {
+            title:'Espacios',
         }
     },
 ]

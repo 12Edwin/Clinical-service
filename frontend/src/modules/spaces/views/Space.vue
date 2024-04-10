@@ -5,8 +5,8 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de Servicios</h5>
-                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
+                            <h5>Gestion de Espacios</h5>
+                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpace()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
                         </div>
@@ -21,28 +21,26 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col cols="12" md="6" lg="3" v-for="(service, index) in services" :key="index"
+                        <b-col cols="12" md="6" lg="3" v-for="(space, index) in spaces" :key="index"
                             class="d-flex justify-content-center align-items-center">
                             <Card class="mb-1 mt-2 custom-card">
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
-                                        {{ service.name }}
+                                        {{ space.name }}
                                     </div>
                                     <p style="font-weight: normal; color: black; padding-top: 10px;">
-                                        {{ limitDescription(service.description) }}
+                                        {{ space.description }}
                                     </p>
-                                    <p style="font-weight: normal; color: black; ">${{ service.price
-                                        }}</p>
                                 </template>
                                 <template #content>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
-                                        @click="openModal(service)" v-tooltip.top="'Editar'" />
+                                        @click="openModal(space)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
                                         style="margin-left: .5em" v-tooltip.top="'Detalle'"
-                                        @click="openModalDetail(service)" />
+                                        @click="openModalDetail(space)" />
                                     <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'"
                                         class="p-button-rounded p-button-secondary" style="margin-left: .5em"
-                                        @click="deleteService(service.id)" />
+                                        @click="deleteSpace(space.id)" />
                                 </template>
                             </Card>
                         </b-col>
@@ -61,9 +59,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateService :visible.sync="displayModal" :service="service" />
-        <ModalSaveServiceVue :visible.sync="displaySaveModal" />
-        <ModalDetailService :visible.sync="displayDetailModal" :service="service" />
+        <ModalSaveSpace :visible.sync="displaySaveModal" />
+        <ModalDetailSpace :visible.sync="displayDetailModal" :space="space" />
+        <ModalUpdateSpace :visible.sync="displayModal" :space="space" />
     </div>
 </template>
 
@@ -72,35 +70,34 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
-import ModalSaveServiceVue from './ModalSaveService.vue'
-import ModalUpdateService from './ModalUpdateService.vue';
-import ModalDetailService from './ModalDetailService.vue';
 import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
-import servicios from '../service-services/Services';
+import spaceService from '../services/spaces-services'
+import ModalDetailSpace from './ModalDetailSpace.vue'
+import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
+import ModalUpdateSpace from './ModalUpdateSpace.vue';
 export default {
     components: {
         Card,
         Button,
         AccordionTab,
         ConfirmDialog,
-        ModalSaveServiceVue,
-        ModalUpdateService,
-        ModalDetailService,
         Paginator,
-        Toast
+        Toast,
+        ModalDetailSpace,
+        ModalSaveSpace,
+        ModalUpdateSpace
     },
     data() {
         return {
-            services: [],
+            spaces: [],
             displayModal: false,
             displaySaveModal: false,
             displayDetailModal: false,
-            service: {
+            space: {
                 name: '',
-                description: '',
-                price: ''
+                description: ''
             },
             pageable: {
                 page: 0,
@@ -110,16 +107,16 @@ export default {
         };
     },
     methods: {
-        openModalSaveService() {
+        openModalSaveSpace() {
             this.displaySaveModal = true;
         },
-        openModal(service) {
+        openModal(space) {
             this.displayModal = true;
-            this.service = JSON.stringify(service)
+            this.space = JSON.stringify(space)
         },
-        openModalDetail(service) {
+        openModalDetail(space) {
             this.displayDetailModal = true;
-            this.service = JSON.stringify(service)
+            this.space = JSON.stringify(space)
         },
 
         async pagination(event) {
@@ -130,45 +127,36 @@ export default {
                 this.rowsPerPage = rows;
             }
             try {
-                const { status, data: { result } } = await servicios.get_services(this.pageable)
+                const { status, data: { result } } = await spaceService.getAllSpaces(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
-                    this.services = content
+                    this.spaces = content
                 }
             } catch (error) { }
 
         },
-        deleteService(serviceId) {
+        deleteSpace(spaceId) {
             this.$confirm.require({
-                message: '¿Está seguro de eliminar este servicio?',
+                message: '¿Está seguro de eliminar este espacio?',
                 header: 'Confirmación',
                 icon: 'pi pi-info-circle',
                 acceptLabel: 'Sí',
                 acceptClass: 'p-button-danger',
                 accept: async () => {
                     try {
-                        const encodedId = await encrypt(serviceId)
-                        const { status } = await servicios.delete_service(encodedId)
+                        const encodedId = await encrypt(spaceId)
+                        const { status } = await spaceService.delete_space(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Servicio eliminado correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Espacio medico eliminado correctamente', life: 3000 });
                         }
                     } catch (error) { }
                 },
                 reject: () => { }
             });
         },
-        limitDescription(description) {
-            const words = description.split(' ');
-            if (words.length === 10 && words.length < 10) {
-                return description;
-            } else {
-                const limitedWords = words.slice(0, 10);
-                return limitedWords.join(' ') + '...';
-            }
-        }
     },
     mounted() {
         this.pagination()

@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Detalle de especialidad" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Detalle de servicios medicos" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>

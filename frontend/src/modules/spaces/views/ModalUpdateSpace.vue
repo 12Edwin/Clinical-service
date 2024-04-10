@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Modificar Servicio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Modificar Patología" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
@@ -59,40 +59,6 @@
                                 </span>
                             </div>
                         </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-money-bill" />
-                                    <InputText id="field-price" type="text" rows="3" v-model="v$.price.$model"
-                                        :class="{ 'invalid-filed-custom': v$.price.$error }" />
-                                    <label for="field-price">Precio</label>
-                                    <div class="text-danger text-start pt-2">
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.required.$invalid">
-                                            {{ v$.price.required.$message }}
-                                        </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.text.$invalid">
-                                            {{ v$.price.text.$message }}
-                                        </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.precio.$invalid">
-                                            {{ v$.price.precio.$message }}
-                                        </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.maxLength.$invalid">
-                                            {{ v$.price.maxLength.$message }}
-                                        </p>
-                                    </div>
-                                </span>
-                            </div>
-                        </b-col>
-                        <b-col class="mt-3" lg="12">
-                            <div class="field">
-                                <span class="p-float-label p-input-icon-right">
-                                    <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
-                                        optionValue="id" v-model="selectedSpeciality" />
-                                    <label for="field-speciality" class="form-label-required">Especialidad</label>
-                                </span>
-                            </div>
-                        </b-col>
                     </b-row>
                 </div>
                 <template #footer>
@@ -100,7 +66,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Actualizar" icon="pi pi-pencil" @click="updateService()"
+                            <Button label="Actualizar" icon="pi pi-pencil" @click="updateSpace()"
                                 :disabled="!disableButton()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -116,26 +82,21 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, maxLength, minLength } from "@vuelidate/validators";
 import { newregex } from "@/utils/regex";
 import Toast from "primevue/toast";
-import { encrypt, decrypt } from "@/config/security";
+import { encrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
-import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
+import spacesServices from '../services/spaces-services';
 export default {
+    name: "ModalUpdateSpace",
     props: {
         visible: {
             type: Boolean,
             required: true,
         },
-        service: {
+        space: {
             required: true,
         },
-    },
-    data() {
-        return {
-            specialities: [],
-            selectedSpeciality: null
-        }
     },
     components: {
         Dialog,
@@ -143,18 +104,16 @@ export default {
         Toast,
         Dropdown,
     },
-    name: "ModalUpdateService",
     setup() {
-        const newService = reactive({
+        const newSpace = reactive({
             name: "",
-            description: "",
-            price: 0
+            description: ""
         });
 
         const rules = {
             name: {
                 required: helpers.withMessage(
-                    "Debes agregar un nombre para la especialidad",
+                    "Debes agregar un nombre para el espacio medico",
                     required
                 ),
                 onlyLettersAndAccents: helpers.withMessage(
@@ -166,13 +125,13 @@ export default {
                     minLength(3)
                 ),
                 maxLength: helpers.withMessage(
-                    "El nombre debe tener menos de 60 caracteres",
-                    maxLength(60)
+                    "El nombre debe tener menos de 70 caracteres",
+                    maxLength(70)
                 ),
             },
             description: {
                 required: helpers.withMessage(
-                    "Debes agregar una descripción para la especialidad",
+                    "Debes agregar una descripción para el espacio medico",
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
@@ -183,66 +142,46 @@ export default {
                     minLength(3)
                 ),
                 maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 100 caracteres",
-                    maxLength(100)
-                ),
-            },
-            price: {
-                required: helpers.withMessage(
-                    "Debes agregar una descripción para la servicio",
-                    required
-                ),
-                text: helpers.withMessage("Caracteres no válidos", (value) =>
-                    newregex.test(value)
-                ),
-                precio: helpers.withMessage("EL precio debe ser mayor a 0", (value) => +value > 0),
-                maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 60 caracteres",
-                    maxLength(60)
+                    "La descripción debe tener menos de 150 caracteres",
+                    maxLength(150)
                 ),
             },
         };
-        const v$ = useVuelidate(rules, newService);
-        return { newService, v$ };
+        const v$ = useVuelidate(rules, newSpace);
+        return { newSpace, v$ };
     },
     methods: {
         closeModal() {
             this.$emit("update:visible", false);
-            const oldService = JSON.parse(this.service);
-            this.newService.id;
-            this.newService.name = oldService.name
-            this.newService.description = oldService.description
-            this.newService.price = oldService.price
+            const oldSpace = JSON.parse(this.space);
+            this.newSpace.id;
+            this.newSpace.name = oldSpace.name
             this.v$.$reset();
         },
         disableButton() {
             if (
                 !this.v$.name.$dirty ||
-                !this.v$.description.$dirty ||
-                !this.v$.price.$dirty
+                !this.v$.description.$dirty
             ) {
                 return true;
             }
             return (
                 !this.v$.name.$invalid &&
-                !this.v$.description.$invalid &&
-                !this.v$.price.$invalid
+                !this.v$.description.$invalid
             );
         },
-        async updateService() {
-            this.speciality = +this.selectedSpeciality
-            if (!this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$invalid && this.selectedSpeciality != null) {
+        async updateSpace() {
+            if (!this.v$.name.$invalid && !this.v$.description.$invalid) {
                 try {
-                    this.newService.id = JSON.parse(this.service).id;
-                    this.newService.speciality = +this.selectedSpeciality
-                    const encodedService = await encrypt(JSON.stringify(this.newService));
-                    const { status } = await servicios.update_service(encodedService);
+                    this.newSpace.id = JSON.parse(this.space).id;
+                    const encodedSpace = await encrypt(JSON.stringify(this.newSpace));
+                    const { status } = await spacesServices.update_space(encodedSpace);
                     if (status === 200 || status === 201) {
                         this.closeModal();
                         this.$toast.add({
                             severity: "success",
                             summary: "Éxito",
-                            detail: "Servicio medico actualizado correctamente",
+                            detail: "Patologia actualizada correctamente",
                             life: 3000,
                         });
                     }
@@ -259,29 +198,13 @@ export default {
                 });
             }
         },
-        async getSpecialities() {
-            try {
-                const { status, data: { result } } = await servicios.get_specialities();
-                if (status === 200 || status === 201) {
-                    const decripted = await decrypt(result);
-                    this.specialities = JSON.parse(decripted).content
-                }
-            } catch (error) {
-                console.log("error en la peticion", error);
-            }
-        }
-    },
-    mounted() {
-        this.getSpecialities()
     },
     watch: {
-        service: {
+        space: {
             handler() {
-                const oldService = JSON.parse(this.service);
-                this.newService.name = oldService.name;
-                this.newService.description = oldService.description;
-                this.newService.price = oldService.price;
-                this.newService.speciality = oldService.speciality;
+                const oldSpace = JSON.parse(this.space);
+                this.newSpace.name = oldSpace.name;
+                this.newSpace.description = oldSpace.description;
             },
             deep: true,
         },
@@ -310,6 +233,4 @@ export default {
         max-width: 95%;
     }
 }
-
-
 </style>
