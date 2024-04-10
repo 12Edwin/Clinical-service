@@ -8,13 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.base_catalog.speciality.model.DtoSpeciality;
 import utez.edu.mx.backend.execution.treatment.model.DtoTreatment;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;

@@ -47,9 +47,9 @@ public class User {
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @OneToOne(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private Appoint appoint;
+    private List<Appoint> appoints;
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")

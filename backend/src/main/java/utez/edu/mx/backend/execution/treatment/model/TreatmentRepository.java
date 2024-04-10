@@ -17,4 +17,7 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
     List<Treatment> findAllByExpedient(Expedient expedient);
 
     Page<Treatment> findAllByExpedientIn(List<Expedient> expedients, Pageable pageable);
+
+    List<Treatment> findAllByExpedientIn(List<Expedient> expedients);
+
 }
