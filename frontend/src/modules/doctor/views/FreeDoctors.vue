@@ -16,8 +16,7 @@
               img-src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg"
               img-alt="doctor.name" img-top style="background-color: ghostwhite;">
               <p class="mb-0">{{ doctor.name }} {{ doctor.lastname }} {{ doctor.surname }}</p>
-              <!-- <p class="mb-0">Zona;</p>
-              <p class="mb-0">{{ doctor.location }}</p> -->
+              <p class="mb-0">{{ doctor.speciality }} </p>
             </b-card>
           </div>
         </div>
@@ -68,7 +67,7 @@ export default {
         },
         {
           label: 'Servicios',
-          to: '/publicServices'
+          to: '/services'
         },
         {
           label: 'Nuestros Doctores',
@@ -110,6 +109,7 @@ export default {
           const { content, totalElements } = JSON.parse(decripted)
           this.totalRecords = totalElements
           this.doctors = content
+          console.log(this.doctors);
         }
       } catch (error) { }
 

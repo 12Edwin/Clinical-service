@@ -160,7 +160,7 @@ export default {
 .image-carrusel {
     overflow: hidden;
     height: 500px;
-    width: 76%;
+    width: 75%;
 }
 
 @media only screen and (max-width: 768px) {

@@ -197,7 +197,7 @@ export default {
         },
         {
           label: 'Servicios',
-          to: '/serviciosPublicos'
+          to: '/services'
         },
         {
           label: 'Nuestros Doctores',
