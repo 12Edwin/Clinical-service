@@ -363,7 +363,6 @@ import {useVuelidate} from "@vuelidate/core";
 import InputNumber from 'primevue/inputnumber';
 import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
 import {getNamesByToken} from "@/kernel/utils";
-import jwtDecode from "jwt-decode";
 
 export default {
   name: 'CreateExpedient',

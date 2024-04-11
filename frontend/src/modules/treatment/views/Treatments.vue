@@ -123,7 +123,7 @@
 
           </b-col>
           <b-col lg="7" md="12" class="mt-4">
-            <CardTreatment/>
+            <CardTreatment :expedient="expedient.id"/>
           </b-col>
         </b-row>
       </div>
