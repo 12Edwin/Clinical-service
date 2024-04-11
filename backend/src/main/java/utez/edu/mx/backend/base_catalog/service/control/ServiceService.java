@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backend.access.user.model.User;
+import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.service.model.Service;
 import utez.edu.mx.backend.base_catalog.service.model.ServiceRepository;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
@@ -28,6 +30,8 @@ public class ServiceService {
     private SpecialityRepository specialityRepository;
     @Autowired
     private TreatmentRepository treatmentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public Optional<Service> findFirstByName(String name){
@@ -37,6 +41,15 @@ public class ServiceService {
     @Transactional(readOnly = true)
     public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findServices(Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+        Optional<User> user = userRepository.findById(id_user);
+        if (user.isEmpty()){
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<> ( new Message(repository.findAllBySpeciality(user.get().getSpeciality()), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.service.model.DtoService;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
+import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
 
 import javax.validation.ConstraintViolation;
@@ -32,6 +33,7 @@ public class ServiceController {
     private ServiceService serv;
 
     private final CryptService cryptService;
+    private final JwtProvider provider;
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoService> exceptionHandler;
 
@@ -39,6 +41,19 @@ public class ServiceController {
     ResponseEntity<?> findAll (Pageable pageable) {
         try {
             return serv.findAll(pageable);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/findByUser/")
+    ResponseEntity<?> findServices (@RequestHeader("Authorization") String str_token) {
+        try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            return serv.findServices(idUser);
         }catch (JsonProcessingException ex) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){

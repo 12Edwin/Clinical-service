@@ -2,7 +2,7 @@
   <div class="right">
     <div class="d-flex w-100 justify-content-between">
       <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Tratamientos</h2>
-      <BButton variant="success" style="width:200px" pill class="mt-0 mb-4 d-inline-block"><BIcon icon="plus-circle"/> Crear tratamiento</BButton>
+      <BButton variant="success" pill class="mb-4 mt-0 w-auto px-4" @click="openRegister"><BIcon icon="plus-circle" class="me-2"/> <label> Crear tratamiento </label></BButton>
     </div>
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
@@ -10,8 +10,14 @@
         <Accordion>
           <AccordionTab v-for="treatment in treatments" class="mb-4">
             <template v-slot:header>
-              <label for="service"> <b> Servicio: </b> <span> {{ treatment.service.name }} </span></label>
-
+              <div class="d-flex justify-content-between w-100">
+                <label for="service"> <b> Servicio: </b> <span v-tooltip="treatment.service.name">
+                  {{ treatment.service.name.length > 30 ? treatment.service.name.substring(0, 30) + '...' : treatment.service.name }}
+                </span></label>
+                <Button class="p-button-rounded p-button-outlined px-3" @click="openUpdate(treatment)">
+                  <BIcon icon="pencil-fill"/>
+                </Button>
+              </div>
             </template>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                  data-bs-parent="#accordionExample">
@@ -55,6 +61,7 @@
             </div>
           </AccordionTab>
         </Accordion>
+        <ModalTreatment :oldTreatment="selectedTreatment" :expedient="expedient" :title="titleModal" :visible="visible" @close="closeModal"/>
       </div>
     </transition-group>
   </div>
@@ -67,20 +74,28 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ProgressBar from 'primevue/progressbar';
 import Loader from "@/components/loader.vue";
+import ModalTreatment from "@/modules/treatment/views/ModalTreatment.vue";
 
 export default {
-  components: {Loader, Accordion, AccordionTab, ProgressBar},
+  components: {ModalTreatment, Loader, Accordion, AccordionTab, ProgressBar},
 
   data() {
     return {
       treatments: [],
       isLoading: true,
-      selected: 0
-
+      selected: 0,
+      visible: false,
+      titleModal: 'Registrar tratamiento',
+      selectedTreatment: {}
+    }
+  },
+  props:{
+    expedient:{
+      type: Number,
+      required: true
     }
   },
   methods: {
-
     async findTreatments() {
       try {
         this.isLoading = true
@@ -101,6 +116,20 @@ export default {
       }
       this.isLoading = false
     },
+
+    openRegister() {
+      this.titleModal = 'Registrar tratamiento'
+      this.visible = true
+    },
+    openUpdate(treatment){
+      this.titleModal = 'Actualizar tratamiento'
+      this.selectedTreatment = treatment
+      this.visible = true
+    },
+    closeModal() {
+      this.visible = false
+      this.findTreatments()
+    }
   },
   
   computed: {
