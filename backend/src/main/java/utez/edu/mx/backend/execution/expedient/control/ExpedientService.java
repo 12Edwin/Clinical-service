@@ -115,7 +115,7 @@ public class ExpedientService {
             return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
         if (!(Objects.equals(optional.get().getCreatedBy(), id_user))){
-            return new ResponseEntity<>(new Message("Unauthorized", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         DtoExpedient expedient = optional.get().cast();
         Optional<Expedient> exp = repository.findById(expedient.getId());
@@ -189,7 +189,7 @@ public class ExpedientService {
         }
 
         if (!(Objects.equals(optionalExpedient.get().getPatient().getCreatedBy().getId(), id_user))){
-            return new ResponseEntity<>(new Message("Unauthorized", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
 
         Calendar cal = Calendar.getInstance();
