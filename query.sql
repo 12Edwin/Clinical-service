@@ -19,13 +19,12 @@ SELECT * FROM view_doctors;
 CREATE OR REPLACE VIEW  view_expedients as select
                 ex.id, ex.folio,
                 pa.id as patient_id, pa.created_by, pa.marital_status, pa.occupation, pa.email, pa.place_of_birth,
-                pe.id as person_id, pe.name, pe.surname, pe.lastname, pe.sex, pe.phone, pe.birthday,
+                pe.id as person_id, pe.name, pe.surname, COALESCE(pe.lastname, '') as lastname, pe.sex, pe.phone, pe.birthday,
                 phy.id as physic_id, phy.allergies, phy.gender, phy.height, phy.weight
                 from expedients ex
                 LEFT JOIN patients pa on ex.patient_id = pa.id
                 LEFT JOIN people pe on pa.person_id = pe.id
                 LEFT JOIN physical_records phy on ex.physical_id = phy.id;
-
 
 
 CREATE OR REPLACE FUNCTION generate_noExpedient()

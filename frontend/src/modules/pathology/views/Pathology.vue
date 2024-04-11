@@ -5,8 +5,8 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de Servicios</h5>
-                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
+                            <h5>Gestion de patologías</h5>
+                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSavePathology()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
                         </div>
@@ -21,28 +21,26 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col cols="12" md="6" lg="3" v-for="(service, index) in services" :key="index"
+                        <b-col cols="12" md="6" lg="3" v-for="(pathology, index) in pathologies" :key="index"
                             class="d-flex justify-content-center align-items-center">
                             <Card class="mb-1 mt-2 custom-card">
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
-                                        {{ service.name }}
+                                        {{ pathology.name }}
                                     </div>
                                     <p style="font-weight: normal; color: black; padding-top: 10px;">
-                                        {{ limitDescription(service.description) }}
+                                        {{ limitDescription(pathology.description) }}
                                     </p>
-                                    <p style="font-weight: normal; color: black; ">${{ service.price
-                                        }}</p>
                                 </template>
                                 <template #content>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
-                                        @click="openModal(service)" v-tooltip.top="'Editar'" />
+                                        @click="openModal(pathology)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
                                         style="margin-left: .5em" v-tooltip.top="'Detalle'"
-                                        @click="openModalDetail(service)" />
+                                        @click="openModalDetail(pathology)" />
                                     <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'"
                                         class="p-button-rounded p-button-secondary" style="margin-left: .5em"
-                                        @click="deleteService(service.id)" />
+                                        @click="deletePathology(pathology.id)" />
                                 </template>
                             </Card>
                         </b-col>
@@ -61,9 +59,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateService :visible.sync="displayModal" :service="service" />
-        <ModalSaveServiceVue :visible.sync="displaySaveModal" />
-        <ModalDetailService :visible.sync="displayDetailModal" :service="service" />
+        <ModalSavePathology :visible.sync="displaySaveModal" />
+        <ModalDetailPathology :visible.sync="displayDetailModal" :pathology="pathology" />
+        <ModalUpdatePathology :visible.sync="displayModal" :pathology="pathology" />
     </div>
 </template>
 
@@ -72,35 +70,34 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import AccordionTab from 'primevue/accordiontab';
 import ConfirmDialog from 'primevue/confirmdialog';
-import ModalSaveServiceVue from './ModalSaveService.vue'
-import ModalUpdateService from './ModalUpdateService.vue';
-import ModalDetailService from './ModalDetailService.vue';
 import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
-import servicios from '../service-services/Services';
+import pathologyService from '../pathology-service/Pathology'
 import { decrypt, encrypt } from "@/config/security"
+import ModalSavePathology from './ModalSavePathology.vue'
+import ModalDetailPathology from './ModalDetailPathology.vue';
+import ModalUpdatePathology from './ModalUpdatePathology.vue';
 export default {
     components: {
         Card,
         Button,
         AccordionTab,
         ConfirmDialog,
-        ModalSaveServiceVue,
-        ModalUpdateService,
-        ModalDetailService,
         Paginator,
-        Toast
+        Toast,
+        ModalSavePathology,
+        ModalDetailPathology,
+        ModalUpdatePathology
     },
     data() {
         return {
-            services: [],
+            pathologies: [],
             displayModal: false,
             displaySaveModal: false,
             displayDetailModal: false,
-            service: {
+            pathology: {
                 name: '',
                 description: '',
-                price: ''
             },
             pageable: {
                 page: 0,
@@ -110,16 +107,16 @@ export default {
         };
     },
     methods: {
-        openModalSaveService() {
+        openModalSavePathology() {
             this.displaySaveModal = true;
         },
-        openModal(service) {
+        openModal(pathology) {
             this.displayModal = true;
-            this.service = JSON.stringify(service)
+            this.pathology = JSON.stringify(pathology)
         },
-        openModalDetail(service) {
+        openModalDetail(pathology) {
             this.displayDetailModal = true;
-            this.service = JSON.stringify(service)
+            this.pathology = JSON.stringify(pathology)
         },
 
         async pagination(event) {
@@ -130,30 +127,30 @@ export default {
                 this.rowsPerPage = rows;
             }
             try {
-                const { status, data: { result } } = await servicios.get_services(this.pageable)
+                const { status, data: { result } } = await pathologyService.get_pathology(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
-                    this.services = content
+                    this.pathologies = content
                 }
             } catch (error) { }
 
         },
-        deleteService(serviceId) {
+        deletePathology(pathologyId) {
             this.$confirm.require({
-                message: '¿Está seguro de eliminar este servicio?',
+                message: '¿Está seguro de eliminar esta patología?',
                 header: 'Confirmación',
                 icon: 'pi pi-info-circle',
                 acceptLabel: 'Sí',
                 acceptClass: 'p-button-danger',
                 accept: async () => {
                     try {
-                        const encodedId = await encrypt(serviceId)
-                        const { status } = await servicios.delete_service(encodedId)
+                        const encodedId = await encrypt(pathologyId)
+                        const { status } = await pathologyService.delete_Pathology(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Servicio eliminado correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Patología eliminada correctamente', life: 3000 });
                         }
                     } catch (error) { }
                 },
@@ -162,10 +159,10 @@ export default {
         },
         limitDescription(description) {
             const words = description.split(' ');
-            if (words.length === 10 && words.length < 10) {
+            if (words.length === 8 && words.length < 8) {
                 return description;
             } else {
-                const limitedWords = words.slice(0, 10);
+                const limitedWords = words.slice(0, 8);
                 return limitedWords.join(' ') + '...';
             }
         }

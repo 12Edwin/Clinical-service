@@ -3,21 +3,23 @@
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div v-else key="main">
-        <Header :title="'Expediente Médico, folio: ' + expedient.folio"/>
+        <Header :title="'Expediente Médico, folio: ' + (expedient.folio || 'No definido')"/>
         <b-row>
           <b-col lg="5" md="12" class="mt-4">
             <div class="left"
                  style="background-color: #f5f5f5; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
 
               <div class="d-flex justify-content-between">
-                <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Información del
-                  Paciente</h2>
-                <Button class="p-button-rounded p-button-outlined px-3" @click="goToEdit">
+                <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">
+                  Información del Paciente
+                </h2>
+                <Button :disabled="unauthorized" class="p-button-rounded p-button-outlined px-3" @click="goToEdit">
                   <BIcon icon="pencil-fill"/>
                 </Button>
               </div>
-
-              <div class="row">
+              <Unautorized message="No tienes permisos para ver este expediente" v-if="unauthorized"/>
+              <NotFound message="Expediente no encotrado" v-if="!expedient.id && !unauthorized"/>
+              <div class="row" v-if="expedient.id">
                 <div class="cols-12">
                   <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -123,7 +125,7 @@
 
           </b-col>
           <b-col lg="7" md="12" class="mt-4">
-            <CardTreatment/>
+            <CardTreatment :expedient="expedient.id"/>
           </b-col>
         </b-row>
       </div>
@@ -140,18 +142,21 @@ import {decrypt} from "@/config/security";
 import Tooltip from "primevue/tooltip";
 import InputText from 'primevue/inputtext';
 import Header from "@/components/Header.vue";
-
+import {onError} from "@/kernel/alerts";
+import Unautorized from "@/components/Unautorized.vue";
+import NotFound from "@/components/NotFound.vue";
 export default {
   directives: {
     'tooltip': Tooltip
   },
-  components: {Header, Loader, CardTreatment, InputText},
+  components: {NotFound, Unautorized, Header, Loader, CardTreatment, InputText},
 
   data() {
     return {
       expedient: {},
       treatments: [],
-      isLoading: true
+      isLoading: true,
+      unauthorized: false
     }
   },
   methods: {
@@ -164,8 +169,18 @@ export default {
           this.$router.replace({name: '404'})
         }
         const {status, data} = await getExpedient(id)
-        if (status === 404) {
-          this.$router.replace({name: '404'})
+        if (status !== 200 && status !== 401 && status !== 500) {
+          let message = 'Error al obtener el expediente'
+          switch (data.text){
+            case 'Not found':
+              message = 'Expediente no encontrado';
+              break;
+            case 'Unauthorized user':
+              message = 'No tienes permisos para ver este expediente';
+              this.unauthorized = true;
+              break;
+          }
+          await onError('Ha ocurrido un error', message)
         }
         if (status === 200) {
           this.expedient = JSON.parse(await decrypt(data.result))

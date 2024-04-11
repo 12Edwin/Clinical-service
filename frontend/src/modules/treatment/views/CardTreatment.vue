@@ -2,16 +2,24 @@
   <div class="right">
     <div class="d-flex w-100 justify-content-between">
       <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Tratamientos</h2>
-      <BButton variant="success" style="width:200px" pill class="mt-0 mb-4 d-inline-block"><BIcon icon="plus-circle"/> Crear tratamiento</BButton>
+      <BButton :disabled="unauthorized" variant="success" pill class="mb-4 mt-0 w-auto px-4" @click="openRegister"><BIcon icon="plus-circle" class="me-2"/> <label> Crear tratamiento </label></BButton>
     </div>
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div key="content" v-else>
         <Accordion>
+          <Unautorized message="No tienes permisos para ver estos tratamientos" v-if="unauthorized"/>
+          <NotFound message="No se encontraron tratamientos" v-if="treatments.length === 0 && !unauthorized"/>
           <AccordionTab v-for="treatment in treatments" class="mb-4">
             <template v-slot:header>
-              <label for="service"> <b> Servicio: </b> <span> {{ treatment.service.name }} </span></label>
-
+              <div class="d-flex justify-content-between w-100">
+                <label for="service"> <b> Servicio: </b> <span v-tooltip="treatment.service.name">
+                  {{ treatment.service.name.length > 30 ? treatment.service.name.substring(0, 30) + '...' : treatment.service.name }}
+                </span></label>
+                <Button class="p-button-rounded p-button-outlined px-3" @click="openUpdate(treatment)">
+                  <BIcon icon="pencil-fill"/>
+                </Button>
+              </div>
             </template>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                  data-bs-parent="#accordionExample">
@@ -54,6 +62,7 @@
             </div>
           </AccordionTab>
         </Accordion>
+        <ModalTreatment :oldTreatment="selectedTreatment" :expedient="expedient" :title="titleModal" :visible="visible" @close="closeModal"/>
       </div>
     </transition-group>
   </div>
@@ -66,20 +75,32 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ProgressBar from 'primevue/progressbar';
 import Loader from "@/components/loader.vue";
+import ModalTreatment from "@/modules/treatment/views/ModalTreatment.vue";
+import {onError} from "@/kernel/alerts";
+import Unautorized from "@/components/Unautorized.vue";
+import NotFound from "@/components/NotFound.vue";
 
 export default {
-  components: {Loader, Accordion, AccordionTab, ProgressBar},
+  components: {NotFound, Unautorized, ModalTreatment, Loader, Accordion, AccordionTab, ProgressBar},
 
   data() {
     return {
       treatments: [],
       isLoading: true,
-      selected: 0
-
+      unauthorized: false,
+      selected: 0,
+      visible: false,
+      titleModal: 'Registrar tratamiento',
+      selectedTreatment: {}
+    }
+  },
+  props:{
+    expedient:{
+      type: Number,
+      required: true
     }
   },
   methods: {
-
     async findTreatments() {
       try {
         this.isLoading = true
@@ -89,21 +110,40 @@ export default {
           this.$router.replace({name: '404'})
         }
         const {status, data} = await getTreatments(id)
-        if (status === 404) {
-          this.$router.replace({name: '404'})
+        if (status !== 200 && status !== 401 && status !== 500) {
+          let message = 'Ocurrió un error al obtener los tratamientos'
+          switch (data.text) {
+            case 'Expedient not found':
+              message = 'No se encontró el expediente'
+              break;
+            case 'Unauthorized user':
+              message = 'No tienes permisos para ver los tratamientos'
+              this.unauthorized = true
+              break;
+          }
+          await onError('Ha ocurrido un error', message)
         }
         if (status === 200) {
           this.treatments = JSON.parse(await decrypt(data.result))
         }
       } catch (e) {
-        this.$router.replace({name: '404'})
+        await this.$router.replace({name: '404'})
       }
       this.isLoading = false
     },
 
-    async toCreateAppoint(idTreatment) {
-      const encrypted = await encrypt(idTreatment)
-      this.$router.push({name: 'NewAppoint', params: {idTreatment: encrypted}})
+    openRegister() {
+      this.titleModal = 'Registrar tratamiento'
+      this.visible = true
+    },
+    openUpdate(treatment){
+      this.titleModal = 'Actualizar tratamiento'
+      this.selectedTreatment = treatment
+      this.visible = true
+    },
+    closeModal() {
+      this.visible = false
+      this.findTreatments()
     }
   },
   

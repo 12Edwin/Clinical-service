@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import utez.edu.mx.backend.base_catalog.space.model.Space;
+import utez.edu.mx.backend.execution.treatment.model.Treatment;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public interface AppointRepository extends JpaRepository<Appoint, Long> {
     @Query(value = "UPDATE appoints SET status = :status, user_id = :user WHERE id = :id")
     int changeStatus(@Param("status") StatusAppoint status, @Param("user") Long user, @Param("id") Long id);
 
-    List<Appoint> findAllBySpace(Space space);
+    List<Appoint> findAllBySpaceAndTreatmentIn(Space space, List<Treatment> treatments);
 
     @Query(value = "SELECT concat(p.name, ' ', p.surname,'~', pa.email) as name  FROM appoints\n" +
             "LEFT JOIN treatments on appoints.treatment_id = treatments.id\n" +
