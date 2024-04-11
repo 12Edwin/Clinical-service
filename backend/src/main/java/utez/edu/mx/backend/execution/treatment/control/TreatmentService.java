@@ -63,7 +63,7 @@ public class TreatmentService {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(new Message(repository.findAllByExpedient(expedient.get()), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
@@ -84,7 +84,7 @@ public class TreatmentService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(new Message(treatment.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
@@ -103,7 +103,7 @@ public class TreatmentService {
             return new ResponseEntity<>(new Message("Invalid expedient", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<utez.edu.mx.backend.base_catalog.service.model.Service> service = serviceRepository.findById(treatment.getService().getId());
         if (service.isEmpty()){
@@ -136,11 +136,11 @@ public class TreatmentService {
             return new ResponseEntity<>(new Message("Invalid expedient", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Expedient> expedientOld = expedientRepository.findById(treatmentOptional.get().getExpedient().getId());
         if (!expedientOld.get().getPatient().getCreatedBy().equals(user.get())){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<utez.edu.mx.backend.base_catalog.service.model.Service> service = serviceRepository.findById(treatment.getService().getId());
         if (service.isEmpty()){

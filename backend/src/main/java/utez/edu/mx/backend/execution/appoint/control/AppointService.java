@@ -75,7 +75,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Space> space = spaceRepository.findById(appoint.getSpace().getId());
         if (space.isEmpty()){
@@ -159,7 +159,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         treatment = treatmentRepository.findById(appoint.getTreatment().getId());
         if (treatment.isEmpty()){
@@ -170,7 +170,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Space> space = spaceRepository.findById(appoint.getSpace().getId());
         if (space.isEmpty()){
@@ -243,7 +243,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<User> user = userRepository.findById(appoint.getUser().getId());
         if (user.isEmpty()){
@@ -310,7 +310,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<User> user = userRepository.findById(appoint.getUser().getId());
         if (user.isEmpty()){
@@ -349,7 +349,7 @@ public class AppointService {
             return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<User> user = userRepository.findById(appoint.getUser().getId());
         if (user.isEmpty()){
