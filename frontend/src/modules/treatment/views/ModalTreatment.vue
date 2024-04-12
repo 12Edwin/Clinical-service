@@ -199,6 +199,9 @@ export default {
       const {status, data} = await getServices()
       if (status === 200) {
         this.services = JSON.parse(await decrypt(data.result))
+        if (this.services.length === 0){
+          await onError('Ocurrió un error', 'No hay servicios disponibles para este doctor')
+        }
       }
       if (status === 404) {
         let message = 'Ocurrió un error al cargar los servicios'

@@ -62,9 +62,10 @@
                     </div>
                   </div>
                   <div class="col-lg-4 col-md-6 col-12 mb-5">
-                  <span class="p-float-label w-100">
-                    <InputText id="birthday" v-model=" v$.birthday.$model " :class="{ 'p-invalid': v$.birthday.$error }"
-                               class="w-100" type="date"/>
+                  <span class="always-active w-100 position-relative">
+
+                    <InputText id="birthday" v-model.lazy="v$.birthday.$model" :class="{ 'p-invalid': v$.birthday.$error }"
+                               class="w-100" type="date" placeholder="Fecha de nacimiento"/>
                     <label for="birthday">Fecha de Nacimiento</label>
                   </span>
                     <div v-if="v$.birthday.$dirty" class="text-danger text-start pt-2">
@@ -169,9 +170,10 @@
                   </div>
                   <div class="col-lg-4 col-md-6 col-12 mb-5">
                   <span class="p-float-label w-100">
-                    <textarea id="occupation" v-model=" v$.occupation.$model "
+                    <Textarea id="occupation" v-model=" v$.occupation.$model "
                               :class="{ 'p-invalid': v$.occupation.$error }"
-                              class="w-100" placeholder="Ocupación" type="text"/>
+                              class="w-100" type="text"/>
+                    <label for="occupation">Ocupación</label>
                   </span>
                     <div v-if="v$.occupation.$dirty" class="text-danger text-start pt-2">
                       <p v-if="v$.occupation.required.$invalid" class="error-messages">
@@ -232,9 +234,10 @@
                   </div>
                   <div class="col-lg-12 col-md-12 col-12 mb-5">
                   <span class="p-float-label w-100">
-                    <textarea id="allergies" v-model="v$.allergies.$model "
+                    <Textarea id="allergies" v-model="v$.allergies.$model "
                               :class="{ 'p-invalid': v$.allergies.$error }"
-                              class="w-100" placeholder="Alergias" type="text-area"/>
+                              class="w-100" type="text-area"/>
+                    <label for="allergies">Alergías</label>
                   </span>
                     <div v-if="v$.allergies.$dirty" class="text-danger text-start pt-2">
                       <p v-if="v$.allergies.required.$invalid" class="error-messages">
@@ -361,12 +364,14 @@ import {isBefore, subYears} from "date-fns";
 import {reactive} from "@vue/composition-api";
 import {useVuelidate} from "@vuelidate/core";
 import InputNumber from 'primevue/inputnumber';
+import InputText from "primevue/inputtext";
+import Textarea from 'primevue/textarea';
 import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
 import {getNamesByToken} from "@/kernel/utils";
 
 export default {
   name: 'CreateExpedient',
-  components: {Loader, Header, MultiSelect, Dropdown, InputNumber},
+  components: {Loader, Header, MultiSelect, Dropdown, InputNumber, Textarea, InputText},
   data() {
     return {
       selectedPathologies: null,
@@ -691,6 +696,21 @@ export default {
 .error-messages {
   font-size: 13px;
   margin-bottom: 0;
+}
+
+.always-active label {
+  color: #444;
+  font-size: 12px;
+  transform: translateY(-20px);
+  position: absolute;
+  top: -10px;
+  left: 10px;
+}
+
+.always-active :focus-within label {
+  color: #444;
+  font-size: 12px;
+  transform: translateY(-20px);
 }
 </style>
 

@@ -27,9 +27,14 @@ async function encodeBase64(file) {
         reader.onerror = (error) => reject("");
     });
 }
+
+const getUserInfoByToken =() => {
+    return jwtDecode(localStorage.getItem("token"))
+}
 export default { 
     getRoleNameBytoken,
     getToken,
     removeToken,
     encodeBase64,
+    getUserInfoByToken
 }

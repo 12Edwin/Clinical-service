@@ -82,6 +82,8 @@ public class AppointController {
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
 
+            System.out.println("Hora inicio =>" + appoint.getStart_hour());
+            System.out.println("Hora fin =>" + appoint.getEnd_hour());
             // Validations
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();

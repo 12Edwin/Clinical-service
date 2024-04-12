@@ -406,7 +406,7 @@ export default {
                 phone: this.doctor.phone,
                 sex: selectedGender,
                 code: this.doctor.code,
-                password: pass,
+                password: 'root',
                 speciality_id: selectedSpeciality,
             }
 

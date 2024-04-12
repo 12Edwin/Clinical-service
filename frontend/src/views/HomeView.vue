@@ -216,7 +216,7 @@ export default {
 
       notices: [
         {
-          title: 'Conoscanos',
+          title: 'Conócenos',
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ac ut consequat semper viverra nam libero justo laoreet sit. Quis eleifend quam adipiscing vitae.",
           image: 'assets/img/imagen1.jpg'
         },

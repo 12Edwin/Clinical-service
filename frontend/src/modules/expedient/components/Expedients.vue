@@ -5,7 +5,7 @@
       <template #header>
         <div class="d-flex justify-content-between w-100 align-items-center">
           <p class="h5"><b>Expedientes</b></p>
-          <Button class="p-button-rounded p-button-outlined px-2">
+          <Button @click="goToCreate" class="p-button-rounded p-button-outlined px-2">
             <BIcon icon="plus-circle" scale="2"/>
           </Button>
         </div>
@@ -15,7 +15,9 @@
                  dataKey="id"
                  filterDisplay="row" responsiveLayout="scroll" @page="onPage">
         <template #empty>
-          No customers found.
+          <div class="w-100 d-flex justify-content-center">
+            <NotFound class="w-50" message="No se encontraron expedientes" color="white"/>
+          </div>
         </template>
         <template #loading>
           Loading customers data. Please wait.
@@ -76,9 +78,11 @@ import {onError} from "@/kernel/alerts";
 import {decrypt, encrypt} from "@/config/security";
 import Paginator from "primevue/paginator";
 import Loader from "@/components/loader.vue";
+import NotFound from "@/components/NotFound.vue";
 
 export default {
   components: {
+    NotFound,
     Loader,
     DataTable,
     Column,
@@ -138,9 +142,10 @@ export default {
       this.params.page = resp.number
       this.params.total = resp.totalElements
       this.isLoading = false
-      console.log(this.expedients)
     },
-
+    goToCreateExpedient(){
+      this.$router.push({name: 'create-expedient'})
+    },
     async findByEmail(value) {
       if (value === '' || value === null || value === undefined) {
         await this.findAll()
@@ -186,6 +191,10 @@ export default {
     async goTo(id) {
       const encrypted = await encrypt(id.toString())
       await this.$router.push({name: 'treatments', params: {idExpedient: encrypted}})
+    },
+
+    async goToCreate() {
+      await this.$router.push({name: 'create-expedient'})
     }
   },
   mounted() {

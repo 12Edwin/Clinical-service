@@ -36,7 +36,7 @@ const routes = [
     {
         name: "unautorized",
         path: "/unautorized",
-        component: () => import("@/views/Unautorized.vue"),
+        component: () => import("@/components/Unautorized.vue"),
     }
 ]
 

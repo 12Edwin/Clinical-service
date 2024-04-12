@@ -2,12 +2,14 @@
   <div class="right">
     <div class="d-flex w-100 justify-content-between">
       <h2 style="color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 24px;">Tratamientos</h2>
-      <BButton variant="success" pill class="mb-4 mt-0 w-auto px-4" @click="openRegister"><BIcon icon="plus-circle" class="me-2"/> <label> Crear tratamiento </label></BButton>
+      <BButton :disabled="unauthorized" variant="success" pill class="mb-4 mt-0 w-auto px-4" @click="openRegister"><BIcon icon="plus-circle" class="me-2"/> <label> Crear tratamiento </label></BButton>
     </div>
     <transition-group name="fade" type="transition">
       <loader v-if="isLoading" key="load"/>
       <div key="content" v-else>
         <Accordion>
+          <Unautorized message="No tienes permisos para ver estos tratamientos" v-if="unauthorized"/>
+          <NotFound message="No se encontraron tratamientos" v-if="treatments.length === 0 && !unauthorized"/>
           <AccordionTab v-for="treatment in treatments" class="mb-4">
             <template v-slot:header>
               <div class="d-flex justify-content-between w-100">
@@ -47,14 +49,13 @@
                     <input type="text" id="support_home" class="form-control" v-model="treatment.support_home" readonly>
                   </div>
                   <div class="col-sm-6 mb-2 d-flex align-items-end">
-                    <button class="w-100 btn btn-success rounded justify-content-center">Crear Cita</button>
+                    <button class="w-100 btn btn-success rounded justify-content-center" @click="toCreateAppoint(treatment.id)" >Crear Cita</button>
                   </div>
                   <div class="col">
                     <label for="appoints"> <b> Citas Terminadas: </b>
                       <span class=""> {{ calcTotalCompletedAppoints }} citas completadas / {{ calcTotalAppoints }} totales </span>
                     </label>
-                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0"
-                                 :aria-valuemax="100"/>
+                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0" :aria-valuemax="100"/>
                   </div>
                 </div>
               </div>
@@ -68,21 +69,25 @@
 </template>
 
 <script>
-import {decrypt} from "@/config/security";
+import {decrypt, encrypt} from "@/config/security";
 import {getTreatments} from "@/modules/treatment/services/teatment-service";
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ProgressBar from 'primevue/progressbar';
 import Loader from "@/components/loader.vue";
 import ModalTreatment from "@/modules/treatment/views/ModalTreatment.vue";
+import {onError} from "@/kernel/alerts";
+import Unautorized from "@/components/Unautorized.vue";
+import NotFound from "@/components/NotFound.vue";
 
 export default {
-  components: {ModalTreatment, Loader, Accordion, AccordionTab, ProgressBar},
+  components: {NotFound, Unautorized, ModalTreatment, Loader, Accordion, AccordionTab, ProgressBar},
 
   data() {
     return {
       treatments: [],
       isLoading: true,
+      unauthorized: false,
       selected: 0,
       visible: false,
       titleModal: 'Registrar tratamiento',
@@ -105,14 +110,24 @@ export default {
           this.$router.replace({name: '404'})
         }
         const {status, data} = await getTreatments(id)
-        if (status === 404) {
-          this.$router.replace({name: '404'})
+        if (status !== 200 && status !== 401 && status !== 500) {
+          let message = 'Ocurrió un error al obtener los tratamientos'
+          switch (data.text) {
+            case 'Expedient not found':
+              message = 'No se encontró el expediente'
+              break;
+            case 'Unauthorized user':
+              message = 'No tienes permisos para ver los tratamientos'
+              this.unauthorized = true
+              break;
+          }
+          await onError('Ha ocurrido un error', message)
         }
         if (status === 200) {
           this.treatments = JSON.parse(await decrypt(data.result))
         }
       } catch (e) {
-        this.$router.replace({name: '404'})
+        await this.$router.replace({name: '404'})
       }
       this.isLoading = false
     },
