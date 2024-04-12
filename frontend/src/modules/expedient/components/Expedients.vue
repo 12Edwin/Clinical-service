@@ -142,9 +142,10 @@ export default {
       this.params.page = resp.number
       this.params.total = resp.totalElements
       this.isLoading = false
-      console.log(this.expedients)
     },
-
+    goToCreateExpedient(){
+      this.$router.push({name: 'create-expedient'})
+    },
     async findByEmail(value) {
       if (value === '' || value === null || value === undefined) {
         await this.findAll()

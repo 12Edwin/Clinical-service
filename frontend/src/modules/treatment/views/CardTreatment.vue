@@ -49,14 +49,13 @@
                     <input type="text" id="support_home" class="form-control" v-model="treatment.support_home" readonly>
                   </div>
                   <div class="col-sm-6 mb-2 d-flex align-items-end">
-                    <button class="w-100 btn btn-success rounded justify-content-center">Crear Cita</button>
+                    <button class="w-100 btn btn-success rounded justify-content-center" @click="toCreateAppoint(treatment.id)" >Crear Cita</button>
                   </div>
                   <div class="col">
                     <label for="appoints"> <b> Citas Terminadas: </b>
                       <span class=""> {{ calcTotalCompletedAppoints }} citas completadas / {{ calcTotalAppoints }} totales </span>
                     </label>
-                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0"
-                                 :aria-valuemax="100"/>
+                    <ProgressBar style="border-radius: 15px" :value="calcProgress" :aria-valuemin="0" :aria-valuemax="100"/>
                   </div>
                 </div>
               </div>
@@ -70,7 +69,7 @@
 </template>
 
 <script>
-import {decrypt} from "@/config/security";
+import {decrypt, encrypt} from "@/config/security";
 import {getTreatments} from "@/modules/treatment/services/teatment-service";
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';

@@ -28,7 +28,7 @@ export default [
                 }
             },
             {
-                path: "new-appoint",
+                path: "new-appoint/:idTreatment",
                 name: "NewAppoint",
                 component: () => import("@/modules/appointment/views/NewAppoint.vue"),
                 meta: {
