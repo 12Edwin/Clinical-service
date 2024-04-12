@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.speciality.model.DtoSpeciality;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
@@ -61,6 +62,7 @@ public class SpecialityController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_speciality) throws IllegalArgumentException {
         try {
@@ -84,6 +86,7 @@ public class SpecialityController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestBody String str_speciality) throws IllegalArgumentException {
         try {
@@ -105,6 +108,7 @@ public class SpecialityController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @DeleteMapping("/{str_id}")
     ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {

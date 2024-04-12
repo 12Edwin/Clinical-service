@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import utez.edu.mx.backend.access.privilege.model.PrivilegeNames;
 import utez.edu.mx.backend.security.jwt.JwtEntryPoint;
 import utez.edu.mx.backend.security.jwt.JwtTokenFilter;
 import utez.edu.mx.backend.security.service.MyUserDetailsService;
@@ -71,7 +72,22 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeHttpRequests(req ->{
-            req.antMatchers("/api/expedient").authenticated();
+            req.antMatchers("/api/auth/**").permitAll();
+            req.antMatchers("/api/ratting/**").permitAll();
+            req.antMatchers("/api/captcha/**").permitAll();
+            req.antMatchers("/api/sms/**").permitAll();
+            req.antMatchers("/api/user/profile/").authenticated();
+            req.antMatchers("/api/user/upload/").authenticated();
+            req.antMatchers("/api/user/**").permitAll();
+            req.antMatchers("/api/pathology/**").authenticated();
+            req.antMatchers("/api/service/**").permitAll();
+            req.antMatchers("/api/space/**").permitAll();
+            req.antMatchers("/api/speciality/**").permitAll();
+            req.antMatchers("/api/appointment/**").authenticated();
+            req.antMatchers("/api/doctor/**").permitAll();
+            req.antMatchers("/api/expedient/**").authenticated();
+            req.antMatchers("/api/ratting/**").permitAll();
+            req.antMatchers("/api/treatment/**").authenticated();
             req.antMatchers(AUTH_WHITELIST).permitAll();
             req.anyRequest().permitAll();
         });
