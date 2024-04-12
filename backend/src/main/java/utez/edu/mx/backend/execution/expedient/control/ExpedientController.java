@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
 import utez.edu.mx.backend.base_catalog.pathology.control.PathologicalService;
@@ -43,8 +44,9 @@ public class ExpedientController {
     private final CustomRestExceptionHandler<DtoPathological_record> exceptionHandler_pathology;
     private final CustomRestExceptionHandler<DtoDisease> exceptionHandler_disease;
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (@RequestHeader("Authorization") String str_token, Pageable pageable) {
+    ResponseEntity<?> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -56,6 +58,7 @@ public class ExpedientController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/{str_id}")
     ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
@@ -70,6 +73,7 @@ public class ExpedientController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByFolio/")
     ResponseEntity<?> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
@@ -93,6 +97,7 @@ public class ExpedientController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByEmail/")
     ResponseEntity<?> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
@@ -116,6 +121,7 @@ public class ExpedientController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
@@ -151,6 +157,7 @@ public class ExpedientController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {

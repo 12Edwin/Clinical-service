@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.execution.treatment.model.DtoTreatment;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
@@ -36,6 +37,7 @@ public class TreatmentController {
     private final JwtProvider provider;
     private final CustomRestExceptionHandler<DtoTreatment> exceptionHandler;
 
+    @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/")
     ResponseEntity<?> findAll ( @RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
@@ -49,6 +51,7 @@ public class TreatmentController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/{str_id}")
     ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
@@ -63,6 +66,7 @@ public class TreatmentController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/findByExp/{str_id}")
     ResponseEntity<?> findByExpedient (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
@@ -77,6 +81,7 @@ public class TreatmentController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
         try {
@@ -100,6 +105,7 @@ public class TreatmentController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
         try {

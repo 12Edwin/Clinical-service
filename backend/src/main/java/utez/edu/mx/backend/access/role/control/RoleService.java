@@ -33,4 +33,9 @@ public class RoleService {
     public Role saveInitial(Role role) {
         return repository.saveAndFlush(role);
     }
+    @Transactional
+    public Role updatePrivileges(Role role, String privileges) {
+        role.setPrivileges(privileges);
+        return repository.saveAndFlush(role);
+    }
 }

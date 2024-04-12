@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.execution.appoint.model.DtoAppoint;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
@@ -37,6 +38,7 @@ public class AppointController {
     private final JwtProvider provider;
     private final CustomRestExceptionHandler<DtoAppoint> exceptionHandler;
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/findByDate/")
     ResponseEntity<?> findByDate (@RequestBody String str_appoint) throws IllegalArgumentException {
         try {
@@ -60,6 +62,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @GetMapping("/{str_id}")
     ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
@@ -74,6 +77,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
@@ -101,6 +105,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
@@ -126,6 +131,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/reschedule/")
     ResponseEntity<?> reschedule (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
@@ -151,6 +157,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/complete/")
     ResponseEntity<?> complete (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
@@ -176,6 +183,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/cancel/")
     ResponseEntity<?> cancel (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
@@ -201,6 +209,7 @@ public class AppointController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @GetMapping("/space/{str_id}")
     ResponseEntity<?> findBySpace (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
