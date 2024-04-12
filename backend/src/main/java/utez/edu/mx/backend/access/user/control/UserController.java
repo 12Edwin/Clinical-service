@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
+import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
 
 import javax.validation.ConstraintViolation;
@@ -32,6 +34,7 @@ public class UserController {
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;
+    private final JwtProvider provider;
     private final CustomRestExceptionHandler<DtoSession> exceptionHandler;
     @PostMapping("/recovery/")
     ResponseEntity<?> recovery (@RequestBody String str_session) throws IllegalArgumentException {
@@ -72,6 +75,24 @@ public class UserController {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/upload/")
+    public ResponseEntity<?> uploadProfilePicture(@RequestHeader("Authorization") String str_token, @RequestParam("profile") MultipartFile file) {
+        String token = str_token.replace("Bearer ", "");
+        Long idUser = provider.getUserId(token);
+        return service.uploadProfilePicture(idUser, file);
+    }
+
+    @GetMapping("/image/{str_id}")
+    public ResponseEntity<?> getImage(@PathVariable String str_id) {
+        try {
+            String decrypt = cryptService.decrypt(str_id);
+            Long id = Long.parseLong(decrypt);
+            return service.getProfilePicture(id);
+        } catch (UnsupportedEncodingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
         }
     }
 
