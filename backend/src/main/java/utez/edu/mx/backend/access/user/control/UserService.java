@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.backend.access.role.model.RoleRepository;
 import utez.edu.mx.backend.access.sms.control.SmsService;
 import utez.edu.mx.backend.access.user.model.DtoSession;
@@ -22,7 +26,11 @@ import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -181,6 +189,66 @@ public class UserService {
         updatedUser.setPassword(encoder.encode(dto.getPassword()));
         repository.saveAndFlush(updatedUser);
         return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> uploadProfilePicture(Long userId, MultipartFile file) {
+        Optional<User> userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        long maxSize = 2097152; // 2MB in bytes
+        if (file.getSize() > maxSize) {
+            return new ResponseEntity<>(new Message("File size exceeds the maximum limit", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        assert originalFilename != null;
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String newFileName = "user_" + userId + extension;
+
+        String folderPath = "resources/profiles/";
+        Path path = Paths.get(folderPath + newFileName);
+
+        try {
+            Files.deleteIfExists(Path.of(user.getImg()));
+            Files.write(path, file.getBytes());
+            user.setImg(path.toString());
+            repository.saveAndFlush(user);
+
+            return new ResponseEntity<>(new Message("Profile picture uploaded successfully", TypeResponse.SUCCESS), HttpStatus.OK);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(new Message("Error while uploading the profile picture", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> getProfilePicture(Long userId) {
+        Optional<User> userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+        String imagePath = user.getImg();
+        if (imagePath == null || imagePath.isEmpty()) {
+            return new ResponseEntity<>(new Message("Profile picture not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            Path path = Paths.get(imagePath);
+            Resource resource = new UrlResource(path.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                String contentType = Files.probeContentType(path);
+                return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+            } else {
+                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
