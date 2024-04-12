@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.backend.access.role.model.RoleRepository;
 import utez.edu.mx.backend.access.sms.control.SmsService;
 import utez.edu.mx.backend.access.user.model.DtoSession;
@@ -18,14 +22,20 @@ import utez.edu.mx.backend.access.user.model.UserDto;
 import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.PersonRepository;
+import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -42,6 +52,7 @@ public class UserService {
     @Autowired
     private final PersonRepository personRepository;
     private final PasswordEncoder encoder;
+    private final CryptService cryptService;
 
     @Transactional(readOnly = true)
     public boolean existsUsername (String username) {
@@ -103,6 +114,68 @@ public class UserService {
             return new ResponseEntity<>(new Message("User not updated", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new Message("Updated user", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+        Optional<User> userOptional = repository.findById(id);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        if (!id.equals(id_user)){
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.WARNING), HttpStatus.FORBIDDEN);
+        }
+        User user = userOptional.get();
+        user.setPassword("");
+        user.setExpiration(null);
+        user.setToken("");
+        user.setRole(null);
+        user.setImg("/user/image/" + cryptService.encrypt(user.getId().toString()));
+        return new ResponseEntity<>(new Message(user, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
+        Optional<User> userOptional = repository.findById(user.getId());
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        if (!Objects.equals(user.getId(), id_user)){
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.WARNING), HttpStatus.FORBIDDEN);
+        }
+        Optional<Person> optionalPerson = personRepository.findById(userOptional.get().getPerson().getId());
+        if (optionalPerson.isEmpty()){
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+
+        User updatedUser = userOptional.get();
+        updatedUser.setPassword(encoder.encode(user.getPassword()));
+        updatedUser.setAvailable(true);
+
+        Person person = optionalPerson.get();
+        person.setName(user.getPersonProfile().getName());
+        person.setSurname(user.getPersonProfile().getSurname());
+        person.setLastname(user.getPersonProfile().getLastname());
+        person.setSex(SexType.valueOf(user.getPersonProfile().getSex()));
+        person.setPhone(user.getPersonProfile().getPhone());
+        person.setBirthday(user.getPersonProfile().getBirthday());
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(person.getBirthday());
+        cal.set((cal.get(Calendar.YEAR) + 18), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+        if (cal.getTime().after(Calendar.getInstance().getTime())){
+            return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+
+        if (personRepository.existsByPhoneAndIdNot(person.getPhone(), userOptional.get().getPerson().getId())){
+            return new ResponseEntity<>(new Message("Phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+
+        personRepository.saveAndFlush(person);
+        repository.saveAndFlush(updatedUser);
+
+        return new ResponseEntity<>(new Message("User updated", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
@@ -181,6 +254,66 @@ public class UserService {
         updatedUser.setPassword(encoder.encode(dto.getPassword()));
         repository.saveAndFlush(updatedUser);
         return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> uploadProfilePicture(Long userId, MultipartFile file) {
+        Optional<User> userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        long maxSize = 2097152; // 2MB in bytes
+        if (file.getSize() > maxSize) {
+            return new ResponseEntity<>(new Message("File size exceeds the maximum limit", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        assert originalFilename != null;
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String newFileName = "user_" + userId + extension;
+
+        String folderPath = "resources/profiles/";
+        Path path = Paths.get(folderPath + newFileName);
+
+        try {
+            Files.deleteIfExists(Path.of(user.getImg()));
+            Files.write(path, file.getBytes());
+            user.setImg(path.toString());
+            repository.saveAndFlush(user);
+
+            return new ResponseEntity<>(new Message("Profile picture uploaded successfully", TypeResponse.SUCCESS), HttpStatus.OK);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(new Message("Error while uploading the profile picture", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> getProfilePicture(Long userId) {
+        Optional<User> userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+        String imagePath = user.getImg();
+        if (imagePath == null || imagePath.isEmpty()) {
+            return new ResponseEntity<>(new Message("Profile picture not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            Path path = Paths.get(imagePath);
+            Resource resource = new UrlResource(path.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                String contentType = Files.probeContentType(path);
+                return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+            } else {
+                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
