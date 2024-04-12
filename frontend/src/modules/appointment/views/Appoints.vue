@@ -21,25 +21,30 @@
                   </b-col>
                   <b-col cols="12">
                     <div class="flex align-items-center mt-3">
-                      <Chip v-for="(badge, index) in badges" :label="badge.status" :icon="badge.icon" class="mr-2"
+                      <Chip style="margin-right: 9px;" v-for="(badge, index) in badges" :label="badge.status" :icon="badge.icon" class="mr-2"
                         :style="{'background-color': setDotBackgrund(badge.status), 'color': 'white'}" :key="index"/>
                     </div>
                   </b-col>
                   <b-col class="mt-3" cols="12">
                     <FullCalendar :options="calendarOptions" id="myCustomCalendar">
                       <template v-slot:eventContent='{ event }'>
-                        <b-row>
+                        <div @dblclick="openAppointDetail(event.extendedProps.appointment)">
+                          <b-row>
                           <b-col cols="12" lg="12" md="4" sm="3">
                             <div class="my-custom-event">
                               <span class="my-event-dot"
                                 :style="{'background-color': setDotBackgrund(event.extendedProps.appointment.status)}"></span>
-                              <div class="my-event-info text-center">
+                              <div class="my-event-info">
                                 <span class="my-event-title"><b>{{ event.title }}</b></span>
-                                <span class="my-event-time">{{ formatCalendarDate(event._instance.range.start) }} - {{formatCalendarDate(event._instance.range.end) }}</span>
+                                <span class="my-event-time">{{ formatCalendarDate(event.start) }} - {{formatCalendarDate(event.end) }}</span>
                               </div>
+                              <div>
+                                <!-- <i @click="toggle" aria-controls="overlay_menu" class="pi pi-ellipsis-v"></i> -->
+                            </div>
                             </div>
                           </b-col>
                         </b-row>
+                        </div>
                       </template>
                     </FullCalendar>
                   </b-col>
@@ -49,6 +54,7 @@
           </b-row>
         </panel>
         <ModalDetailAppoint :visible.sync="displayModal" :appoint="appoint"/>
+        <Toast/>
       </b-col>
     </b-row>
   </div>
@@ -67,13 +73,19 @@ import Toast from 'primevue/toast';
 import Chip from 'primevue/chip';
 import ModalDetailAppoint from './ModalDetailAppoint.vue';
 import moment from 'moment'
+import Delete from '../components/Delete.vue';
+import { format12Time } from '@/utils/regex';
+import Menu from 'primevue/menu';
+
 export default {
   components:{
     Dropdown,
     FullCalendar,
     Toast,
     Chip,
-    ModalDetailAppoint
+    ModalDetailAppoint,
+    Delete,
+    Menu,
   },
   data(){
     return {
@@ -83,9 +95,6 @@ export default {
         locale: esLocale,
         events: this.appoints,
         weekends: false,
-        eventClick: (info) => {
-          this.openAppointDetail(info.event.extendedProps)
-        },
         dayMaxEventRows: 2,
         eventLimitText: "Ver más",
         headerToolbar: {
@@ -121,10 +130,44 @@ export default {
         }
       ],
       displayModal: false,
-      appoint: null
+      appoint: null,
+      onDrag: false,
+      items: [
+				{
+					label: 'Update',
+					icon: 'pi pi-refresh',
+					command: () => {
+						this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
+					}
+				},
+				{
+					label: 'Delete',
+					icon: 'pi pi-times',
+					command: () => {
+						this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
+					}
+				},
+				{
+					label: 'Vue Website',
+					icon: 'pi pi-external-link',
+					command: () => {
+						window.location.href = 'https://vuejs.org/'
+					}
+				},
+				{
+					label: 'Upload',
+					icon: 'pi pi-upload',
+					command: () => {
+						window.location.hash = "/fileupload"
+					}
+				}
+			]
     }
   },
   methods: {
+    right(){
+      console.log('Right click')
+    },
     async onSpaceSelected(){
             if(this.selectedSpace != null){
                 try {
@@ -165,9 +208,11 @@ export default {
             }
     },
     formatCalendarDate(pop){
-      const format = new Date(pop)
-      return moment(format).format('HH:mm')
+      return moment(pop).format(format12Time)
     },
+    toggle(event) {
+            this.$refs.menu.toggle(event);
+        },
     setDotBackgrund(status){
             let color = '';
             switch (status) {
@@ -190,7 +235,6 @@ export default {
             return color
     },
     openAppointDetail(appoint){
-      console.log('Open appoint detail', appoint)
       this.displayModal = true
       this.appoint = JSON.stringify(appoint)
     },

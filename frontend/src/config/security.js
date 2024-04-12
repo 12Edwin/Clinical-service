@@ -36,9 +36,6 @@ const getKey = async () => {
     }
 }
 
-// Esta función realiza la operación de descifrado de un texto cifrado en formato base64
-// utilizando el algoritmo AES-CBC y una clave generada mediante la función getKey().
-// Devuelve el texto descifrado.
 export async function decrypt(ciphertext) {
   const decoder = new TextDecoder();
   const keyMaterial = await getKey();

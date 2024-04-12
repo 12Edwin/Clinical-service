@@ -1,8 +1,7 @@
 import router from "@/router";
 import axios from "axios";
 import {onError} from "@/kernel/alerts";
-
-const SERVER_URL = "http://localhost:8080/api" //ip de la magen de docker
+const SERVER_URL = "http://localhost:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000

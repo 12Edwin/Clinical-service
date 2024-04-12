@@ -1,12 +1,13 @@
 <template>
   <div class="sidebar" :class="{ 'side-close': closeSide }">
+
     <div class="w-100 d-flex justify-content-end mb-3 pe-3">
       <Button style="background-color: transparent; color: white;" @click="toggleSidebar()"
         class="p-button-rounded px-2 p-button-white p-button-outlined"> <b-icon :class="{ 'toggle-arrow': closeSide }"
           class="arrow-side" icon="arrow-left-circle" scale="2" /> </Button>
     </div>
     <div class="dock-window dock-advanced" :class="[{ 'fade-dock': !closeSide }, { 'unFade-dock': closeSide }]">
-      <Dock :model="items" position="left" style="background: transparent;">
+      <Dock :model="filteredRoutes" position="left" style="background: transparent;">
         <template #item="slotProps">
           <a href="#" class="p-dock-action" @click="() => $router.push({ name: slotProps.item.route })">
             <Button class="p-button-rounded p-button-white p-button-outlined" style="color: white;" pill>
@@ -21,6 +22,12 @@
         <li class="item" v-for="(item, ind) in filteredRoutes" :key="ind"
           @click="() => $router.push({ name: item.route })">
           <BIcon :icon="item.icon" scale="1.15" /> <span class="ms-3">{{ item.label }}</span>
+        </li>
+        <li class="item" @click="() => $router.push({name : 'perfil'})">
+          <i class="pi pi-user"></i><span class="ms-3">Perfil</span>
+        </li>
+        <li class="item" @click="logout()">
+          <i class="pi pi-sign-out"></i><span class="ms-3">Cerrar sesión</span>
         </li>
       </ul>
     </div>
@@ -81,11 +88,20 @@ export default {
         },
       ],
       role: null,
+      userLogged: null
     }
   },
   methods: {
     toggleSidebar() {
       this.closeSide = !this.closeSide
+    },
+    async showUserInfo(){
+      const {name} = await utils.getUserInfoByToken()
+      this.userLogged = name
+    },
+    logout(){
+      utils.removeToken()
+      this.$router.push('/login')
     }
   },
   computed: {
@@ -95,6 +111,7 @@ export default {
   },
   mounted() {
     this.role = utils.getRoleNameBytoken().toLowerCase()
+    this.showUserInfo()
   }
 }
 </script>
@@ -183,6 +200,15 @@ div ul {
   cursor: pointer;
   box-shadow: 0 2px 20px 1px rgba(0, 0, 0, 0.2);
   color: #373b87
+}
+
+.user-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  color: white;
+  font-size: 20px;
 }
 </style>
 

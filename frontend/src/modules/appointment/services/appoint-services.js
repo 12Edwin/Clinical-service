@@ -24,7 +24,50 @@ const saveAppointment = async (appointment) => {
     }
 }
 
+
+const reschedule = async (appointment) => {
+    try {
+        const response = await api.doPost("/appoint/reschedule/", appointment, {
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+        })
+        return response
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const cancelAppoint = async (appointment) => {
+    try {
+        const response = await api.doPost("/appoint/cancel/", appointment, {
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+        })
+        return response
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const completeAppoint = async (appointment) => {
+    try {
+        const response = await api.doPost("/appoint/complete/", appointment, {
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+        })
+        return response
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 export default {
     getAppointmentsBySpace,
-    saveAppointment
+    saveAppointment,
+    reschedule,
+    cancelAppoint,
+    completeAppoint
 }

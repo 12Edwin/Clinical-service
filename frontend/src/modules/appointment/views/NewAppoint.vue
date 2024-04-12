@@ -15,10 +15,10 @@
                                 <transition-group name="fade" type="transition">
                                     <div key="main">
                                         <b-row>
-                                            <b-col cols="12" md="6" lg="6" sm="12">
+                                            <b-col cols="12" md="12" lg="5" sm="12">
                                                 <div class="p-fluid grid form-container mb-3">
                                                     <b-row>
-                                                        <b-col class="mt-3 mb-2" cols="12">
+                                                        <b-col class="mt-2 mb-2" cols="12">
                                                             <div class="field text-start">
                                                                 <label for="space-selector"
                                                                     class="form-label-required">Espacio:</label>
@@ -29,11 +29,11 @@
                                                             </div>
                                                         </b-col>
                                                     </b-row>
-                                                    <div v-if="dateSelected != null">
+                                                    <div>
                                                         <b-row>
                                                             <b-col cols="12" sm="12" class="d-flex justify-content-end mt-1">
-                                                                <div>
-                                                                    <p>Fecha: <small class="text-muted">{{ dateSelected }}</small></p>
+                                                                <div v-if="selectedSpace != null">
+                                                                    <p><small style="color: #b0acac">{{ showDate ? 'Fecha: '+ dateSelected : '¡Selecciona una fecha!'}}</small></p>
                                                                 </div>
                                                             </b-col>
                                                         </b-row>
@@ -42,10 +42,12 @@
                                                                 <div class="field text-start">
                                                                     <span class="p-float-label p-input-icon-right">
                                                                         <Calendar id="start-hour-field" :timeOnly="true"
-                                                                            hourFormat="24" showTime :manualInput="false"
+                                                                            hourFormat="12" showTime :manualInput="false"
                                                                             v-model="newAppoint.startHour"
                                                                             @input="datesAreFilled()"
-                                                                            :inputStyle="{ 'border-color': areSame || isBeforeEnd ? '#ff0000' : ''}" />
+                                                                            :inputStyle="{ 'border-color': areSame || isBeforeEnd || isBeforeCurrent ? '#ff0000' : ''}" 
+                                                                            :disabled="!showDate"
+                                                                        />
                                                                         <label for="start-hour-field"
                                                                             class="form-label-required">
                                                                             Hora inicio</label>
@@ -59,6 +61,10 @@
                                                                             La hora de inicio no puede ser mayor a la hora de
                                                                             fin
                                                                         </p>
+                                                                        <p class="error-messages" v-if="isBeforeCurrent">
+                                                                            La hora de inicio no puede ser menor a la hora
+                                                                            actual
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                             </b-col>
@@ -66,16 +72,19 @@
                                                                 <div class="field text-start ">
                                                                     <span class="p-float-label p-input-icon-right">
                                                                         <Calendar id="end-hour-field" :timeOnly="true" showTime
-                                                                            :manualInput="false" hourFormat="24"
+                                                                            :manualInput="false" hourFormat="12"
                                                                             v-model="newAppoint.endHour"
                                                                             @input="datesAreFilled()"
-                                                                            :inputStyle="{ 'border-color': areSame ? '#ff0000' : ''}" />
+                                                                            :inputStyle="{ 'border-color': areSame || isGraterThanFive ? '#ff0000' : ''}" :disabled="!showDate"/>
                                                                         <label for="end-hour-field"
                                                                             class="form-label-required">Hora fin</label>
                                                                     </span>
                                                                     <div class="text-danger text-danger text-start pt-2">
                                                                         <p class="error-messages" v-if="areSame">
                                                                             Las horas no pueden ser iguales
+                                                                        </p>
+                                                                        <p class="error-messages" v-if="isGraterThanFive">
+                                                                            La cita no puede durar más de 5 horas
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -84,7 +93,9 @@
                                                         <b-row class="mt-2 justify-content-end mt-3">
                                                             <b-col cols="12" lg="4" md="6" sm="6">
                                                                 <Button icon="pi pi-times" label="Cancelar"
-                                                                    class="p-button-rounded p-button-secondary" />
+                                                                    class="p-button-rounded p-button-secondary" 
+                                                                    @click="() => $router.push({name: 'clinical-history'})"
+                                                                />
                                                             </b-col>
                                                             <b-col cols="12" lg="4" md="6" sm="6">
                                                                 <Button icon="pi pi-save" label="Guardar"
@@ -95,7 +106,7 @@
                                                     </div>   
                                                 </div>
                                             </b-col>
-                                            <b-col cols="12" md="6" lg="6" sm="12">
+                                            <b-col cols="12" md="12" lg="7" sm="12">
                                                 <div style="position: relative;" class="p-1 w-100 h-100" v-if="selectedSpace != null">
                                                     <transition-group name="fade" type="transition">
                                                         <Loader v-if="isLoading" key="load"/>
@@ -108,7 +119,7 @@
                                                                                 <span class="my-event-dot" :style="{'background-color': setDotBackgrund(event.extendedProps.statusEvent)}"></span>
                                                                                 <div class="my-event-info text-center">
                                                                                     <span class="my-event-title"><b>{{ event.title }}</b></span>
-                                                                                    <span class="my-event-time">{{ formatCalendarDate(event._instance.range.start) }} - {{ formatCalendarDate(event._instance.range.end) }}</span>
+                                                                                    <span class="my-event-time">{{ formatCalendarDate(event.start) }} - {{ formatCalendarDate(event.end) }}</span>
                                                                                 </div>
                                                                             </div>
                                                                         </b-col>
@@ -155,6 +166,7 @@ import InputText from 'primevue/inputtext/InputText';
 import moment from 'moment'
 import Loader from "@/components/loader.vue";
 import Dialog from 'primevue/dialog';
+import { format12Time, formatDate, formatDate2, formatTime } from '@/utils/regex';
 export default {
     components: {
         FullCalendar,
@@ -168,7 +180,6 @@ export default {
         Dialog
     },
     name: 'NewAppoint',
-
     data(){
         return{ 
             calendarOptions: {
@@ -186,6 +197,8 @@ export default {
                 },
                 dayMaxEventRows: 2,
                 eventLimitText: "Ver más",
+                dateDidMount: (info) => {this.dateDidMount(info)},
+                validRange: this.validRange(),
                 views: {
                 dayGridMonth: {
                     titleFormat: { year: 'numeric', month: 'long' }
@@ -204,17 +217,31 @@ export default {
             areSame: false,
             isBeforeEnd: false,
             isFormValid: false,
+            isBeforeCurrent: false,
+            isGraterThanFive: false,
             isLoading: false,
-            onSave: false
+            onSave: false,
+            showDate: false
         }
     },
     methods: {
-        print(comming){
-            console.log(comming)
+        print(event){
+            console.log(event)
+        },
+        dateDidMount(info) {
+            if (info.date < new Date()) {
+                info.el.classList.add('fc-day-past');
+            }
+        },
+        validRange() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+            return {
+                start: today
+            };
         },
         formatCalendarDate(pop){
-            const format = new Date(pop)
-            return moment(format).format('HH:mm')
+            return moment(pop).format(format12Time)
         },
         datesAreFilled(){
             if(this.newAppoint.startHour !== '' && this.newAppoint.endHour !== ''){
@@ -243,14 +270,14 @@ export default {
             return color
         },
         async saveAppoint(){
-            if(this.newAppoint.startHour && this.newAppoint.startHour !== '' && this.newAppoint.endHour && this.newAppoint.endHour !== ''){
+            if(this.newAppoint.startHour && this.newAppoint.startHour !== '' && this.newAppoint.endHour && this.newAppoint.endHour !== '' && this.selectedSpace != null && this.dateSelected != null){
                 if(this.isFormValid){
                     const {startHour, endHour} = this.newAppoint
                     const start = this.formatHour(startHour)
                     const end = this.formatHour(endHour)
                     const appoint = {
-                        start_hour: moment(this.formatDate(start)).format('YYYY-MM-DDTHH:mm:ss'),
-                        end_hour: moment(this.formatDate(end)).format('YYYY-MM-DDTHH:mm:ss'), 
+                        start_hour: moment(this.formatDate(start)).format(formatDate),
+                        end_hour: moment(this.formatDate(end)).format(formatDate), 
                         treatment: await this.getTreatmentFromUrl(),
                         space: this.selectedSpace
                     }
@@ -267,10 +294,14 @@ export default {
                             this.areSame = false;
                             this.isBeforeEnd = false;
                             this.isFormValid = false;
+                            this.isBeforeCurrent = false;
+                            this.onSpaceSelected()
+                            this.dateSelected = null
                         }
                         this.onSave = false
+                        this.showDate = false
                     } catch (error) {
-                        console.log("Error: ", error)
+                        this.onSave = false
                     }
                 }else{
                     this.onSave = false
@@ -285,19 +316,35 @@ export default {
             return await decrypt(this.$route.params.idTreatment)
         },
         validateHours(start, end) {
-            const startTime = moment(this.formatHour(start), 'HH:mm')
-            const endTime = moment(this.formatHour(end), 'HH:mm')
+            const startTime = moment(this.formatHour(start), formatTime)
+            const endTime = moment(this.formatHour(end), formatTime)
+            const currentHour = moment()
+            const date = moment(this.dateSelected)
+
             this.areSame = false;
             this.isBeforeEnd = false;
-
-             if (startTime.isSame(endTime)) {
+            this.isBeforeCurrent = false;
+            this.isBeforeToday = false;
+            this.isGraterThanFive = false;
+            
+            if (date.isSame(currentHour.format(formatDate2))) {
+                if(currentHour.isAfter(startTime)){
+                    this.isBeforeCurrent = true;
+                }
+            }
+            if (startTime.isSame(endTime)) {
                 this.areSame = true;
             }
             if (startTime.isAfter(endTime)) {
                 this.isBeforeEnd = true;
             }
-
-            this.isFormValid = !this.areSame && !this.isBeforeEnd;
+            if( startTime.isBefore(moment())){
+                this.isBeforeToday = true;
+            }
+            if(endTime.diff(startTime, 'hours') > 5){
+                this.isGraterThanFive = true;
+            }
+            this.isFormValid = !this.areSame && !this.isBeforeEnd && !this.isBeforeCurrent && !this.isGraterThanFive;
         },
         formatHour(unfformatedHour){
             const format = new Date(unfformatedHour)
@@ -312,6 +359,16 @@ export default {
         },
         handleDateClick(arg) {
             this.dateSelected = arg.dateStr
+            this.showDate = true
+            this.newAppoint = {
+                startHour: '',
+                endHour: ''
+            }
+            this.areSame = false;
+            this.isBeforeEnd = false;
+            this.isFormValid = false;
+            this.isBeforeCurrent = false;
+            this.isGraterThanFive = false;
         },
         openModalSaveSpeciality() {
             this.displaySaveModal = true;
@@ -363,7 +420,7 @@ export default {
             }catch(error){
                 console.log("Error: ", error)
             }
-        }
+        },
     },
     mounted(){
         this.getAllSpaces()
@@ -398,8 +455,8 @@ export default {
 .alert-container{
     width: 100%; 
     height: 100%;
-    background: #FFF3CD;
-    color: #856404;
+    background: transparent;
+    color: #b0acac;
 }
 
 .invalid-field-custom{
@@ -449,5 +506,11 @@ export default {
 .my-event-time {
     font-size: 12px;
     color: #000;
+}
+
+.fc-day-past {
+  background-color: #f0f0f0 !important;
+  color: #ccc !important;
+  cursor: none !important;
 }
 </style>
