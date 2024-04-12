@@ -11,7 +11,7 @@
                 <div class="p-fluid grid">
                     <b-row class="mt-3">
                         <b-col>
-                            <div class="field text-start">
+                            <div class="field text-start" v-if="appointInfo.status !== 'Completada' && appointInfo.status !== 'Cancelada'">
                                 <span class="p-float-label">
                                     <Dropdown 
                                         id="options-selector" 
@@ -26,13 +26,13 @@
                             </div>
                         </b-col>
                     </b-row>
-                    <div v-if="optionSelected === 'Reagendar cita'">
+                    <div>
                         <b-row class="mt-3">
                         <b-col>
                             <div class="field mt-3">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-calendar" />
-                                    <InputText id="field-date" type="text" :value="getDate(appointInfo.startHour)"/>
+                                    <Calendar id="disableddays" v-model="appointInfo.date"  :disabledDays="[0,6]" :manualInput="false" />
                                     <label for="field-date">Fecha:</label>
                                 </span>
                             </div>
@@ -116,6 +116,9 @@ import Dropdown from 'primevue/dropdown';
 import InputText from "primevue/inputtext"
 import Chip from 'primevue/chip/Chip';
 import ConfirmPopup from 'primevue/confirmpopup';
+import appointServices from '../services/appoint-services';
+import { encrypt } from '@/config/security';
+import { onError,  onQuestion, onSuccess} from '@/kernel/alerts';
 export default {
     name: 'ModalDetailAppoint',
     components: {
@@ -151,7 +154,8 @@ export default {
                     name: '',
                 },
                 startHour: 0,
-                status: ''
+                status: '',
+                date: null
             },
             areSame: false,
             isBeforeEnd: false,
@@ -170,6 +174,13 @@ export default {
     },
     methods: {
         closeModal() {
+            this.areSame = false,
+            this.isBeforeEnd = false,
+            this.isFormValid = false,
+            this.isBeforeCurrent = false,
+            this.isGraterThanFive = false,
+            this.onSave = false,
+            this.formChanged = false
             this.$emit('update:visible', false);
         },
         formatHour(hour){
@@ -210,29 +221,33 @@ export default {
         getDate(date){
             return moment(date).format('DD/MM/YYYY')
         },
-        saveChanges(){
+        async saveChanges(){
             if(this.optionSelected){
-                switch (this.optionSelected) {
-                    case 'Reagendar cita':
-                        if(this.formChanged){
-                            if(this.isFormValid){
-                                //iniciar validaciones
+                try {
+                    switch (this.optionSelected) {
+                        case 'Reagendar cita':
+                            if(this.formChanged){
+                                if(this.isFormValid){
+                                    console.log('reagendar cita', JSON.stringify(this.appointInfo))
+                                }else{
+                                    this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Verifica los campos', life: 3000});
+                                }
                             }else{
-                                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Verifica los campos', life: 3000});
+                                this.$toast.add({severity:'info', summary: 'Vaya!', detail:'No se han realizado cambios', life: 3000});
                             }
-                        }else{
-                            this.$toast.add({severity:'info', summary: 'Vaya!', detail:'No se han realizado cambios', life: 3000});
-                        }
-                        break;
-                    case 'Cancelar cita':
-                        this.$toast.add({severity:'success', summary: '¡Éxito!', detail:'¡Cita cancelada!', life: 3000});
-                        break;
-                    case 'Completar cita':
-                        this.$toast.add({severity:'success', summary: '¡Éxito!', detail:'¡Cita completada!', life: 3000});
-                        break;
-                    default:
-                        this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Selecciona una opción válida', life: 3000});
-                        break;
+                            break;
+                        case 'Cancelar cita':
+                            this.canclAppoint()
+                            break;
+                        case 'Completar cita':
+                            this.compltAppoint()
+                            break;
+                        default:
+                            this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Selecciona una opción válida', life: 3000});
+                            break;
+                    }
+                } catch (error) {
+                    this.$toast.add({severity:'error', summary: '¡Error!', detail:'Ocurrió un error al procesar la solicitud', life: 3000});
                 }
             }else{
                 this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Debe seleccionar una opción', life: 3000});
@@ -276,6 +291,120 @@ export default {
                     break;
             }
             return color
+        },
+        async compltAppoint(){
+            if (await onQuestion('¿Estás seguro de completar la cita?')) {
+                const encrypted = await encrypt(JSON.stringify({id: this.appointInfo.id}))
+                const { status, data } = await appointServices.completeAppoint(encrypted)
+                if (status === 400) {
+                    let message = 'Ocurrion un error al completar la cita'
+                    switch (data.text) {
+                        case 'User not found':
+                            message = 'Usuario no encontrado'
+                            break;
+                        case 'Not found':
+                            message = 'Cita no encontrada'
+                            break;
+                        case 'Treatment not found':
+                            message = 'Tratamiento no encontrado'
+                            break;
+                        case 'Expedient not found':
+                            message = 'Expediente no encontrado'
+                            break;
+                        case 'Unauthorized user':
+                            message = 'Usuario no autorizado'
+                            break;
+                    }
+                    await onError('Ocurrió un error', message).then(() => this.closeModal())
+                }
+                if (status === 200) {
+                    await onSuccess('Cita completada', 'La cita ha sido completada con éxito')
+                        .then(() => this.closeModal())
+                }
+            }
+        },
+        async canclAppoint(){
+            if (await onQuestion('¿Estás seguro de cancelar la cita?')) {
+                const encrypted = await encrypt(JSON.stringify({id: this.appointInfo.id}))
+                const { status, data } = await appointServices.cancelAppoint(encrypted)
+                if (status === 400) {
+                    let message = 'Ocurrion un error al cancelar la cita'
+                    switch (data.text) {
+                        case 'User not found':
+                            message = 'Usuario no encontrado'
+                            break;
+                        case 'Not found':
+                            message = 'Cita no encontrada'
+                            break;
+                        case 'Treatment not found':
+                            message = 'Tratamiento no encontrado'
+                            break;
+                        case 'Expedient not found':
+                            message = 'Expediente no encontrado'
+                            break;
+                        case 'Unauthorized user':
+                            message = 'Usuario no autorizado'
+                            break;
+                    }
+                    await onError('Ocurrió un error', message).then(() => this.closeModal())
+                }
+                if (status === 200) {
+                    await onSuccess('Cita cancelada', 'La cita ha sido cancelada con éxito')
+                        .then(() => this.closeModal())
+                }
+            }
+        },
+        async rescheduleAppoint(){
+            if (await onQuestion('¿Estás seguro de reprogramar la cita?')) {
+                const {id, startHour, endHour} = this.appointInfo
+                const reschedule = {
+                    id,
+                    startHour,
+                    endHour
+                }
+                const encrypted = await encrypt(JSON.stringify(reschedule))
+                const { status, data } = await appointServices.reschedule(encrypted)
+                if (status === 400) {
+                    let message = 'Ocurrion un error al reprogramar la cita'
+                    switch (data.text) {
+                        case 'User not found':
+                            message = 'Usuario no encontrado'
+                            break;
+                        case 'Not found':
+                            message = 'Cita no encontrada'
+                            break;
+                        case 'Treatment not found':
+                            message = 'Tratamiento no encontrado'
+                            break;
+                        case 'Expedient not found':
+                            message = 'Expediente no encontrado'
+                            break;
+                        case 'Unauthorized user':
+                            message = 'Usuario no autorizado'
+                            break;
+                        case "Maximum 5 hours":
+                            message = 'La cita no puede durar más de 5 horas'
+                            break;
+                        case "Minimum 1 hour":
+                            message = 'La cita debe durar al menos 1 hora'
+                            break;
+                        case "Invalid schedule":
+                            message = 'Horario no válido'
+                            break;
+                        case "The space is busy in this schedule":
+                            message = 'El espacio está ocupado en este horario'
+                            break;
+                        case "Cannot be more than one month from now":
+                            message = 'La cita no puede programarse después de un mes'
+                            break;
+                    }
+                    await onError('Ocurrió un error al reprogramar', message).then(() => this.closeModal())
+                }
+                if (status === 200) {
+                    await onSuccess('Cita reprogramada', 'La cita ha sido reprogramada con éxito')
+                        .then(() => this.closeModal())
+                }
+            }
         }
     },
     watch:{
@@ -289,6 +418,7 @@ export default {
                 this.appointInfo.startHour = new Date(oldAppoint.startHour)
                 this.appointInfo.space.description = oldAppoint.space.description
                 this.appointInfo.status = oldAppoint.status
+                this.appointInfo.date = new Date(oldAppoint.startHour)
             },
             deep: true
         }
