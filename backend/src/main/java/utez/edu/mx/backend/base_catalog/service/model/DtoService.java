@@ -15,7 +15,7 @@ import javax.validation.constraints.*;
 @Setter
 public class DtoService {
 
-    @NotNull(groups = {Modify.class,  Delete.class})
+    @NotNull(groups = {Modify.class})
     private Long id;
 
     @NotBlank(groups = { Register.class,  Modify.class})

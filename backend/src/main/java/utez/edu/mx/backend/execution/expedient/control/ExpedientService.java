@@ -198,10 +198,10 @@ public class ExpedientService {
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-        if (personRepository.existsByPhoneAndPhoneNot(expedient.getPhone(), optionalExpedient.get().getPatient().getPerson().getPhone())){
+        if (personRepository.existsByPhoneAndIdNot(expedient.getPhone(), optionalExpedient.get().getPatient().getPerson().getId())){
             return new ResponseEntity<>(new Message("phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-        if (patientRepository.existsByEmailAndEmailNot(expedient.getEmail(), optionalExpedient.get().getPatient().getEmail())){
+        if (patientRepository.existsByEmailAndIdNot(expedient.getEmail(), optionalExpedient.get().getPatient().getId())){
             return new ResponseEntity<>(new Message("email already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Physical_record record = recordRepository.saveAndFlush(new Physical_record(expedient.getPhysic_id(), expedient.getWeight(), expedient.getHeight(), TypeGender.valueOf(expedient.getGender()), expedient.getAllergies()));
