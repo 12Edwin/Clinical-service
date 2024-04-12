@@ -28,7 +28,7 @@
                                     <div class="d-flex justify-content-center align-items-center">
                                         {{ space.name }}
                                     </div>
-                                    <p style="font-weight: normal; color: black; padding-top: 10px;">
+                                    <p style="font-weight: normal; color: black; padding-top: 40px;">
                                         {{ space.description }}
                                     </p>
                                 </template>

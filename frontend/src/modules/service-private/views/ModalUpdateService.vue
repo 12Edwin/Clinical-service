@@ -76,9 +76,6 @@
                                         <p class="error-messages" v-if="v$.price.$dirty && v$.price.precio.$invalid">
                                             {{ v$.price.precio.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.maxLength.$invalid">
-                                            {{ v$.price.maxLength.$message }}
-                                        </p>
                                     </div>
                                 </span>
                             </div>
@@ -114,7 +111,7 @@
 import { reactive } from "@vue/composition-api";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, maxLength, minLength } from "@vuelidate/validators";
-import { newregex } from "@/utils/regex";
+import { newregex, text, words } from "@/utils/regex";
 import Toast from "primevue/toast";
 import { encrypt, decrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
@@ -159,7 +156,7 @@ export default {
                 ),
                 onlyLettersAndAccents: helpers.withMessage(
                     "Caracteres no válidos",
-                    (value) => newregex.test(value)
+                    (value) => words.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "El nombre debe tener al menos 3 caracteres",
@@ -176,15 +173,15 @@ export default {
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
-                    newregex.test(value)
+                    text.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "La descripción debe tener al menos 3 caracteres",
                     minLength(3)
                 ),
                 maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 100 caracteres",
-                    maxLength(100)
+                    "La descripción debe tener menos de 140 caracteres",
+                    maxLength(140)
                 ),
             },
             price: {
@@ -196,10 +193,6 @@ export default {
                     newregex.test(value)
                 ),
                 precio: helpers.withMessage("EL precio debe ser mayor a 0", (value) => +value > 0),
-                maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 60 caracteres",
-                    maxLength(60)
-                ),
             },
         };
         const v$ = useVuelidate(rules, newService);

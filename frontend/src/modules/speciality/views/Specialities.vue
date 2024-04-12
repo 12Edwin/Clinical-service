@@ -24,42 +24,44 @@
                         <b-col cols="12" md="6" lg="3" v-for="(speciality, index) in specialities" :key="index"
                             class="d-flex justify-content-center align-items-center">
                             <Card class="mb-1 mt-2 card-custom">
-                                <template #header>
-                                    <img style="border-radius: 10px 10px; width: 100%; height: 120px!important;"
-                                        src="https://picsum.photos/600/300/?image=25"
-                                        :alt="`medical-service-${speciality.name}`">
-                                </template>
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
                                         {{ speciality.name }}
                                     </div>
+                                    <p style="font-weight: normal; color: black; padding-top: 40px;">
+                                        {{ limitDescription(speciality.description) }}
+                                    </p>
                                 </template>
                                 <template #footer>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
                                         @click="openModal(speciality)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
-                                        style="margin-left: .5em" v-tooltip.top="'Detalle'" @click="openModalDetail(speciality)"/>
-                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality(speciality.id)" />
+                                        style="margin-left: .5em" v-tooltip.top="'Detalle'"
+                                        @click="openModalDetail(speciality)" />
+                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'"
+                                        class="p-button-rounded p-button-secondary" style="margin-left: .5em"
+                                        @click="deleteSpeciality(speciality.id)" />
                                 </template>
                             </Card>
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col cols="1" :style="{marginTop: '20px'}">
-                            <small >Registros: </small> {{ totalRecords }}
+                        <b-col cols="1" :style="{ marginTop: '20px' }">
+                            <small>Registros: </small> {{ totalRecords }}
                         </b-col>
                         <b-col>
-                             <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
+                            <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
+                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }"
+                                @page="pagination($event)" />
                         </b-col>
                     </b-row>
                 </panel>
-                <Toast/>
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
         <ModalUpdateSpecialityVue :visible.sync="displayModal" :speciality="speciality" />
         <ModalSaveSpeciality :visible.sync="displaySaveModal" />
-        <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
+        <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality" />
     </div>
 </template>
 <script>
@@ -69,7 +71,7 @@ import ModalUpdateSpecialityVue from './ModalUpdateSpeciality.vue';
 import ModalSaveSpeciality from './ModalSaveSpeciality.vue';
 import Paginator from 'primevue/paginator';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
-import {decrypt, encrypt} from "@/config/security"
+import { decrypt, encrypt } from "@/config/security"
 import Toast from 'primevue/toast';
 import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
 export default {
@@ -81,8 +83,8 @@ export default {
         Paginator,
         Toast,
         ModalDetailSpeciality
-    },	
-    data(){
+    },
+    data() {
         return {
             specialities: [],
             displayModal: false,
@@ -99,7 +101,7 @@ export default {
             totalRecords: 0
         }
     },
-    methods:{
+    methods: {
         deleteSpeciality(especialityId) {
             this.$confirm.require({
                 message: '¿Está seguro de eliminar esta especialidad?',
@@ -109,15 +111,15 @@ export default {
                 acceptClass: 'p-button-danger',
                 accept: async () => {
                     try {
-                        const encodedId  = await encrypt(especialityId)
-                        const {status} = await specialitiesServices.deleteSpeciality(encodedId)
-                        if(status === 200 || status === 201){
+                        const encodedId = await encrypt(especialityId)
+                        const { status } = await specialitiesServices.deleteSpeciality(encodedId)
+                        if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({severity:'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000});
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000 });
                         }
-                    } catch (error) {}
+                    } catch (error) { }
                 },
-                reject: () => {}
+                reject: () => { }
             });
         },
         openModal(speciality) {
@@ -131,45 +133,53 @@ export default {
         openModalSaveSpeciality() {
             this.displaySaveModal = true;
         },
-        async pagination(event){ 
-           if(event != undefined){
-            const {page, rows} = event;
+        async pagination(event) {
+            if (event != undefined) {
+                const { page, rows } = event;
                 this.pageable.page = page;
                 this.pageable.size = rows;
-           }
-           try {
-            const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)  
-            if(status === 200 || status === 201){
-                const decripted = await decrypt(result)
-                const {content, totalElements} = JSON.parse(decripted)
-                this.totalRecords = totalElements
-                this.specialities = content
             }
-           } catch (error) {}
-           
+            try {
+                const { status, data: { result } } = await specialitiesServices.getSpecialities(this.pageable)
+                if (status === 200 || status === 201) {
+                    const decripted = await decrypt(result)
+                    const { content, totalElements } = JSON.parse(decripted)
+                    this.totalRecords = totalElements
+                    this.specialities = content
+                }
+            } catch (error) { }
+
         },
+        limitDescription(description) {
+            const words = description.split(' ');
+            if (words.length === 10 && words.length < 10) {
+                return description;
+            } else {
+                const limitedWords = words.slice(0, 10);
+                return limitedWords.join(' ') + '...';
+            }
+        }
     },
-    mounted(){
+    mounted() {
         this.pagination()
     }
 }
 </script>
 
 <style scoped>
-
-.p-inputtext{
+.p-inputtext {
     width: 550px;
     border-radius: 5px;
 }
 
 @media (max-width: 768px) {
-    .p-inputtext{
+    .p-inputtext {
         width: 100%;
     }
-    
+
 }
 
-.p-card{
+.p-card {
     width: 100%;
     height: 300px !important;
     border-radius: 10px;
@@ -179,11 +189,11 @@ export default {
     transition: all 0.3s;
 }
 
-.card-custom:hover{
+.card-custom:hover {
     transform: scale(1.05);
 }
 
-.label{
+.label {
     text-align: justify;
     font-size: 14px;
     font-family: 'Roboto', sans-serif;
@@ -191,11 +201,12 @@ export default {
     color: #000;
 }
 
-.button-style{
+.button-style {
     background: #2a715a;
     border: none;
 }
-.button-style:hover{
+
+.button-style:hover {
     background-color: #368368 !important;
 }
 

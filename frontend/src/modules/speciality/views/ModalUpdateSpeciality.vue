@@ -75,7 +75,7 @@ import Textarea from "primevue/textarea"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
-import { newregex } from "@/utils/regex"
+import { newregex, text, words } from "@/utils/regex"
 import Toast from 'primevue/toast';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
 import { encrypt } from '@/config/security';
@@ -98,13 +98,13 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => words.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 60 caracteres", maxLength(60))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos",(value) => text.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres",minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 60 caracteres", maxLength(60))
             }

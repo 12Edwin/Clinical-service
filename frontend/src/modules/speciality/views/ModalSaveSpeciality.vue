@@ -73,7 +73,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex } from "@/utils/regex"
+import { newregex, text, words } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
@@ -103,15 +103,15 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => words.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
-                maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
+                maxLength: helpers.withMessage("El nombre debe tener menos de 60 caracteres", maxLength(60))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos",(value) => text.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres",minLength(3)),
-                maxLength: helpers.withMessage("La descripción debe tener menos de 50 caracteres", maxLength(60))
+                maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             }
         }
         const v$ = useVuelidate(rules, speciality )
@@ -137,11 +137,9 @@ export default {
                     if(status === 200 || status === 201){
                         this.closeModal()
                         this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
-                    }else{
-                        console.log("error en la peticion" )
                     }
                 } catch (error) {
-                    console.log("error en la peticion",error)
+                    return error
                 }
             }else{
                 this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos', life: 3000});

@@ -107,7 +107,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex } from "@/utils/regex"
+import { newregex, text, words } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
@@ -140,13 +140,13 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre para el servicio", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => words.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
             },
             description: {
                 required: helpers.withMessage("Debes agregar una descripción para el servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos", (value) => text.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },

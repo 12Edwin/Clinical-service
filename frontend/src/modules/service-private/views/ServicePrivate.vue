@@ -26,13 +26,12 @@
                             <Card class="mb-1 mt-2 custom-card">
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
-                                        {{ service.name }}
+                                        {{ limitTittle(service.name) }}
                                     </div>
-                                    <p style="font-weight: normal; color: black; padding-top: 10px;">
+                                    <p style="font-weight: normal; color: black; padding-top: 20px;">
                                         {{ limitDescription(service.description) }}
                                     </p>
-                                    <p style="font-weight: normal; color: black; ">${{ service.price
-                                        }}</p>
+                                    <p style="font-weight: normal; color: black; ">${{ service.price }}</p>
                                 </template>
                                 <template #content>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
@@ -49,12 +48,12 @@
                     </b-row>
                     <b-row>
                         <b-col cols="1" :style="{ marginTop: '20px' }">
-                            <small style="">Registros: </small> {{ totalRecords }}
+                            <small>Registros: </small> {{ totalRecords }}
                         </b-col>
                         <b-col>
-                            <Paginator :rows="pageable.size" :totalRecords="totalRecords"
-                                :rowsPerPageOptions="[5, 10, 15]" :first="0" :pageLinkSize="1"
-                                :style="{ marginTop: '20px' }" @page="pagination($event)" />
+                            <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
+                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }"
+                                @page="pagination($event)" />
                         </b-col>
                     </b-row>
                 </panel>
@@ -66,7 +65,6 @@
         <ModalDetailService :visible.sync="displayDetailModal" :service="service" />
     </div>
 </template>
-
 <script>
 import Card from 'primevue/card';
 import Button from 'primevue/button';
@@ -125,9 +123,8 @@ export default {
         async pagination(event) {
             if (event != undefined) {
                 const { page, rows } = event;
-                this.pageable.page = page;
+                this.pageable.page = page
                 this.pageable.size = rows;
-                this.rowsPerPage = rows;
             }
             try {
                 const { status, data: { result } } = await servicios.get_services(this.pageable)
@@ -168,6 +165,15 @@ export default {
                 const limitedWords = words.slice(0, 10);
                 return limitedWords.join(' ') + '...';
             }
+        },
+        limitTittle(name) {
+            const words = name.split(' ');
+            if (words.length === 2 && words.length < 2) {
+                return description;
+            } else {
+                const limitedWords = words.slice(0, 2);
+                return limitedWords.join(' ') + '...';
+            }
         }
     },
     mounted() {
@@ -199,7 +205,7 @@ export default {
     transition: all 0.3s;
 }
 
-.custom-card:hover {
+.card-custom:hover {
     transform: scale(1.05);
 }
 
