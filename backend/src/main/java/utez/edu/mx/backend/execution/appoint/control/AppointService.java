@@ -11,9 +11,7 @@ import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.base_catalog.space.model.SpaceRepository;
-import utez.edu.mx.backend.execution.appoint.model.Appoint;
-import utez.edu.mx.backend.execution.appoint.model.AppointRepository;
-import utez.edu.mx.backend.execution.appoint.model.StatusAppoint;
+import utez.edu.mx.backend.execution.appoint.model.*;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 import utez.edu.mx.backend.execution.expedient.model.ExpedientRepository;
 import utez.edu.mx.backend.execution.patient.model.Patient;
@@ -36,6 +34,8 @@ public class AppointService {
     @Autowired
     private final AppointRepository repository;
     @Autowired
+    private final ViewRepositoryAppoint viewRepositoryAppoint;
+    @Autowired
     private final SpaceRepository spaceRepository;
     @Autowired
     private final UserRepository userRepository;
@@ -54,6 +54,38 @@ public class AppointService {
         ) throw new IllegalArgumentException();
 
         return new ResponseEntity<>(new Message(repository.findAllByStartHourBetween(appoint.getStartHour(), appoint.getEndHour()), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+        if (id <= 0) return new ResponseEntity<>(new Message("missing fields", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+
+        Optional<User> user = userRepository.findById(id_user);
+        if (user.isEmpty()){
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Appoint> appoint = repository.findById(id);
+        if (appoint.isEmpty()){
+            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        Optional<Treatment> treatment = treatmentRepository.findById(appoint.get().getTreatment().getId());
+        if (treatment.isEmpty()){
+            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
+        if (expedient.isEmpty()){
+            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+        }
+        Optional<ViewAppointPatient> result = viewRepositoryAppoint.findById(id);
+        if (result.isEmpty()){
+            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(new Message( result.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
