@@ -82,6 +82,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/profile/{str_id}")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String str_token, @PathVariable String str_id) {
+        try {
+            String token = str_token.replace("Bearer ", "");
+            Long idUser = provider.getUserId(token);
+            String decrypt = cryptService.decrypt(str_id);
+            Long id = Long.parseLong(decrypt);
+            return service.findProfile(id, idUser);
+        } catch (UnsupportedEncodingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
     @PutMapping("/profile/")
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String str_token, @RequestBody String str_profile) {
         try {

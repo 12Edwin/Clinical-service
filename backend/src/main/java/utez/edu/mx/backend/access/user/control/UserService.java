@@ -52,6 +52,7 @@ public class UserService {
     @Autowired
     private final PersonRepository personRepository;
     private final PasswordEncoder encoder;
+    private final CryptService cryptService;
 
     @Transactional(readOnly = true)
     public boolean existsUsername (String username) {
@@ -113,6 +114,24 @@ public class UserService {
             return new ResponseEntity<>(new Message("User not updated", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new Message("Updated user", TypeResponse.SUCCESS), HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+        Optional<User> userOptional = repository.findById(id);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+        }
+        if (!id.equals(id_user)){
+            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.WARNING), HttpStatus.FORBIDDEN);
+        }
+        User user = userOptional.get();
+        user.setPassword("");
+        user.setExpiration(null);
+        user.setToken("");
+        user.setRole(null);
+        user.setImg("/user/image/" + cryptService.encrypt(user.getId().toString()));
+        return new ResponseEntity<>(new Message(user, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
