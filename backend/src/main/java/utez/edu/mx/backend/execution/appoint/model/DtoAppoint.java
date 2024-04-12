@@ -40,11 +40,6 @@ public class DtoAppoint {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", groups = {Register.class, Modify.class, Reschedule.class, FindByDate.class}, message = "Invalid date format")
     private String end_hour;
 
-    @NotNull(groups = {Modify.class, Cancel.class, Complete.class, Reschedule.class})
-    @Min(value = 1, groups = {Modify.class, Complete.class, Cancel.class})
-    @Max(value = 1000000, groups = {Modify.class, Complete.class, Cancel.class})
-    private Long user;
-
     @NotNull(groups = {Modify.class, Register.class})
     @Min(value = 1, groups = {Modify.class, Register.class})
     @Max(value = 1000000, groups = {Modify.class, Register.class})
@@ -68,9 +63,6 @@ public class DtoAppoint {
         Appoint appoint = new Appoint();
         appoint.setId(getId());
         appoint.setStatus(getStatus() == null ? null : StatusAppoint.valueOf(getStatus()));
-        User user1 = new User();
-        user1.setId(getUser());
-        appoint.setUser(user1);
         Treatment treatment1 = new Treatment();
         treatment1.setId(getTreatment());
         appoint.setTreatment(treatment1);
