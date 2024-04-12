@@ -10,7 +10,7 @@ import java.util.List;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     boolean existsByEmail(String email);
-    boolean existsByEmailAndEmailNot(String email, String email2);
+    boolean existsByEmailAndIdNot(String email, Long id);
 
     List<Patient> findAllByCreatedBy(User user);
 }
