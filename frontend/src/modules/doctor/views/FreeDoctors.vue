@@ -52,6 +52,7 @@ export default {
     return {
       searchQuery: '',
       doctors: [],
+      filteredDoctors: [],
       pageable: {
         page: 0,
         size: 10
@@ -84,13 +85,14 @@ export default {
       ],
     };
   },
-  computed: {
-    filteredDoctors() {
-      const query = this.searchQuery.toLowerCase();
-      return this.doctors.filter(doctor =>
-          doctor.name.toLowerCase().includes(query) ||
-          doctor.specialty.toLowerCase().includes(query)
-      );
+
+
+  watch: {
+    searchQuery(value) {
+      this.filteredDoctors = this.doctors.filter(doctor =>
+          doctor.name.toLowerCase().includes(value.toLowerCase()) ||
+          doctor.speciality.toLowerCase().includes(value.toLowerCase())
+      )
     }
   },
   methods: {
@@ -109,6 +111,7 @@ export default {
           const {content, totalElements} = JSON.parse(decripted)
           this.totalRecords = totalElements
           this.doctors = content
+          this.filteredDoctors = content
         }else {
           await onError('Ocurrió un error', 'Error al cargar los doctores')
         }
