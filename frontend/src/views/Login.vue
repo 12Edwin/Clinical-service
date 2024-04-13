@@ -1,7 +1,7 @@
 <template>
   <div id="login">
 
-    <Card class="cards mx-5">
+    <Card class="cards mx-5 h-auto">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
           <img src="../assets/img/logo.png" alt="">
