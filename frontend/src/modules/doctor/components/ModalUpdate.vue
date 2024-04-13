@@ -198,6 +198,11 @@ export default {
         Toast,
         Dropdown
     },
+    data(){
+        return{
+            specialitys: []
+        }
+    },
     name: 'ModalUpdateDoctor',
     mounted() {
         this.getSpecialities();

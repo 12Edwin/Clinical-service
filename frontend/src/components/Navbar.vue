@@ -33,6 +33,13 @@ export default {
           }
         },
         {
+          label: 'Cambiar contraseña',
+          icon: 'pi pi-key',
+          command: ()=> {
+            this.$router.push('/recovery-password')
+          }
+        },
+        {
           label: 'Cerrar sesión',
           icon: 'pi pi-sign-out',
           command: ()=> {
