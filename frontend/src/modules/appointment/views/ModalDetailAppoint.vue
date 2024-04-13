@@ -17,7 +17,7 @@
                                         id="options-selector" 
                                         class="text-start" 
                                         v-model="optionSelected" 
-                                        :options="options"
+                                        :options="actions"
                                         optionLabel="name" 
                                         optionValue="name" 
                                     />
@@ -422,7 +422,6 @@ export default {
                    const { status, data } = await appointServices.reschedule(encrypted)
                    if (status === 400) {
                        this.onSave = false
-                       console.log(data)
                        let message = 'Ocurrion un error al reprogramar la cita'
                        switch (data.text) {
                            case 'User not found':
@@ -465,7 +464,7 @@ export default {
                                this.$emit("onSpaceSelected")
                                this.closeModal()
                            }
-                           )
+                        )
                    }
                }
            } catch (error) {}

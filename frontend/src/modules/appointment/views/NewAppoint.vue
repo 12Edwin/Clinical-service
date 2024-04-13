@@ -2,10 +2,13 @@
     <div  class="w-100">
         <b-row>
             <b-col cols="12">
-            <panel>
+                <Header style="margin-bottom: 20px" title="Gestión de citas"/>
+            </b-col>
+            <b-col cols="12">
+            <panel class="fadeclass">
                 <template #header>
                     <div class="d-flex justify-content-between w-100 align-items-center">
-                        <p class="h5"><b>Generación de citas</b></p>
+                        <p class="h5"><b>Nueva cita</b></p>
                     </div>
                 </template>
                 <b-row>
@@ -167,6 +170,8 @@ import moment from 'moment'
 import Loader from "@/components/loader.vue";
 import Dialog from 'primevue/dialog';
 import { format12Time, formatDate, formatDate2, formatTime } from '@/utils/regex';
+import Header from '@/components/Header.vue';
+import { onQuestion, onError, onSuccess } from '@/kernel/alerts';
 export default {
     components: {
         FullCalendar,
@@ -177,7 +182,8 @@ export default {
         Toast,
         InputText,
         Loader,
-        Dialog
+        Dialog,
+        Header
     },
     name: 'NewAppoint',
     data(){
@@ -202,7 +208,7 @@ export default {
                 views: {
                 dayGridMonth: {
                     titleFormat: { year: 'numeric', month: 'long' }
-                },
+                    },
                 },
             },
             selectedSpace: null,
@@ -225,12 +231,12 @@ export default {
         }
     },
     methods: {
-        print(event){
-            console.log(event)
-        },
         dateDidMount(info) {
+            console.log(info)
             if (info.date < new Date()) {
                 info.el.classList.add('fc-day-past');
+            }else{
+                info.el.classList.add('fc-day-ok');
             }
         },
         validRange() {
@@ -272,34 +278,72 @@ export default {
         async saveAppoint(){
             if(this.newAppoint.startHour && this.newAppoint.startHour !== '' && this.newAppoint.endHour && this.newAppoint.endHour !== '' && this.selectedSpace != null && this.dateSelected != null){
                 if(this.isFormValid){
-                    const {startHour, endHour} = this.newAppoint
-                    const start = this.formatHour(startHour)
-                    const end = this.formatHour(endHour)
-                    const appoint = {
-                        start_hour: moment(this.formatDate(start)).format(formatDate),
-                        end_hour: moment(this.formatDate(end)).format(formatDate), 
-                        treatment: await this.getTreatmentFromUrl(),
-                        space: this.selectedSpace
-                    }
-                    this.onSave = true
-                    const appointEncrypted = await encrypt(JSON.stringify(appoint))
                     try {
-                        const {status} = await appointServices.saveAppointment(appointEncrypted)
-                        if(status === 200 || status === 201){ 
-                            this.$toast.add({severity:'success', summary: '¡Éxito!', detail: '¡Cita guardada con éxito!', life: 3000});
-                            this.newAppoint = {
-                                startHour: '',
-                                endHour: ''
+                        if(await onQuestion('¿Estás seguro de agendar esta cita?')){
+                            const {startHour, endHour} = this.newAppoint
+                            const start = this.formatHour(startHour)
+                            const end = this.formatHour(endHour)
+                            const appoint = {
+                                start_hour: moment(this.formatDate(start)).format(formatDate),
+                                end_hour: moment(this.formatDate(end)).format(formatDate), 
+                                treatment: await this.getTreatmentFromUrl(),
+                                space: this.selectedSpace
                             }
-                            this.areSame = false;
-                            this.isBeforeEnd = false;
-                            this.isFormValid = false;
-                            this.isBeforeCurrent = false;
-                            this.onSpaceSelected()
-                            this.dateSelected = null
-                        }
+                            this.onSave = true
+                            const appointEncrypted = await encrypt(JSON.stringify(appoint))
+                            const {status, data: {text}} = await appointServices.saveAppointment(appointEncrypted)
+                            if(status === 400){
+                                this.onSave = false
+                                let message = 'Ocurrion un error al agendar la cita'
+                                switch (text) {
+                                    case 'User not found':
+                                        message = 'Usuario no encontrado'
+                                        break;
+                                    case 'Not found':
+                                        message = 'Cita no encontrada'
+                                        break;
+                                    case 'Treatment not found':
+                                        message = 'Tratamiento no encontrado'
+                                        break;
+                                    case 'Expedient not found':
+                                        message = 'Expediente no encontrado'
+                                        break;
+                                    case 'Unauthorized user':
+                                        message = 'Usuario no autorizado'
+                                        break;
+                                    case "Maximum 5 hours":
+                                        message = 'La cita no puede durar más de 5 horas'
+                                        break;
+                                    case "Minimum 1 hour":
+                                        message = 'La cita debe durar al menos 1 hora'
+                                        break;
+                                    case "Invalid schedule":
+                                        message = 'Horario no válido'
+                                        break;
+                                    case "The space is busy in this schedule":
+                                        message = 'El espacio está ocupado en este horario'
+                                        break;
+                                    case "Cannot be more than one month from now":
+                                        message = 'La cita no puede programarse después de un mes'
+                                        break;
+                                }
+                                await onError('Ocurrió un error al agendar la cita', message).then(() => {
+                                    this.cleanFields()
+                                    this.onSpaceSelected()
+                                })
+                            }
+                            if(status === 200 || status === 201){ 
+                                this.onSave = false
+                                await onSuccess('Cita agendada', 'La cita ha sido agendada con éxito')
+                                    .then(() => {
+                                        this.cleanFields()
+                                        this.onSpaceSelected()
+                                    }
+                                )
+                            }
                         this.onSave = false
                         this.showDate = false
+                        }
                     } catch (error) {
                         this.onSave = false
                     }
@@ -370,9 +414,6 @@ export default {
             this.isBeforeCurrent = false;
             this.isGraterThanFive = false;
         },
-        openModalSaveSpeciality() {
-            this.displaySaveModal = true;
-        },
         async onSpaceSelected(){
             if(this.selectedSpace != null){
                 try {
@@ -404,12 +445,6 @@ export default {
                 }
             }
         },
-        getAppoints(){
-            return this.appoints
-        },
-        handleEventClick(arg) {
-            console.log('event click! ', arg.event)
-        },
         async getAllSpaces(){
             try {
                 const {status, data : {result}} = await spaceServices.getAllSpaces()
@@ -421,6 +456,18 @@ export default {
                 console.log("Error: ", error)
             }
         },
+        cleanFields(){
+            this.newAppoint = {
+                startHour: '',
+                endHour: ''
+            }
+            this.areSame = false;
+            this.isBeforeEnd = false;
+            this.isFormValid = false;
+            this.isBeforeCurrent = false;
+            this.dateSelected = null
+            this.isGraterThanFive = false;
+        }
     },
     mounted(){
         this.getAllSpaces()
@@ -437,7 +484,19 @@ export default {
 </script>
 
 <style scoped>
+.fadeclass{
+  animation-name: fade;
+  animation-duration: 1s;
+}
 
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .button-style{
     background: #2a715a;
     border: none;
@@ -511,6 +570,10 @@ export default {
 .fc-day-past {
   background-color: #f0f0f0 !important;
   color: #ccc !important;
-  cursor: none !important;
+  cursor: not-allowed !important;
+}
+
+.fc-day-ok{
+    cursor: pointer !important;
 }
 </style>

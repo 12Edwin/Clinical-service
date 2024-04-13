@@ -1,5 +1,4 @@
 import api from "@/config/http-client.gateway"
-import { decrypt } from "@/config/security"
 
 const getAppointmentsBySpace = async (spaceId) => {
     try {
@@ -71,7 +70,6 @@ const getAppointById = async (id) => {
         const response = await api.doGet(`/appoint/${id}`)
         return response
     } catch (error) {
-        console.log("error",error)
         return error.response
     }
 
