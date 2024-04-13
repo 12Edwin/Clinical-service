@@ -11,8 +11,10 @@ import utez.edu.mx.backend.access.role.model.Role;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
+import utez.edu.mx.backend.execution.patient.model.Patient;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +33,9 @@ public class User {
     @Column(name = "password", columnDefinition = "VARCHAR(100) NOT NULL")
     private String password;
 
+    @Column(name = "img", columnDefinition = "TEXT DEFAULT 'https://res.cloudinary.com/dkrcosw87/image/upload/v1623680134/utez/utez_logo.png'")
+    private String img;
+
     @Column(name = "token", columnDefinition = "VARCHAR(200) NOT NULL")
     private String token;
 
@@ -45,9 +50,9 @@ public class User {
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @OneToOne(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private Appoint appoint;
+    private List<Appoint> appoints;
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")
@@ -56,6 +61,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "speciality_id", referencedColumnName = "id")
     private Speciality speciality;
+
+    @OneToMany(mappedBy = "createdBy")
+    @JsonIgnore
+    private List<Patient> patients;
 
     @PrePersist
     protected void onCreate() {

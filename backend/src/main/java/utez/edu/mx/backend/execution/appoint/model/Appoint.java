@@ -40,7 +40,7 @@ public class Appoint {
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(70)")
     private StatusAppoint status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

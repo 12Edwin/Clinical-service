@@ -16,7 +16,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     Optional<Person> findByName(String name);
     boolean existsByPhone(String phone);
 
-    boolean existsByPhoneAndPhoneNot(String phone, String phone2);
+    boolean existsByPhoneAndIdNot(String phone, Long id);
     @Modifying
     @Query(value = "UPDATE people SET name = :name, surname = :surname," +
                     "  lastname = :lastname, birthday = :birthday," +

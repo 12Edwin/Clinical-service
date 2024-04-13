@@ -61,10 +61,10 @@ public class ViewExpedients {
     @NotBlank(groups = { Register.class,  Modify.class})
     @Pattern(regexp = "^(Casado|Soltero|Viudo)$", groups = { Register.class,  Modify.class}, message = "Estado civil inválido")
     private String marital_status;
-    @NotBlank(groups = { Register.class,  Modify.class})
-    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+)*$", groups = { Register.class,  Modify.class}, message = "Responsable inválido")
-    @Length(min = 3, max = 50, groups = { Register.class,  Modify.class})
-    private String created_by;
+    @NotNull(groups = { Register.class})
+    @Max(value = 1000000, groups = { Register.class })
+    @Min(value = 1, groups = { Register.class })
+    private Long createdBy;
     @NotBlank(groups = { Register.class,  Modify.class})
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$", groups = { Register.class,  Modify.class}, message = "Ocupación inválido")
     @Length(min = 3, max = 70, groups = { Register.class,  Modify.class})
@@ -106,7 +106,7 @@ public class ViewExpedients {
 
     public DtoExpedient cast(){
         return new DtoExpedient(getId(), getFolio(), getPhysic_id(), getWeight(), getHeight(), getGender(), getAllergies(),
-                null, null, getPatient_id(), getPlace_of_birth(), getMarital_status(), getCreated_by(),
+                null, null, getPatient_id(), getPlace_of_birth(), getMarital_status(), getCreatedBy(),
                 getOccupation(), getEmail(), getPerson_id(), getName(), getSurname(), getLastname(), getBirthday(), getSex(), getPhone());
     }
 }

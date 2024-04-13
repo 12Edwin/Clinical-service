@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
 import utez.edu.mx.backend.base_catalog.service.control.ServiceService;
@@ -48,6 +50,7 @@ public class PathologicalController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @GetMapping("/{str_id}")
     ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
@@ -60,6 +63,7 @@ public class PathologicalController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_Pathology) throws IllegalArgumentException {
         try {
@@ -81,6 +85,7 @@ public class PathologicalController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestBody String str_pathology) throws IllegalArgumentException {
         try {
@@ -102,6 +107,7 @@ public class PathologicalController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @DeleteMapping("/{str_id}")
     ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {

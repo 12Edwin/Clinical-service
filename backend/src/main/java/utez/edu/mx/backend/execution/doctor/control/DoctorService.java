@@ -121,7 +121,7 @@ public class DoctorService {
         if (!message.getType().equals(TypeResponse.SUCCESS)){
             return resp;
         }
-        return userService.updateUserDoctor(new User(user.get().getId(), null, null, "", true, null, null, null, null, speciality.get()));
+        return userService.updateUserDoctor(new User(user.get().getId(), null, null, null, "", true, null, null, null, null, speciality.get(), null));
     }
 
     @Transactional(rollbackFor = {SQLException.class})

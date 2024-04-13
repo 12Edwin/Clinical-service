@@ -4,12 +4,9 @@
     </div>
     <div class="options">
 
-      <div style="margin-right:20px; display: flex;">
-        <SplitButton 
-          :label="usernameRole()" 
-          :model="options" 
-          class="p-splitbutton p-button-rounded p-button-secondary mb-1"
-        ></SplitButton>
+      <div style="margin-right:20px; display: flex;" class="align-items-center">
+        <Avatar icon="pi pi-user" size="medium" style="margin-right: 10px;" shape="circle" />
+        <label class="text-white">{{ usernameRole() }}</label>
       </div>
     </div>
   </div>
@@ -18,51 +15,15 @@
 <script>
 import SplitButton from 'primevue/splitbutton'
 import utils from '@/kernel/utils';
+import Avatar from 'primevue/avatar';
 export default {
 
   components:{
-    SplitButton
+    Avatar
   },
 
   data(){
     return{
-      items: [
-        {
-          label: 'Add',
-          icon: 'pi pi-pencil',
-          command: () => {
-            this.$toast.add({ severity: 'info', summary: 'Add', detail: 'Data Added' });
-          }
-        },
-        {
-          label: 'Update',
-          icon: 'pi pi-refresh',
-          command: () => {
-            this.$toast.add({ severity: 'success', summary: 'Update', detail: 'Data Updated' });
-          }
-        },
-        {
-          label: 'Delete',
-          icon: 'pi pi-trash',
-          command: () => {
-            this.$toast.add({ severity: 'error', summary: 'Delete', detail: 'Data Deleted' });
-          }
-        },
-        {
-          label: 'Upload',
-          icon: 'pi pi-upload',
-          command: () => {
-            window.location.hash = "/fileupload"
-          }
-        },
-        {
-          label: 'Vue Website',
-          icon: 'pi pi-external-link',
-          command: () => {
-            window.location.href = 'https://vuejs.org/'
-          }
-        }
-      ],
       options: [
         {
           label: 'Perfil',
@@ -84,12 +45,8 @@ export default {
     }
   },
   methods: {
-    logout(){
-      utils.removeToken()
-      this.$router.push('/login')
-    },
     usernameRole(){
-      return utils.getRoleNameBytoken().toLowerCase()
+      return utils.getRoleNameBytoken()
     }
   }
 

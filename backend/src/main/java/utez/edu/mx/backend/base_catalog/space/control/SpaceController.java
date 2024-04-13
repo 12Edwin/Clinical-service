@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.base_catalog.space.model.DtoSpace;
@@ -61,6 +62,7 @@ public class SpaceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPACES')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_space) throws IllegalArgumentException {
         try {
@@ -82,6 +84,7 @@ public class SpaceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPACES')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestBody String str_space) throws IllegalArgumentException {
         try {
@@ -103,6 +106,7 @@ public class SpaceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPACES')")
     @DeleteMapping("/{str_id}")
     ResponseEntity<?> delete (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException {
         try {

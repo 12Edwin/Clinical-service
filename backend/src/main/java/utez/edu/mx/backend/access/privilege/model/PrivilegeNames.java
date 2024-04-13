@@ -7,8 +7,11 @@ public enum PrivilegeNames {
     DOCTORS,
     SPECIALITIES,
     SERVICES,
-    EXPEDIENT,
-    TREATMENT,
-    USER
+    EXPEDIENTS,
+    TREATMENTS,
+    USERS,
+    PHYSICAL_RECORDS,
+    SPACES,
+    PATIENTS,
 
 }

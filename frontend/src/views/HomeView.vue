@@ -4,7 +4,6 @@
     <Menubar :model="navbarItems"
       style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;" />
 
-    <!-- Carrusel -->
     <div style="display: flex; align-items: center; justify-content: center;">
       <div style=" margin-top: 50px;">
         <Carousel style="margin-top: 20px;" :value="notices" :numVisible="1" :numScroll="1"
@@ -15,7 +14,7 @@
             <div class="car-item">
               <div class="car-content">
                 <div>
-                  <img src="https://picsum.photos/600/300/?image=25" class="image-carrusel"
+                  <img :src="require(`@/${slotProps.data.image}`)" class="image-carrusel"
                     :alt="slotProps.data.title" />
                 </div>
                 <div style="padding-left: 10%; padding-right: 10%;">
@@ -36,26 +35,24 @@
       <div class="row text-center">
         <h3 class="welcome-heading">Bienvenido a nuestro Hospital</h3>
         <h6 class="welcome-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ac ut consequat semper viverra nam libero justo laoreet sit. Quis eleifend quam adipiscing
-          vitae.
-          Vitae tempus quam pellentesque nec nam aliquam sem et tortor. In cursus turpis massa tincidunt dui ut. Id
-          cursus
-          metus aliquam eleifend mi in nulla. Bibendum enim facilisis gravida neque. Id aliquet lectus proin nibh nisl
-          condimentum id venenatis. Nibh cras pulvinar mattis nunc sed blandit. Dui faucibus in ornare quam. A erat nam
-          at
-          lectus urna. Tincidunt vitae semper quis lectus nulla at volutpat. Libero id faucibus nisl tincidunt eget
-          nullam
-          non nisi. Habitasse platea dictumst vestibulum rhoncus. Egestas egestas fringilla phasellus faucibus
-          scelerisque
-          eleifend donec pretium vulputate.
+          Bienvenido a nuestro Hospital San J, donde la salud y el
+          bienestar de nuestros pacientes son nuestra máxima prioridad.
+          Nos enorgullece ofrecer una atención médica de alta calidad,
+          personalizada y centrada en el paciente.
+          Nuestro equipo de profesionales de la salud está dedicado a
+          mejorar y mantener su salud a través de la prevención, el
+          diagnóstico temprano y el tratamiento de diversas condiciones
+          médicas. Con una combinación de tecnología médica avanzada,
+          instalaciones modernas y personal altamente capacitado, nos
+          esforzamos por proporcionar una experiencia de atención médica
+          excepcional. Gracias por elegirnos como su socio de atención médica.
         </h6>
       </div>
     </div>
 
 
     <div class="container-fluid" style="background-color: #5cab8c;">
-      <div class="row">
+      <div class="row align-items-center">
         <div class="col-md-6">
           <img src="../assets/img/imagen1.jpg" height="450px" alt="imagen-1"
             style="padding: 30px; border-radius: 20px;">
@@ -63,13 +60,18 @@
         <div class="col-md-6" style="padding: 130px;">
           <h4 class="text-white">Quienes somos</h4>
           <h6 class="text-white">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore
-            magna aliqua. Ac ut consequat semper viverra nam libero justo laoreet sit. Quis eleifend quam adipiscing
-            vitae.
-            Vitae tempus quam pellentesque nec nam aliquam sem et tortor. In cursus turpis massa tincidunt dui ut. Id
-            cursus
-            metus aliquam eleifend mi in nulla. Bibendum enim facilisis gravida neque.
+            Somos el Hospital San J, una institución de salud comprometida
+            con brindar atención médica de alta calidad a nuestra comunidad.
+            Contamos con un equipo de profesionales altamente capacitados y
+            dedicados a ofrecer un cuidado compasivo y personalizado.
+            Nuestro hospital está equipado con tecnología médica de
+            vanguardia para garantizar que nuestros pacientes reciban el
+            mejor tratamiento posible. Creemos en la importancia de la
+            atención preventiva y trabajamos arduamente para educar a
+            nuestros pacientes sobre la importancia de mantener un estilo
+            de vida saludable. En el Hospital San J, nos esforzamos por
+            superar las expectativas de nuestros pacientes y proporcionar
+            una atención excepcional en todo momento.
           </h6>
         </div>
       </div>
@@ -79,7 +81,7 @@
       <div class="row">
         <h4>Artículos</h4>
         <div class="col-lg-4 col-md-6 col-sm-12 mt-2" v-for="(item, index) in cardData" :key="index">
-          <Card style="height: 400px;">
+          <Card style="min-height: 500px;">
             <template #header>
               <img :src="require(`@/${item.image}`)" class="card-img-top" :alt="'Imagen ' + (index + 1) + ' de ejemplo'">
             </template>
@@ -105,7 +107,7 @@
   <p class="footer-address">Dirección: Avenida Univ. Tec. 1, Emiliano Zapata, México</p>
 </div>
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-4 text-center">
     <h5>Servicios</h5>
     <ul>
       <li>Urgencias 24 Horas</li>
@@ -117,7 +119,7 @@
       <li>Estacionamiento</li>
     </ul>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-4 text-center">
     <h5>Instalaciones</h5>
     <ul>
       <li>Urgencias</li>
@@ -128,7 +130,7 @@
       <li>Estacionamiento</li>
     </ul>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-4 text-center">
     <h5>Mapa del Sitio</h5>
     <ul>
       <li>Inicio</li>
@@ -170,14 +172,7 @@ export default {
     Card,
 
   },
-  computed: {
-    // numVisible() {
-    //   return this.responsiveOptions[0].numVisible;
-    // },
-    // numScroll() {
-    //   return this.responsiveOptions[0].numScroll;
-    // }
-  },
+
   data() {
     return {
       isLoading: true,
@@ -187,13 +182,8 @@ export default {
           to: "/home",
         },
         {
-          label: 'Conócenos',
-        },
-        {
           label: 'Blog',
-        },
-        {
-          label: 'Especialidades',
+          to: '/blog'
         },
         {
           label: 'Servicios',
@@ -204,31 +194,28 @@ export default {
           to: "/our_doctors"
         },
         {
-          label: "Directorio",
-        },
-        {
           label: '',
           icon: 'pi pi-fw pi-user',
           to: "/login",
-          end: true // Esto alinea este elemento a la derecha
+          end: true // this will align the item to the right
         },
       ],
 
       notices: [
         {
-          title: 'Conoscanos',
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ac ut consequat semper viverra nam libero justo laoreet sit. Quis eleifend quam adipiscing vitae.",
-          image: 'assets/img/imagen1.jpg'
+          title: 'Conócenos',
+          description: "Somos el Hospital San J, una institución de salud comprometida con brindar atención médica de alta calidad a nuestra comunidad. Contamos con un equipo de profesionales altamente capacitados y dedicados a ofrecer un cuidado compasivo y personalizado. Nuestro hospital está equipado con tecnología médica de vanguardia para garantizar que nuestros pacientes reciban el mejor tratamiento posible. Creemos en la importancia de la atención preventiva y trabajamos arduamente para educar a nuestros pacientes sobre la importancia de mantener un estilo de vida saludable. En el Hospital San J, nos esforzamos por superar las expectativas de nuestros pacientes y proporcionar una atención excepcional en todo momento.",
+          image: 'assets/img/home2.jpg'
         },
         {
           title: 'Revisiones',
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ac ut consequat semper viverra nam libero justo laoreet sit. Quis eleifend quam adipiscing vitae.",
-          image: 'assets/img/imagen2.jpg'
+          description: "En Hospital San J, valoramos la opinión de nuestros pacientes. Nuestro compromiso con la excelencia nos lleva a buscar constantemente formas de mejorar nuestros servicios y atención al paciente. Las revisiones y testimonios de nuestros pacientes son una parte integral de este proceso. Nos enorgullece compartir algunas de las experiencias de nuestros pacientes y cómo nuestro equipo de atención médica ha impactado positivamente en sus vidas. Si eres un paciente actual o anterior, te invitamos a compartir tu experiencia con nosotros.",
+          image: 'assets/img/home1.jpg'
         },
         {
-          title: 'Hospital 3',
-          description: "",
-          image: 'assets/img/imagen3.jpg'
+          title: 'Acuerdos',
+          description: "En el Hospital San J, creemos en la importancia de establecer acuerdos y colaboraciones con otras instituciones de salud y organizaciones para mejorar la atención que brindamos a nuestros pacientes. Estos acuerdos nos permiten compartir conocimientos, recursos y mejores prácticas, y trabajar juntos para enfrentar los desafíos de la atención médica. Estamos orgullosos de nuestros acuerdos con una variedad de organizaciones y continuamos buscando nuevas oportunidades para colaborar y mejorar la atención que brindamos.",
+          image: 'assets/img/home3.jpg'
         },
       ],
 
@@ -253,19 +240,19 @@ export default {
       cardData: [
         {
           title: '¿Cómo funciona la Terapia Intensiva?',
-          description: 'Este es un ejemplo de texto para la tarjeta. Puedes agregar información adicional aquí.',
+          description: "La Terapia Intensiva, también conocida como Cuidados Intensivos, es un área especializada de la medicina que se dedica a la atención de pacientes con condiciones críticas o potencialmente mortales. En esta unidad.",
           image: 'assets/img/imagen3.jpg',
           link: '/terapia-intensiva'
         },
         {
           title: '¿Qué es el glaucoma?',
-          description: 'Otra tarjeta con un poco de texto adicional. ¡Personalízala según tus necesidades!',
+          description: "El glaucoma es una enfermedad del ojo que puede dañar el nervio óptico. El nervio óptico suministra información visual al cerebro. Si se daña, como ocurre con el glaucoma, la visión se verá afectada y puede resultar en ceguera. Por lo general.",
           image: 'assets/img/imagen4.jpg',
           link: '/glaucoma'
         },
         {
           title: 'Alimentos que mejoran tu piel.',
-          description: 'Una tercera tarjeta con contenido relevante. ¡Ajusta según tus preferencias!',
+          description: "La piel es el órgano más grande del cuerpo y su estado de salud puede ser un reflejo de nuestra dieta. Algunos alimentos pueden ayudar a mejorar la salud de nuestra piel, proporcionándole los nutrientes necesarios para su reparación y regeneración.",
           image: 'assets/img/imagen2.jpg',
           link: '/alimentos-piel'
         }
@@ -352,6 +339,10 @@ export default {
   .col-md-4 {
     margin-bottom: 20px;
   }
+}
+
+li{
+  list-style-type: none;
 }
 
 </style>

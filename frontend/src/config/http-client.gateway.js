@@ -1,6 +1,6 @@
 import router from "@/router";
 import axios from "axios";
-
+import {onError} from "@/kernel/alerts";
 const SERVER_URL = "http://localhost:8080/api"
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
@@ -32,32 +32,23 @@ AxiosClient.interceptors.response.use(
     },
     async (error) => {
         if(!error.response){
-            alert('El servidor no respondió')
-            localStorage.removeItem('token')
-
+            await onError('Ocurrió un error', 'El servidor no respondió')
             return Promise.reject(error)
         }
         if(error.response.status){
             switch(error.response.status){
-                case 400:
-                    console.log('Error 400')
-                    console.log(error.response.data)
-                    break;
                 case 401:
-                    console.log('Error 401')
-                    console.log(error.response.data)
-                    break;
-                case 403: 
-                    console.log('Error 403')
-                    console.log(error.response.data)
-                    break;
+                    await onError('Su sesión ha expirado', 'Por favor vuelva a iniciar sesión')
+                        .then(() => {
+                            localStorage.removeItem('token')
+                            router.push({name: 'login'})
+                        })
+                    return Promise.resolve()
                 case 404:
-                    console.log('Error 404')
-                    console.log(error.response.data)
+                    await router.push({name: '404'})
                     break;
                 case 500:
-                    console.log('Error 500')
-                    console.log(error.response.data)
+                    await onError('Error interno del servidor', 'Por favor contacte a soporte técnico')
                     break;
             }
             return Promise.reject(error)
