@@ -58,6 +58,8 @@
               </div>
             </b-col>
         </b-row>
+        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3"
+                                        @click="$router.push({ name: 'recovery-password' })" />
         <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Iniciar sesión"
           @click="login(credentials)" />
       </template>
@@ -182,7 +184,8 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/colors.scss";
 #login {
   display: flex;
   justify-content: center;
@@ -277,5 +280,15 @@ Button {
 .form-label-required::after {
   content: " *";
   color: red;
+}
+
+.p-button-link {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: $btn-link; 
+  text-decoration: none; 
 }
 </style>

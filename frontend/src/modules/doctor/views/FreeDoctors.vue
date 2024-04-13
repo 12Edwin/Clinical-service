@@ -10,7 +10,7 @@
     </div>
     <div class="w-100 d-flex justify-content-center" style="min-height: 50vh">
       <div class="position-relative mt-3 px-5 w-75">
-        <transition-group name="fade">
+        <transition-group name="fade" tag="div" class="row">
           <Loader v-if="isLoading" key="loader"/>
           <div v-else key="content" class="doctor-list">
             <div v-for="doctor in filteredDoctors" :key="doctor.id" class="col-md-4">
@@ -19,7 +19,7 @@
                         img-alt="doctor.name"
                         img-src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg"
                         img-top style="background-color: ghostwhite;">
-                  <p class="mb-0">{{ doctor.name }} {{ doctor.lastname }} {{ doctor.surname }}</p>
+                  <p class="mb-0">{{ doctor.fullname }} </p>
                   <p class="mb-0">{{ doctor.speciality }} </p>
                 </b-card>
               </div>
@@ -92,8 +92,8 @@ export default {
     filteredDoctors() {
       const query = this.searchQuery.toLowerCase();
       return this.doctors.filter(doctor =>
-          doctor.name.toLowerCase().includes(query) ||
-          doctor.specialty.toLowerCase().includes(query)
+          doctor.fullname.toLowerCase().includes(query) ||
+          doctor.speciality.toLowerCase().includes(query)
       );
     }
   },
@@ -112,7 +112,11 @@ export default {
           const decripted = await decrypt(result)
           const {content, totalElements} = JSON.parse(decripted)
           this.totalRecords = totalElements
-          this.doctors = content
+          content.forEach(c => {
+            if (c.available) {
+              this.doctors.push(c);
+            }
+          });
         }else {
           await onError('Ocurrió un error', 'Error al cargar los doctores')
         }

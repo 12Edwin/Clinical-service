@@ -35,7 +35,7 @@ export default [
             },
             {
                 path: 'recovery-password',
-                name: 'recover-password',
+                name: 'recovery-password',
                 component: () => import("../modules/password-recovery/views/RecoveryPassword.vue"),
                 meta:{
                     title: 'Recuperar contraseña'
