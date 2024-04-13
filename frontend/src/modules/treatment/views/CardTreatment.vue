@@ -144,6 +144,9 @@ export default {
     closeModal() {
       this.visible = false
       this.findTreatments()
+    },
+    async toCreateAppoint(id){
+      this.$router.push({name: 'NewAppoint', params: {idTreatment: await encrypt(id)}})
     }
   },
   

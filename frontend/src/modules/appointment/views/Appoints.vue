@@ -28,10 +28,10 @@
                   <b-col class="mt-3" cols="12">
                     <FullCalendar :options="calendarOptions" id="myCustomCalendar">
                       <template v-slot:eventContent='{ event }'>
-                        <div @dblclick="openAppointDetail(event.extendedProps.appointment)">
+                        <div>
                           <b-row>
                           <b-col cols="12" lg="12" md="4" sm="3">
-                            <div class="my-custom-event">
+                            <div class="my-custom-event" @click="openAppointDetail(event.extendedProps.appointment)">
                               <span class="my-event-dot"
                                 :style="{'background-color': setDotBackgrund(event.extendedProps.appointment.status)}"></span>
                               <div class="my-event-info">
@@ -39,7 +39,6 @@
                                 <span class="my-event-time">{{ formatCalendarDate(event.start) }} - {{formatCalendarDate(event.end) }}</span>
                               </div>
                               <div>
-                                <!-- <i @click="toggle" aria-controls="overlay_menu" class="pi pi-ellipsis-v"></i> -->
                             </div>
                             </div>
                           </b-col>
@@ -53,7 +52,7 @@
             </b-col>
           </b-row>
         </panel>
-        <ModalDetailAppoint :visible.sync="displayModal" :appoint="appoint"/>
+        <ModalDetailAppoint :visible.sync="displayModal" :appoint="appoint" @onSpaceSelected="onSpaceSelected"/>
         <Toast/>
       </b-col>
     </b-row>
@@ -274,6 +273,7 @@ export default {
     display: flex;
     align-items: center;
     padding-left: 10px;
+    cursor: pointer;
 }
 
 .my-event-dot {

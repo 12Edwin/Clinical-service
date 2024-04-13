@@ -1,11 +1,12 @@
 import api from "@/config/http-client.gateway"
+import { decrypt } from "@/config/security"
 
 const getAppointmentsBySpace = async (spaceId) => {
     try {
         const response = await api.doGet(`/appoint/space/${spaceId}`)
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -20,7 +21,7 @@ const saveAppointment = async (appointment) => {
         )
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -34,7 +35,7 @@ const reschedule = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -47,7 +48,7 @@ const cancelAppoint = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -60,8 +61,20 @@ const completeAppoint = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
+}
+
+
+const getAppointById = async (id) => {
+    try {
+        const response = await api.doGet(`/appoint/${id}`)
+        return response
+    } catch (error) {
+        console.log("error",error)
+        return error.response
+    }
+
 }
 
 export default {
@@ -69,5 +82,6 @@ export default {
     saveAppointment,
     reschedule,
     cancelAppoint,
-    completeAppoint
+    completeAppoint,
+    getAppointById
 }

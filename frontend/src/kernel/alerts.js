@@ -14,6 +14,10 @@ export const onQuestion = async (title, text) => {
         title: title,
         text: text,
         showCancelButton: true,
+        confirmButtonColor: '#2a715a',
+        cancelButtonColor: '#607D8B',
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar'
     }).then((result) => {
         return result.isConfirmed
     })
