@@ -23,7 +23,7 @@ public class UserDto {
     private Long id;
     @NotBlank(groups = {Modify.class, Register.class, ChangePassword.class, VerifyCode.class, UpdatePassword.class})
     private String code;
-    @NotBlank(groups = {Modify.class, Register.class, ChangePassword.class, VerifyCode.class, UpdatePassword.class, Profile.class})
+    @NotBlank(groups = {Modify.class, Register.class, ChangePassword.class, VerifyCode.class, UpdatePassword.class})
     private String password;
     @NotBlank(groups = {VerifyCode.class, ChangePassword.class})
     private String token;

@@ -10,6 +10,11 @@ export const getNamesByToken = () => {
     return name
 }
 
+export const getUserIdByToken = () => {
+    const { user_id } = jwtDecode(localStorage.getItem("token"))
+    return user_id
+}
+
 const getToken = () => {
     return localStorage.getItem("token")
 }
