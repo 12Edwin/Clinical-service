@@ -277,7 +277,9 @@ public class UserService {
         Path path = Paths.get(folderPath + newFileName);
 
         try {
-            Files.deleteIfExists(Path.of(user.getImg()));
+            if (user.getImg() != null && !user.getImg().isEmpty()) {
+                Files.deleteIfExists(Path.of(user.getImg()));
+            }
             Files.write(path, file.getBytes());
             user.setImg(path.toString());
             repository.saveAndFlush(user);
@@ -308,10 +310,10 @@ public class UserService {
                 String contentType = Files.probeContentType(path);
                 return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
             } else {
-                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
     }
 

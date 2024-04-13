@@ -9,6 +9,8 @@ export const acceptedFormatsForImages = ['.png', '.jpeg', '.jpg'];
 
 export const newregex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ0-9]+)*$/
 
+export const regexName = /^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+)*$/
+
 export const formatDate = "YYYY-MM-DDTHH:mm:ss"
 export const formatDate2 = "YYYY-MM-DD"
 export const formatTime = "HH:mm"
