@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.service.model.DtoService;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
@@ -73,6 +74,7 @@ public class ServiceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SERVICES')")
     @PostMapping("/")
     ResponseEntity<?> save (@RequestBody String str_service) throws IllegalArgumentException {
         try {
@@ -94,6 +96,7 @@ public class ServiceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SERVICES')")
     @PutMapping("/")
     ResponseEntity<?> update (@RequestBody String str_service) throws IllegalArgumentException {
         try {
@@ -115,6 +118,7 @@ public class ServiceController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SERVICES')")
     @DeleteMapping("/{str_id}")
     ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {

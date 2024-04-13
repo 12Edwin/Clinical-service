@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
@@ -44,6 +45,7 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @GetMapping("/{str_id}")
     ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
@@ -56,6 +58,7 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PostMapping("/")
     ResponseEntity<?> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
@@ -77,6 +80,7 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PutMapping("/")
     ResponseEntity<?> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
@@ -98,6 +102,7 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @DeleteMapping("/{str_id}")
     ResponseEntity<?> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
         try {

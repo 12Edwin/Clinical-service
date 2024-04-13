@@ -6,6 +6,10 @@ const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
 })
+
+export const getServerUrl = () => {
+    return SERVER_URL
+}
 AxiosClient.interceptors.request.use(
     function(config){
         const auth_token = localStorage.getItem('token')
@@ -32,18 +36,11 @@ AxiosClient.interceptors.response.use(
     },
     async (error) => {
         if(!error.response){
-            alert('El servidor no respondió')
-            console.log('Error: ', error)
-            localStorage.removeItem('token')
-
+            await onError('Ocurrió un error', 'El servidor no respondió')
             return Promise.reject(error)
         }
         if(error.response.status){
             switch(error.response.status){
-                case 400:
-                    console.log('Error 400')
-                    console.log(error.response.data)
-                    break;
                 case 401:
                     await onError('Su sesión ha expirado', 'Por favor vuelva a iniciar sesión')
                         .then(() => {
@@ -51,14 +48,6 @@ AxiosClient.interceptors.response.use(
                             router.push({name: 'login'})
                         })
                     return Promise.resolve()
-                case 403:
-                    console.log('Error 403')
-                    console.log(error.response.data)
-                    break;
-                case 404:
-                    console.log('Error 404')
-                    console.log(error.response.data)
-                    break;
                 case 500:
                     await onError('Error interno del servidor', 'Por favor contacte a soporte técnico')
                     break;

@@ -108,10 +108,32 @@ public class InitialDatabase implements CommandLineRunner {
         }
         privilegeAdmin += new Gson().toJson(privilege) +",";
 
-        // PRIVILEGES   -- EXPEDIENT --
-        optionalPrivilege = privilegeService.findByName(PrivilegeNames.EXPEDIENT);
+        // PRIVILEGES   -- PHYSICAL_RECORDS --
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.PHYSICAL_RECORDS);
         if (optionalPrivilege.isEmpty()) {
-            privilege = new Privilege(PrivilegeNames.EXPEDIENT,
+            privilege = new Privilege(PrivilegeNames.PHYSICAL_RECORDS,
+                    "Catálogo para el control de composición física en el sistema");
+            privilege = privilegeService.saveInitial(privilege);
+        } else {
+            privilege = optionalPrivilege.get();
+        }
+        privilegeAdmin += new Gson().toJson(privilege) +",";
+
+        // PRIVILEGES   -- SPACES --
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.SPACES);
+        if (optionalPrivilege.isEmpty()) {
+            privilege = new Privilege(PrivilegeNames.SPACES,
+                    "Catálogo para el control de espacios de atención a pacientes en el sistema");
+            privilege = privilegeService.saveInitial(privilege);
+        } else {
+            privilege = optionalPrivilege.get();
+        }
+        privilegeAdmin += new Gson().toJson(privilege) +",";
+
+        // PRIVILEGES   -- EXPEDIENT --
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.EXPEDIENTS);
+        if (optionalPrivilege.isEmpty()) {
+            privilege = new Privilege(PrivilegeNames.EXPEDIENTS,
                     "Catálogo para el control de expedientes en el sistema");
             privilege = privilegeService.saveInitial(privilege);
         } else {
@@ -120,10 +142,21 @@ public class InitialDatabase implements CommandLineRunner {
         privilegeDoctor += new Gson().toJson(privilege) +",";
 
         // PRIVILEGES   -- TREATMENT --
-        optionalPrivilege = privilegeService.findByName(PrivilegeNames.TREATMENT);
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.TREATMENTS);
         if (optionalPrivilege.isEmpty()) {
-            privilege = new Privilege(PrivilegeNames.TREATMENT,
+            privilege = new Privilege(PrivilegeNames.TREATMENTS,
                     "Catálogo para el control de tratamientos en el sistema");
+            privilege = privilegeService.saveInitial(privilege);
+        } else {
+            privilege = optionalPrivilege.get();
+        }
+        privilegeDoctor += new Gson().toJson(privilege) +",";
+
+        // PRIVILEGES   -- PATIENTS --
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.PATIENTS);
+        if (optionalPrivilege.isEmpty()) {
+            privilege = new Privilege(PrivilegeNames.PATIENTS,
+                    "Catálogo para el control de pacientes en el sistema");
             privilege = privilegeService.saveInitial(privilege);
         } else {
             privilege = optionalPrivilege.get();
@@ -142,9 +175,9 @@ public class InitialDatabase implements CommandLineRunner {
         privilegeDoctor += new Gson().toJson(privilege) +"]";
 
         // PRIVILEGES   -- USERS --
-        optionalPrivilege = privilegeService.findByName(PrivilegeNames.USER);
+        optionalPrivilege = privilegeService.findByName(PrivilegeNames.USERS);
         if (optionalPrivilege.isEmpty()) {
-            privilege = new Privilege(PrivilegeNames.USER,
+            privilege = new Privilege(PrivilegeNames.USERS,
                     "Catálogo para el control de cuentas en el sistema");
             privilege = privilegeService.saveInitial(privilege);
         } else {
@@ -155,14 +188,21 @@ public class InitialDatabase implements CommandLineRunner {
         // ROLES    -- ADMIN --
         Optional<Role> optionalRoleAdmin = roleService.findByName(RoleTypes.ADMIN);
         String finalPrivilegeAdmin = privilegeAdmin;
-        Role roleAdmin = optionalRoleAdmin.orElseGet(() ->
-                roleService.saveInitial(new Role(RoleTypes.ADMIN, "Administrador", finalPrivilegeAdmin)));
+        Role roleAdmin;
+        if (optionalRoleAdmin.isEmpty()){
+            roleAdmin = roleService.saveInitial(new Role(RoleTypes.ADMIN, "Administrador", finalPrivilegeAdmin));
+        }else {
+            roleAdmin = roleService.updatePrivileges(optionalRoleAdmin.get(), finalPrivilegeAdmin);
+        }
 
         // ROLES    -- DOCTOR --
         Optional<Role> optionalRoleDoctor = roleService.findByName(RoleTypes.DOCTOR);
         String finalPrivilegeDoctor = privilegeDoctor;
-        optionalRoleDoctor.orElseGet(() ->
-                roleService.saveInitial(new Role(RoleTypes.DOCTOR, "Doctor", finalPrivilegeDoctor)));
+        if (optionalRoleDoctor.isEmpty()) {
+            roleService.saveInitial(new Role(RoleTypes.DOCTOR, "Doctor", finalPrivilegeDoctor));
+        } else {
+            roleService.updatePrivileges(optionalRoleDoctor.get(), finalPrivilegeDoctor);
+        }
 
         // USERS    -- ADMIN --
         if (!userService.existsUsername("6666666666")){

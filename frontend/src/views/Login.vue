@@ -1,7 +1,7 @@
 <template>
   <div id="login">
 
-    <Card class="cards mx-5">
+    <Card class="cards mx-5 h-auto">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
           <img src="../assets/img/logo.png" alt="">
@@ -58,8 +58,11 @@
               </div>
             </b-col>
         </b-row>
+
         <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Iniciar sesión"
           @click="login(credentials)" />
+        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3"
+                                                @click="$router.push({ name: 'recovery-password' })" />
       </template>
     </Card>
 
@@ -182,7 +185,8 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/colors.scss";
 #login {
   display: flex;
   justify-content: center;
@@ -277,5 +281,15 @@ Button {
 .form-label-required::after {
   content: " *";
   color: red;
+}
+
+.p-button-link {
+  background-color: transparent !important;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: $btn-link; 
+  text-decoration: none; 
 }
 </style>

@@ -33,7 +33,7 @@ public class User {
     @Column(name = "password", columnDefinition = "VARCHAR(100) NOT NULL")
     private String password;
 
-    @Column(name = "img", columnDefinition = "TEXT DEFAULT 'https://res.cloudinary.com/dkrcosw87/image/upload/v1623680134/utez/utez_logo.png'")
+    @Column(name = "img", columnDefinition = "TEXT DEFAULT ''")
     private String img;
 
     @Column(name = "token", columnDefinition = "VARCHAR(200) NOT NULL")
