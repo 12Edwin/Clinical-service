@@ -65,36 +65,28 @@ export default {
         return {
             services: [],
             navbarItems: [
-                {
-                    label: 'Hospital San J',
-                    to: "/home",
-                },
-                {
-                    label: 'Conócenos',
-                },
-                {
-                    label: 'Blog',
-                },
-                {
-                    label: 'Especialidades',
-                },
-                {
-                    label: 'Servicios',
-                    to: '/publicServices'
-                },
-                {
-                    label: 'Nuestros Doctores',
-                    to: "/our_doctors"
-                },
-                {
-                    label: "Directorio",
-                },
-                {
-                    label: '',
-                    icon: 'pi pi-fw pi-user',
-                    to: "/login",
-                    end: true
-                },
+              {
+                label: 'Hospital San J',
+                to: "/home",
+              },
+              {
+                label: 'Blog',
+                to: '/blog'
+              },
+              {
+                label: 'Servicios',
+                to: '/services'
+              },
+              {
+                label: 'Nuestros Doctores',
+                to: "/our_doctors"
+              },
+              {
+                label: '',
+                icon: 'pi pi-fw pi-user',
+                to: "/login",
+                end: true // this will align the item to the right
+              },
             ],
             responsiveOptions: [
                 {
