@@ -1,26 +1,32 @@
 <template>
   <div style="background-color: white;">
     <Menubar :model="navbarItems"
-      style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;" />
-    <h1 class="mt-3">Nuestros Doctores</h1>
+             style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;"/>
+    <h1 class="mt-5">Nuestros Doctores</h1>
     <div class="row mt-5" style="justify-content: center;">
       <div class="col-sm-6" style="padding: 5px;">
-        <b-form-input v-model="searchQuery" placeholder="Buscar por nombre o especialidad" />
+        <b-form-input v-model="searchQuery" placeholder="Buscar por nombre o especialidad"/>
       </div>
     </div>
-    <div class="doctor-list mt-3">
-      <transition-group name="fade" tag="div" class="row">
-        <div v-for="doctor in filteredDoctors" :key="doctor.id" class="col-md-4">
-          <div class="doctor-card">
-            <b-card :title="doctor.specialty"
-              img-src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg"
-              img-alt="doctor.name" img-top style="background-color: ghostwhite;">
-              <p class="mb-0">{{ doctor.name }} {{ doctor.lastname }} {{ doctor.surname }}</p>
-              <p class="mb-0">{{ doctor.speciality }} </p>
-            </b-card>
+    <div class="w-100 d-flex justify-content-center" style="min-height: 50vh">
+      <div class="position-relative mt-3 px-5 w-75">
+        <transition-group name="fade">
+          <Loader v-if="isLoading" key="loader"/>
+          <div v-else key="content" class="doctor-list">
+            <div v-for="doctor in filteredDoctors" :key="doctor.id" class="col-md-4">
+              <div class="doctor-card">
+                <b-card :title="doctor.specialty"
+                        img-alt="doctor.name"
+                        img-src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg"
+                        img-top style="background-color: ghostwhite;">
+                  <p class="mb-0">{{ doctor.name }} {{ doctor.lastname }} {{ doctor.surname }}</p>
+                  <p class="mb-0">{{ doctor.speciality }} </p>
+                </b-card>
+              </div>
+            </div>
           </div>
-        </div>
-      </transition-group>
+        </transition-group>
+      </div>
     </div>
     <footer class="bg-white">
       <div class="text-center py-2 text-white" style="background-color: #2a715a;">
@@ -34,9 +40,13 @@
 import Card from 'primevue/card';
 import Menubar from 'primevue/menubar';
 import doctorService from '../services/doctor-service';
-import { decrypt } from '@/config/security';
+import {decrypt} from '@/config/security';
+import Loader from "@/components/loader.vue";
+import {onError} from "@/kernel/alerts";
+
 export default {
   components: {
+    Loader,
     Button: () => import('primevue/button'),
     Menubar,
     Card,
@@ -50,6 +60,7 @@ export default {
         page: 0,
         size: 10
       },
+      isLoading: true,
       totalRecords: 0,
       navbarItems: [
         {
@@ -57,13 +68,8 @@ export default {
           to: "/home",
         },
         {
-          label: 'Conócenos',
-        },
-        {
           label: 'Blog',
-        },
-        {
-          label: 'Especialidades',
+          to: '/blog'
         },
         {
           label: 'Servicios',
@@ -74,13 +80,10 @@ export default {
           to: "/our_doctors"
         },
         {
-          label: "Directorio",
-        },
-        {
           label: '',
           icon: 'pi pi-fw pi-user',
           to: "/login",
-          end: true,
+          end: true // this will align the item to the right
         },
       ],
     };
@@ -89,30 +92,33 @@ export default {
     filteredDoctors() {
       const query = this.searchQuery.toLowerCase();
       return this.doctors.filter(doctor =>
-        doctor.name.toLowerCase().includes(query) ||
-        doctor.specialty.toLowerCase().includes(query)
+          doctor.name.toLowerCase().includes(query) ||
+          doctor.specialty.toLowerCase().includes(query)
       );
     }
   },
   methods: {
     async pagination(event) {
-      if (event != undefined) {
-        const { page, rows } = event;
+      if (event !== undefined) {
+        const {page, rows} = event;
         this.pageable.page = page;
         this.pageable.size = rows;
         this.rowsPerPage = rows;
       }
       try {
-        const { status, data: { result } } = await doctorService.get_doctors(this.pageable)
+        this.isLoading = true
+        const {status, data: {result}} = await doctorService.get_doctors(this.pageable)
         if (status === 200 || status === 201) {
           const decripted = await decrypt(result)
-          const { content, totalElements } = JSON.parse(decripted)
+          const {content, totalElements} = JSON.parse(decripted)
           this.totalRecords = totalElements
           this.doctors = content
-          console.log(this.doctors);
+        }else {
+          await onError('Ocurrió un error', 'Error al cargar los doctores')
         }
-      } catch (error) { }
-
+      } catch (error) {
+      }
+      this.isLoading = false
     },
   },
   mounted() {
