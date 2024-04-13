@@ -1,23 +1,19 @@
 <template>
-  <div class="home" style="background-color: white;">
-    <!-- navbar -->
-    <Menubar :model="navbarItems"
-      style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;" />
-
-    <div style="display: flex; align-items: center; justify-content: center;">
-      <div style=" margin-top: 50px;">
-        <Carousel style="margin-top: 20px;" :value="notices" :numVisible="1" :numScroll="1"
-          :responsiveOptions="responsiveOptions">
+  <div class="w-100">
+    <div class="w-100" style="display: flex; align-items: center; justify-content: center;">
+      <div>
+        <Carousel :numScroll="1" :numVisible="1" :responsiveOptions="responsiveOptions" :value="notices"
+                  style="margin-top: 20px;">
           <template #header>
           </template>
           <template #item="slotProps">
             <div class="car-item">
               <div class="car-content">
                 <div>
-                  <img :src="require(`@/${slotProps.data.image}`)" class="image-carrusel"
-                    :alt="slotProps.data.title" />
+                  <img :alt="slotProps.data.title" :src="require(`@/${slotProps.data.image}`)"
+                       class="image-carrusel"/>
                 </div>
-                <div style="padding-left: 10%; padding-right: 10%;">
+                <div class="mt-3" style="padding-left: 10%; padding-right: 10%;">
                   <h4 class="car-title">{{ slotProps.data.title }}</h4>
                   <div class="car-subtitle">{{ slotProps.data.description }}</div>
                 </div>
@@ -30,34 +26,33 @@
 
 
 
-
-    <div class="container">
-      <div class="row text-center">
-        <h3 class="welcome-heading">Bienvenido a nuestro Hospital</h3>
-        <h6 class="welcome-text">
-          Bienvenido a nuestro Hospital San J, donde la salud y el
-          bienestar de nuestros pacientes son nuestra máxima prioridad.
-          Nos enorgullece ofrecer una atención médica de alta calidad,
-          personalizada y centrada en el paciente.
-          Nuestro equipo de profesionales de la salud está dedicado a
-          mejorar y mantener su salud a través de la prevención, el
-          diagnóstico temprano y el tratamiento de diversas condiciones
-          médicas. Con una combinación de tecnología médica avanzada,
-          instalaciones modernas y personal altamente capacitado, nos
-          esforzamos por proporcionar una experiencia de atención médica
-          excepcional. Gracias por elegirnos como su socio de atención médica.
-        </h6>
-      </div>
-    </div>
-
-
-    <div class="container-fluid" style="background-color: #5cab8c;">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <img src="../assets/img/imagen1.jpg" height="450px" alt="imagen-1"
-            style="padding: 30px; border-radius: 20px;">
+      <div class="w-100 d-flex justify-content-center mb-5 mt-5">
+        <div class="w-75">
+          <h3 class="welcome-heading " style="color:black">Bienvenido a nuestro Hospital</h3>
+          <h6 class="welcome-text">
+            Bienvenido a nuestro Hospital San J, donde la salud y el
+            bienestar de nuestros pacientes son nuestra máxima prioridad.
+            Nos enorgullece ofrecer una atención médica de alta calidad,
+            personalizada y centrada en el paciente.
+            Nuestro equipo de profesionales de la salud está dedicado a
+            mejorar y mantener su salud a través de la prevención, el
+            diagnóstico temprano y el tratamiento de diversas condiciones
+            médicas. Con una combinación de tecnología médica avanzada,
+            instalaciones modernas y personal altamente capacitado, nos
+            esforzamos por proporcionar una experiencia de atención médica
+            excepcional. Gracias por elegirnos como su socio de atención médica.
+          </h6>
         </div>
-        <div class="col-md-6" style="padding: 130px;">
+      </div>
+
+
+
+      <b-row class="w-100 justify-content-center align-items-center" style="background-color: #5cab8c">
+        <div class="col-6">
+          <img alt="imagen-1" height="450px" src="../assets/img/imagen1.jpg"
+               style="padding: 10px; border-radius: 20px;">
+        </div>
+        <div class="col-6">
           <h4 class="text-white">Quienes somos</h4>
           <h6 class="text-white">
             Somos el Hospital San J, una institución de salud comprometida
@@ -74,16 +69,16 @@
             una atención excepcional en todo momento.
           </h6>
         </div>
-      </div>
-    </div>
+      </b-row>
 
-    <div class="container">
-      <div class="row">
-        <h4>Artículos</h4>
-        <div class="col-lg-4 col-md-6 col-sm-12 mt-2" v-for="(item, index) in cardData" :key="index">
+    <div class="w-100 px-4 mt-5">
+      <h4>Artículos</h4>
+      <b-row>
+        <div v-for="(item, index) in cardData" :key="index" class="col-lg-4 col-md-6 col-sm-12 mt-2">
           <Card style="min-height: 500px;">
             <template #header>
-              <img :src="require(`@/${item.image}`)" class="card-img-top" :alt="'Imagen ' + (index + 1) + ' de ejemplo'">
+              <img :alt="'Imagen ' + (index + 1) + ' de ejemplo'" :src="require(`@/${item.image}`)"
+                   class="card-img-top">
             </template>
             <template #title>
               <h4 class="">{{ item.title }}</h4>
@@ -92,65 +87,60 @@
               <h6 class="">{{ item.description }}</h6>
             </template>
             <template #footer>
-              <!-- <router-link :to="item.link" class="p-button p-button-primary">Leer más</router-link> -->
+
             </template>
           </Card>
         </div>
-      </div>
+      </b-row>
     </div>
 
-    <footer class="bg-white">
-      <div class="py-4">
-        <div class="row text-center text-white" style="background-color: #5cab8c;">
-          <!-- Parte turquesa del footer con servicios e información adicional -->
-          <div class="col-md-12 mt-3">
-  <p class="footer-address">Dirección: Avenida Univ. Tec. 1, Emiliano Zapata, México</p>
-</div>
-<div class="row">
-  <div class="col-md-4 text-center">
-    <h5>Servicios</h5>
-    <ul>
-      <li>Urgencias 24 Horas</li>
-      <li>Centro de Especialidades Médicas</li>
-      <li>Hospitalización</li>
-      <li>Laboratorio e Imagenología</li>
-      <li>Farmacia</li>
-      <li>Cafetería</li>
-      <li>Estacionamiento</li>
-    </ul>
-  </div>
-  <div class="col-md-4 text-center">
-    <h5>Instalaciones</h5>
-    <ul>
-      <li>Urgencias</li>
-      <li>Habitaciones</li>
-      <li>Laboratorio</li>
-      <li>Farmacia</li>
-      <li>Cafetería</li>
-      <li>Estacionamiento</li>
-    </ul>
-  </div>
-  <div class="col-md-4 text-center">
-    <h5>Mapa del Sitio</h5>
-    <ul>
-      <li>Inicio</li>
-      <li>Nosotros</li>
-      <li>Servicios</li>
-      <li>Paquetes y Promociones</li>
-      <li>Contacto</li>
-    </ul>
-  </div>
-</div>
+      <div class="py-4 w-100 mt-4">
+        <div class="pb-5 pt-3 px-4 w-100 text-white justify-content-center" style="background-color: #5cab8c;">
+
+          <h5 class="mb-5 w-auto">Dirección: Avenida Univ. Tec. 1, Emiliano Zapata, México</h5>
+
+          <div class="d-flex w-100 justify-content-center p-0">
+            <div class="col-md-4 m-0 text-center">
+              <ul class="m-0">
+                <h5>Servicios</h5>
+                <li>Urgencias 24 Horas</li>
+                <li>Centro de Especialidades Médicas</li>
+                <li>Hospitalización</li>
+                <li>Laboratorio e Imagenología</li>
+                <li>Farmacia</li>
+                <li>Cafetería</li>
+                <li>Estacionamiento</li>
+              </ul>
+            </div>
+            <div class="col-md-4 text-center">
+              <ul class="m-0">
+                <h5>Instalaciones</h5>
+                <li>Urgencias</li>
+                <li>Habitaciones</li>
+                <li>Laboratorio</li>
+                <li>Farmacia</li>
+                <li>Cafetería</li>
+                <li>Estacionamiento</li>
+              </ul>
+            </div>
+            <div class="col-md-4 text-center">
+              <ul class="m-0">
+                <h5>Mapa del Sitio</h5>
+                <li>Inicio</li>
+                <li>Nosotros</li>
+                <li>Servicios</li>
+                <li>Paquetes y Promociones</li>
+                <li>Contacto</li>
+              </ul>
+            </div>
+          </div>
 
         </div>
       </div>
-
-      <div class="linea"></div>
 
       <div class="text-center py-2 text-white" style="background-color: #2a715a;">
         <p>© Hospital San J 2024. Todos los derechos reservados.</p>
       </div>
-    </footer>
 
   </div>
 </template>
@@ -176,30 +166,6 @@ export default {
   data() {
     return {
       isLoading: true,
-      navbarItems: [
-        {
-          label: 'Hospital San J',
-          to: "/home",
-        },
-        {
-          label: 'Blog',
-          to: '/blog'
-        },
-        {
-          label: 'Servicios',
-          to: '/services'
-        },
-        {
-          label: 'Nuestros Doctores',
-          to: "/our_doctors"
-        },
-        {
-          label: '',
-          icon: 'pi pi-fw pi-user',
-          to: "/login",
-          end: true // this will align the item to the right
-        },
-      ],
 
       notices: [
         {
@@ -263,15 +229,14 @@ export default {
     window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
-    handleScroll() {
+    handleScroll(evt) {
       const welcomeHeading = document.querySelector('.welcome-heading');
       const welcomeText = document.querySelector('.welcome-text');
-
+      console.log(evt)
       const boundingHeading = welcomeHeading.getBoundingClientRect();
       const boundingText = welcomeText.getBoundingClientRect();
-
       if (boundingHeading.top >= 0 && boundingHeading.bottom <= window.innerHeight ||
-        boundingText.top >= 0 && boundingText.bottom <= window.innerHeight) {
+          boundingText.top >= 0 && boundingText.bottom <= window.innerHeight) {
         welcomeHeading.classList.add('show');
         welcomeText.classList.add('show');
       }
@@ -287,7 +252,7 @@ export default {
 .image-carrusel {
   overflow: hidden;
   height: 500px;
-  width: 76%;
+  width: 90%;
 }
 
 @media only screen and (max-width: 768px) {
@@ -299,41 +264,15 @@ export default {
 
 .welcome-heading,
 .welcome-text {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.welcome-heading.show,
-.welcome-text.show {
   opacity: 1;
+  color: black;
+  transition: opacity 0.5s ease;
 }
 
 .card-img-top {
   height: 200px;
 }
 
-.card-content {
-  height: 100%;
-}
-
-/* .card-style {
-  border-radius: 5%;
-  border-width: 1px;
-  border-color: #ff0000;
-} */
-
-.card-style {
-  border-radius: 5px;
-  box-shadow: 5px 0 5px -2px rgba(0, 0, 0, 0.2), 0 5px 5px -2px rgba(0, 0, 0, 0.2);
-  height: 400px !important;
-}
-
-.h6 {
-  font-weight: 200;
-}
-.footer-address {
-  margin-bottom: 20px;
-}
 
 @media (max-width: 768px) {
   .col-md-4 {
@@ -341,8 +280,13 @@ export default {
   }
 }
 
-li{
+li {
   list-style-type: none;
 }
-
+</style>
+<style>
+.welcome-heading.show,
+.welcome-text.show {
+  opacity: 1;
+}
 </style>

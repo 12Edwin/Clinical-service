@@ -1,9 +1,7 @@
 <template>
-  <div style="background-color: white;">
-    <Menubar :model="navbarItems"
-             style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;"/>
-    <h1 class="mt-5">Nuestros Doctores</h1>
-    <div class="row mt-5" style="justify-content: center;">
+  <div>
+    <h1>Nuestros Doctores</h1>
+    <div class="row mt-5 w-100" style="justify-content: center;">
       <div class="col-sm-6" style="padding: 5px;">
         <b-form-input v-model="searchQuery" placeholder="Buscar por nombre o especialidad"/>
       </div>
@@ -28,11 +26,9 @@
         </transition-group>
       </div>
     </div>
-    <footer class="bg-white">
-      <div class="text-center py-2 text-white" style="background-color: #2a715a;">
-        <p>© Hospital San J 2024. Todos los derechos reservados.</p>
-      </div>
-    </footer>
+    <div class="text-center py-2 text-white" style="background-color: #2a715a;">
+      <p>© Hospital San J 2024. Todos los derechos reservados.</p>
+    </div>
   </div>
 </template>
 
@@ -56,6 +52,7 @@ export default {
     return {
       searchQuery: '',
       doctors: [],
+      filteredDoctors: [],
       pageable: {
         page: 0,
         size: 10
@@ -88,13 +85,13 @@ export default {
       ],
     };
   },
-  computed: {
-    filteredDoctors() {
-      const query = this.searchQuery.toLowerCase();
-      return this.doctors.filter(doctor =>
-          doctor.fullname.toLowerCase().includes(query) ||
-          doctor.speciality.toLowerCase().includes(query)
-      );
+
+  watch: {
+    searchQuery(value) {
+      this.filteredDoctors = this.doctors.filter(doctor =>
+          doctor.name.toLowerCase().includes(value.toLowerCase()) ||
+          doctor.speciality.toLowerCase().includes(value.toLowerCase())
+      )
     }
   },
   methods: {
@@ -117,6 +114,7 @@ export default {
               this.doctors.push(c);
             }
           });
+          this.filteredDoctors = this.doctors
         }else {
           await onError('Ocurrió un error', 'Error al cargar los doctores')
         }
@@ -131,7 +129,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .doctor-card {
   opacity: 1;
   transition: opacity 0.5s, transform 0.5s;
@@ -161,5 +159,9 @@ export default {
     flex: 0 0 calc(33.333% - 40px);
     margin: 20px;
   }
+}
+
+.nav-content{
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
