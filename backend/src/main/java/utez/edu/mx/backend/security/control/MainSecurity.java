@@ -76,8 +76,8 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
             req.antMatchers("/api/ratting/**").permitAll();
             req.antMatchers("/api/captcha/**").permitAll();
             req.antMatchers("/api/sms/**").permitAll();
-            req.antMatchers("/api/user/profile/").authenticated();
-            req.antMatchers("/api/user/upload/").authenticated();
+            req.antMatchers("/api/user/profile/**").authenticated();
+            req.antMatchers("/api/user/upload/**").authenticated();
             req.antMatchers("/api/user/**").permitAll();
             req.antMatchers("/api/pathology/**").authenticated();
             req.antMatchers("/api/service/**").permitAll();
