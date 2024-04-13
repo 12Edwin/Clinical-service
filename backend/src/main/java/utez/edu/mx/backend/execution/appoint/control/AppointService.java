@@ -182,6 +182,9 @@ public class AppointService {
         if (optionalAppoint.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
+            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
             return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -262,6 +265,9 @@ public class AppointService {
         if (appoint1.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (appoint1.get().getStatus() == StatusAppoint.Cancelada || appoint1.get().getStatus() == StatusAppoint.Completada){
+            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Optional<Treatment> treatment = treatmentRepository.findById(appoint1.get().getTreatment().getId());
         if (treatment.isEmpty()){
             return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -325,6 +331,9 @@ public class AppointService {
         if (optionalAppoint.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
+            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
             return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -359,6 +368,9 @@ public class AppointService {
         Optional<Appoint> optionalAppoint = repository.findById(appoint.getId());
         if (optionalAppoint.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
+            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){

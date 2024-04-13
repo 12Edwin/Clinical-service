@@ -18,7 +18,7 @@ public interface AppointRepository extends JpaRepository<Appoint, Long> {
     List<Appoint> findAllByStartHourBetween(Date startDate, Date endDate);
     @Query(value = "SELECT id FROM appoints  WHERE space_id = :space AND (((:date1 > start_hour  AND :date1 < end_hour) OR (:date2 > start_hour AND :date2 < end_hour)) OR\n" +
             "                                ((start_hour > :date1 AND start_hour < :date2) OR (end_hour > :date1 AND end_hour < :date2))  OR\n" +
-            "                                (:date1 = start_hour AND :date2 = end_hour)) AND id NOT IN (:id)")
+            "                                (:date1 = start_hour AND :date2 = end_hour)) AND id NOT IN (:id) AND status not like 'Cancelada'")
     List<Long> findBusySpaces(@Param("space") Long space, @Param("date1") Date date1, @Param("date2") Date date2, @Param("id") Long id);
 
     @Modifying
