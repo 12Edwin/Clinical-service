@@ -14,6 +14,26 @@
             <b-col cols="12" lg="3" md="6">
               <b-img :src="availableImage ? getImage : require(`@/${getImage}`)" alt="profile" class="w-100 mb-2"
                      thumbnail/>
+              <Button class="w-100 p-button-outlined text-center mt-3 mb-3" icon="pi-edit" @click="toggleShow">Cambiar imagen</Button>
+              <my-upload field="profile"
+                         ref="upload"
+                         @crop-success="cropSuccess"
+                         @crop-upload-success="cropUploadSuccess"
+                         no-circle
+                         @close="toggleShow"
+                         @cancel="toggleShow"
+                         @toggle="toggleShow"
+                         @abort="toggleShow"
+                         @mouseup="toggleShow"
+                         :model-value="show"
+                         method="post"
+                         :width="300"
+                         :height="300"
+                         :lang-ext="lang"
+                         :url="url"
+                         :headers="headers">
+              </my-upload>
+
               <div class="d-flex justify-content-center w-100">
                 <b-row>
                   <b-col cols="12">
@@ -23,7 +43,7 @@
               </div>
               <b-row>
                 <b-col class="d-flex justify-content-center" cols="12">
-                  <p><label style="font-weight: lighter; font-size: 22px;">{{ data.speciality.id ? data.speciality.name : 'Administrador'}}</label></p>
+                  <p><label style="font-weight: lighter; font-size: 22px;">{{ data.speciality ? data.speciality.name : 'Administrador'}}</label></p>
                 </b-col>
               </b-row>
             </b-col>
@@ -108,7 +128,7 @@
                   <div class="col-lg-6 col-md-6 col-12 mb-5">
                     <span class="p-float-label">
                         <Dropdown id="dropdown" v-model=" v$.sex.$model " :class="{ 'p-invalid': v$.sex.$error }"
-                                  :options="sex" class="w-100"
+                                  :options="sex" class="w-100 text-start"
                                   optionLabel="name"/>
                         <label for="dropdown">Sexo</label>
                     </span>
@@ -160,14 +180,15 @@ import Loader from "@/components/loader.vue";
 import {getServerUrl} from "@/config/http-client.gateway";
 import {reactive} from "@vue/composition-api";
 import {helpers, required} from "@vuelidate/validators";
-import {newregex} from "@/utils/regex";
+import {regexName} from "@/utils/regex";
 import {useVuelidate} from "@vuelidate/core";
 import {isBefore, subYears} from "date-fns";
 import Dropdown from "primevue/dropdown";
+import myUpload from 'vue-image-crop-upload';
 import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
 
 export default {
-  components: {Dropdown, Loader, Header},
+  components: {Dropdown, Loader, Header, 'my-upload': myUpload},
   data() {
     return {
       data:{},
@@ -175,6 +196,31 @@ export default {
         {value: 'Masculino', name: 'Masculino'},
         {value: 'Femenino', name: 'Femenino'}
       ],
+      show: false,
+      imgDataUrl: '',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      },
+      url: getServerUrl() + '/user/upload/',
+      lang: {
+        hint: 'Haga clic para subir una imagen',
+        loading: 'Cargando imagen…',
+        noSupported: 'El navegador no soporta cortar la imagen.',
+        success: 'Carga exitosa.',
+        fail: 'Carga fallida.',
+        preview: 'Previsualización',
+        btn: {
+          off: 'Cancelar',
+          close: 'Cerrar',
+          back: 'Atrás',
+          save: 'Guardar'
+        },
+        error: {
+          onlyImg: 'Solo archivos de imagen son permitidos.',
+          outOfSize: 'El archivo excede el tamaño máximo: 2mb.',
+          lowestPx: 'La imagen es demasiado pequeña. Ancho mínimo: 300px.',
+        }
+      },
       isLoading: true,
       isSaving: false,
       availableImage: true
@@ -201,16 +247,16 @@ export default {
     const rules = {
       name: {
         required: helpers.withMessage("Campo obligatorio", required),
-        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => regexName.test(value)),
         length: helpers.withMessage("Apellido no válido", (value) => value.length > 3 && value.length < 150),
       },
       surname: {
         required: helpers.withMessage("Campo obligatorio", required),
-        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => regexName.test(value)),
         length: helpers.withMessage("Apellido no válido", (value) => value.length > 3 && value.length < 150),
       },
       lastname: {
-        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => value.length > 0 ? newregex.test(value) : true),
+        onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => value.length > 0 ? regexName.test(value) : true),
         length: helpers.withMessage("Apellido no válido", (value) => value.length > 0 ? (value.length > 3 && value.length < 150) : true),
       },
       sex: {
@@ -228,6 +274,22 @@ export default {
 
     const v$ = useVuelidate(rules, profile)
     return {profile, v$}
+  },
+
+  watch:{
+    show(value) {
+      const element = document.querySelector('.vicp-operate');
+      const element2 = document.querySelector('.vicp-close');
+      if (element) {
+        if (value) {
+          element.addEventListener('click', this.toggleShow);
+          element2.addEventListener('click', this.toggleShow);
+        } else {
+          element.removeEventListener('click', this.toggleShow);
+          element2.removeEventListener('click', this.toggleShow);
+        }
+      }
+    }
   },
 
   methods: {
@@ -258,6 +320,7 @@ export default {
         const {status} = await getImage(this.data.img)
         if (status !== 200) {
           this.availableImage = false
+          await onError('Error al cargar la imagen', 'La imagen no fue encontrada')
         }
 
       }
@@ -306,12 +369,32 @@ export default {
         }
         this.isSaving = false
       }
-    }
+    },
+
+    toggleShow() {
+      this.show = !this.show;
+    },
+
+    cropSuccess(imgDataUrl, field){
+      this.imgDataUrl = imgDataUrl;
+    },
+
+    async cropUploadSuccess(jsonData, field){
+      if (jsonData.type === 'SUCCESS') {
+        this.availableImage = true
+        this.toggleShow()
+        await onSuccess('Imagen actualizada', 'Imagen actualizada correctamente')
+            .then(() => {
+              this.getProfile()
+            })
+      }
+    },
   },
 
   computed: {
     getImage() {
-      return this.availableImage ? `${getServerUrl()}${this.profile.img}` : 'assets/latido-del-corazon.gif'
+      const timestamp = Date.now();
+      return this.availableImage ? `${getServerUrl()}${this.data.img}?t=${timestamp}` : 'assets/latido-del-corazon.gif'
     },
     fullName(){
       return this.data.id ? `${this.data.person.name} ${this.data.person.surname} ${(this.data.person.lastname || '')}` : ''
