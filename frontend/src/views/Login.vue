@@ -58,10 +58,11 @@
               </div>
             </b-col>
         </b-row>
-        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3"
-                                        @click="$router.push({ name: 'recovery-password' })" />
+
         <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Iniciar sesión"
           @click="login(credentials)" />
+        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3"
+                                                @click="$router.push({ name: 'recovery-password' })" />
       </template>
     </Card>
 
@@ -283,7 +284,7 @@ Button {
 }
 
 .p-button-link {
-  background-color: transparent;
+  background-color: transparent !important;
   border: none;
   padding: 0;
   font: inherit;

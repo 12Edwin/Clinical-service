@@ -45,7 +45,7 @@ export default {
   },
   computed:{
     isLogin(){
-      return this.$route.path.includes('login')
+      return this.$route.path.includes('login') || this.$route.path.includes('recovery-password')
     }
   }
 }
