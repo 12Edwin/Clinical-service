@@ -355,7 +355,6 @@ export default {
             this.saveDoctor();
         },
 
-
         async saveDoctor() {
             let pass = "DOC" + this.doctor.name;
             let selectedGender = this.doctor.sex.value;
