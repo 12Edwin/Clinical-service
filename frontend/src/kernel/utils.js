@@ -74,6 +74,51 @@ const getSuccesMessage = (successCode) => {
     }
     return successCodes[successCode] || 'Operación exitosa';
 }
+
+const getIconByStatus = (status) => {
+    let icon = "";
+    switch (status) {
+      case "Pendiente":
+        icon = "pi pi-clock";
+        break;
+      case "Completada":
+        icon = "pi pi-check";
+        break;
+      case "Cancelada":
+        icon = "pi pi-calendar-minus";
+        break;
+      default:
+        icon = "pi pi-question";
+        break;
+    }
+    return icon;
+}
+
+const getColorByStatus = (status) => {
+    let color = "";
+    switch (status) {
+      case "Pendiente":
+        color = "orange";
+        break;
+      case "Completada":
+        color = "#368368";
+        break;
+      case "Cancelada":
+        color = "gray";
+        break;
+      case "Reprogramada":
+        color = "#2196F3";
+        break;
+      default:
+        color = "red";
+        break;
+    }
+    return color;
+}
+
+const filterByName = (array, name) => {
+    return array.filter((item) => item.name === name);
+}
 export default { 
     getRoleNameBytoken,
     getToken,
@@ -82,5 +127,8 @@ export default {
     getUserInfoByToken,
     limitDescription,
     getErrorMessages,
-    getSuccesMessage
+    getSuccesMessage,
+    getIconByStatus,
+    getColorByStatus,
+    filterByName
 }
