@@ -1,4 +1,6 @@
 <template>
+<div>
+    <Header style="margin-bottom: 20px" title="Doctores"/>
     <Card class="shadow shadow-lg rounded">
         <template #header>
             <div class="header">
@@ -202,6 +204,7 @@
             <Toast />
         </template>
     </Card>
+</div>
 </template>
 
 <script>
@@ -221,6 +224,8 @@ import InputText from 'primevue/inputtext/InputText';
 import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
+import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
+import Header from '@/components/Header.vue';
 
 export default {
     name: 'SaveDoctor',
@@ -232,7 +237,8 @@ export default {
         InputMask,
         Dropdown,
         Toast,
-        FileUpload
+        FileUpload,
+        Header
     },
     setup() {
         const doctor = reactive({

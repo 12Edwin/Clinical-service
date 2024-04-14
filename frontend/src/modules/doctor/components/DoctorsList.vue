@@ -1,5 +1,6 @@
 <template>
     <div>
+        <Header style="margin-bottom: 20px" title="Doctores"/>
         <Panel class="w-100 shadow-lg">
             <template #header>
                 <div class="d-flex justify-content-between w-100 align-items-center">
@@ -107,6 +108,7 @@ import Badge from 'primevue/badge';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
+import Header from '@/components/Header.vue';
 
 export default {
     components: {
@@ -117,7 +119,8 @@ export default {
         Paginator,
         Toast,
         ModalUpdateVue,
-        Badge
+        Badge, 
+        Header
     },
     data() {
         return {

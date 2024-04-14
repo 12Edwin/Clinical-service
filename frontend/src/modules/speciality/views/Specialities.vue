@@ -1,5 +1,7 @@
 <template>
-    <div class="w-100">
+    <div>
+        <Header style="margin-bottom: 20px" title="Especialidades"/>
+        <div class="w-100">
         <b-row>
             <b-col cols="12">
                 <panel>
@@ -61,6 +63,7 @@
         <ModalSaveSpeciality :visible.sync="displaySaveModal" />
         <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
     </div>
+    </div>
 </template>
 <script>
 import AccordionTab from 'primevue/accordiontab';
@@ -72,6 +75,7 @@ import specialitiesServices from "@/modules/speciality/services/speciality-servi
 import {decrypt, encrypt} from "@/config/security"
 import Toast from 'primevue/toast';
 import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
+import Header from '@/components/Header.vue';
 export default {
     components: {
         AccordionTab,
@@ -80,7 +84,8 @@ export default {
         ModalSaveSpeciality,
         Paginator,
         Toast,
-        ModalDetailSpeciality
+        ModalDetailSpeciality,
+        Header
     },	
     data(){
         return {
