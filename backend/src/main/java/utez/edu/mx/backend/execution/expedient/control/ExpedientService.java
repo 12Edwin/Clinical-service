@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.execution.expedient.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,29 +31,21 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class ExpedientService {
 
-    @Autowired
-    private ExpedientRepository repository;
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private Physical_recordRepository recordRepository;
-    @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
-    private PathologicalRepository pathologicalRepository;
-    @Autowired
-    private DiseaseRepository diseaseRepository;
-    @Autowired
-    private ViewExpedientRepository viewRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ExpedientRepository repository;
+    private final PersonRepository personRepository;
+    private final Physical_recordRepository recordRepository;
+    private final PatientRepository patientRepository;
+    private final PathologicalRepository pathologicalRepository;
+    private final DiseaseRepository diseaseRepository;
+    private final ViewExpedientRepository viewRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public ResponseEntity<?> findAll(Pageable pageable, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
@@ -119,6 +111,9 @@ public class ExpedientService {
         }
         DtoExpedient expedient = optional.get().cast();
         Optional<Expedient> exp = repository.findById(expedient.getId());
+        if (exp.isEmpty()){
+            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
         expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
         expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
         return new ResponseEntity<>(new Message(expedient, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);

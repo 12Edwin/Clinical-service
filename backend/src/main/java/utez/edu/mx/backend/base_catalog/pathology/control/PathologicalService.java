@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.pathology.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import utez.edu.mx.backend.base_catalog.pathology.model.PathologicalRepository;
 import utez.edu.mx.backend.base_catalog.pathology.model.Pathological_record;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathologicalRepository;
-import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 import utez.edu.mx.backend.execution.expedient.model.ExpedientRepository;
 import utez.edu.mx.backend.utils.entity.Message;
@@ -23,16 +22,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class PathologicalService {
 
-    @Autowired
-    private PathologicalRepository repository;
+    private final PathologicalRepository repository;
 
-    @Autowired
-    private TypePathologicalRepository typePathologicalRepository;
+    private final TypePathologicalRepository typePathologicalRepository;
 
-    @Autowired
-    private ExpedientRepository expedientRepository;
+    private final ExpedientRepository expedientRepository;
 
     @Transactional(readOnly = true)
     public Optional<TypePathological> findFirstByName(String name){

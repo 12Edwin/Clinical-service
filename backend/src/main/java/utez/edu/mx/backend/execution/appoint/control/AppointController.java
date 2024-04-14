@@ -3,7 +3,6 @@ package utez.edu.mx.backend.execution.appoint.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,10 +27,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AppointController {
 
-    private static final String APPOINT = "APPOINT";
-
-    @Autowired
-    private AppointService service;
+    private final AppointService service;
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;

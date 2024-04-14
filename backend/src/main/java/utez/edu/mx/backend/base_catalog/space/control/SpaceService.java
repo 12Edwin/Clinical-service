@@ -2,7 +2,6 @@ package utez.edu.mx.backend.base_catalog.space.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SpaceService {
 
-    @Autowired
     private final SpaceRepository repository;
     @Transactional
     public Space saveInitial(Space space){

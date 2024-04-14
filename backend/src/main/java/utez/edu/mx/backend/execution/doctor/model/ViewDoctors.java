@@ -1,10 +1,12 @@
 package utez.edu.mx.backend.execution.doctor.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import utez.edu.mx.backend.base_catalog.person.model.SexType;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

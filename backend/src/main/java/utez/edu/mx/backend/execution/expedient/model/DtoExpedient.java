@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
