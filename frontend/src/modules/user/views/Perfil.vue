@@ -185,7 +185,7 @@ import {useVuelidate} from "@vuelidate/core";
 import {isBefore, subYears} from "date-fns";
 import Dropdown from "primevue/dropdown";
 import myUpload from 'vue-image-crop-upload';
-import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
+import {onError, onQuestion, onSuccess, onWarning} from "@/kernel/alerts";
 
 export default {
   components: {Dropdown, Loader, Header, 'my-upload': myUpload},
@@ -320,7 +320,7 @@ export default {
         const {status} = await getImage(this.data.img)
         if (status !== 200) {
           this.availableImage = false
-          await onError('Error al cargar la imagen', 'La imagen no fue encontrada')
+          await onWarning('Imagen inexistente', 'La imagen no fue encontrada')
         }
 
       }
