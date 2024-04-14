@@ -331,6 +331,9 @@ public class AppointService {
         if (optionalAppoint.isEmpty()){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (new Date().before(optionalAppoint.get().getStartHour())) {
+            return new ResponseEntity<>(new Message("The appointment has not yet started", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
             return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }

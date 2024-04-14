@@ -150,13 +150,12 @@ public class UserService {
 
 
         User updatedUser = userOptional.get();
-        updatedUser.setPassword(encoder.encode(user.getPassword()));
         updatedUser.setAvailable(true);
 
         Person person = optionalPerson.get();
         person.setName(user.getPersonProfile().getName());
         person.setSurname(user.getPersonProfile().getSurname());
-        person.setLastname(user.getPersonProfile().getLastname());
+        person.setLastname(user.getPersonProfile().getLastname() == null ? "" : user.getPersonProfile().getLastname());
         person.setSex(SexType.valueOf(user.getPersonProfile().getSex()));
         person.setPhone(user.getPersonProfile().getPhone());
         person.setBirthday(user.getPersonProfile().getBirthday());
@@ -278,7 +277,9 @@ public class UserService {
         Path path = Paths.get(folderPath + newFileName);
 
         try {
-            Files.deleteIfExists(Path.of(user.getImg()));
+            if (user.getImg() != null && !user.getImg().isEmpty()) {
+                Files.deleteIfExists(Path.of(user.getImg()));
+            }
             Files.write(path, file.getBytes());
             user.setImg(path.toString());
             repository.saveAndFlush(user);
@@ -309,10 +310,10 @@ public class UserService {
                 String contentType = Files.probeContentType(path);
                 return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
             } else {
-                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
     }
 
