@@ -14,7 +14,6 @@
             <b-col cols="12" lg="3" md="6">
               <b-img :src="availableImage ? getImage : require(`@/${getImage}`)" alt="profile" class="w-100 mb-2"
                      thumbnail/>
-              <Button class="w-100 p-button-outlined text-center mt-3 mb-3" icon="pi-edit" @click="toggleShow">Cambiar imagen</Button>
               <my-upload field="profile"
                          ref="upload"
                          @crop-success="cropSuccess"
@@ -33,7 +32,6 @@
                          :url="url"
                          :headers="headers">
               </my-upload>
-
               <div class="d-flex justify-content-center w-100">
                 <b-row>
                   <b-col cols="12">
@@ -44,6 +42,12 @@
               <b-row>
                 <b-col class="d-flex justify-content-center" cols="12">
                   <p><label style="font-weight: lighter; font-size: 22px;">{{ data.speciality ? data.speciality.name : 'Administrador'}}</label></p>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="12" class="d-flex justify-content-center w-100">
+                  <Button icon="pi pi-camera" class="p-button-rounded p-button-outlined button-margin" @click="toggleShow" v-tooltip.top="'Cambiar foto'" />
+                  <Button icon="pi pi-lock-open" class="p-button-rounded p-button-outlined button-margin" @click="openChangePassword" v-tooltip.bottom="'Cambiar contraseña'"/>
                 </b-col>
               </b-row>
             </b-col>
@@ -156,14 +160,14 @@
                 </b-row>
                 <div class="w-100 d-flex justify-content-end">
                   <Button
-                      :disabled="v$.$invalid  || isSaving" :loading="isSaving"
-                      class="rounded-pill px-4 " type="submit" variant="success"><span
-                      class="me-3"> Guardar </span>
+                      :disabled="v$.$invalid  || isSaving" :loading="isSaving" icon="pi pi-check"
+                      class="p-button-rounded button-style" type="submit" variant="success" label="Guardar">
                   </Button>
                 </div>
               </form>
             </b-col>
           </b-row>
+          <ChangePassword  :visible.sync="displayModal" key="modal"/>
         </transition-group>
       </div>
     </Panel>
@@ -186,9 +190,9 @@ import {isBefore, subYears} from "date-fns";
 import Dropdown from "primevue/dropdown";
 import myUpload from 'vue-image-crop-upload';
 import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
-
+import ChangePassword from '@/modules/user/views/Change-password.vue';
 export default {
-  components: {Dropdown, Loader, Header, 'my-upload': myUpload},
+  components: {Dropdown, Loader, Header, 'my-upload': myUpload, ChangePassword},
   data() {
     return {
       data:{},
@@ -223,7 +227,8 @@ export default {
       },
       isLoading: true,
       isSaving: false,
-      availableImage: true
+      availableImage: true,
+      displayModal: false,
     }
   },
 
@@ -289,7 +294,7 @@ export default {
           element2.removeEventListener('click', this.toggleShow);
         }
       }
-    }
+    },
   },
 
   methods: {
@@ -389,6 +394,9 @@ export default {
             })
       }
     },
+    openChangePassword(){
+      this.displayModal = true
+    }
   },
 
   computed: {
@@ -431,6 +439,18 @@ export default {
   color: #444;
   font-size: 12px;
   transform: translateY(-20px);
+}
+
+.button-margin{
+  margin-left: 10px
+}
+
+.button-style{
+    background: #2a715a;
+    border: none;
+}
+.button-style:hover{
+    background-color: #368368 !important;
 }
 </style>
 

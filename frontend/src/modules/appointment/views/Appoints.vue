@@ -82,7 +82,6 @@ import Toast from 'primevue/toast';
 import Chip from 'primevue/chip';
 import ModalDetailAppoint from './ModalDetailAppoint.vue';
 import moment from 'moment'
-import Delete from '../components/Delete.vue';
 import { format12Time } from '@/utils/regex';
 import Menu from 'primevue/menu';
 import Header from '@/components/Header.vue';
@@ -94,7 +93,6 @@ export default {
     Toast,
     Chip,
     ModalDetailAppoint,
-    Delete,
     Menu,
     Header,
     Loader

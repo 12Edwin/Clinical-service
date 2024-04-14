@@ -33,6 +33,12 @@
                                 <p class="error-messages" v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
                                     {{ v$.name.onlyLettersAndAccents.$message }}
                                 </p>
+                                <p class="error-messages" v-if="v$.name.$dirty && v$.name.maxLength.$invalid">
+                                    {{ v$.name.maxLength.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
+                                    {{ v$.name.minLength.$message }}
+                                </p>
                             </div>
                         </div>
                         <div class="p-col-12 mb-2">
@@ -46,6 +52,12 @@
                                 </p>
                                 <p class="error-messages" v-if="v$.comment.$dirty && v$.comment.onlyLettersAndAccents.$invalid">
                                     {{ v$.comment.onlyLettersAndAccents.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.comment.$dirty && v$.comment.maxLength.$invalid">
+                                    {{ v$.name.maxLength.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.comment.$dirty && v$.comment.minLength.$invalid">
+                                    {{ v$.comment.minLength.$message }}
                                 </p>
                             </div>
                         </div>
@@ -109,11 +121,15 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage('El nombre es requerido', required),
-                onlyLettersAndAccents: helpers.withMessage('El nombre solo puede contener letras y acentos', (value)=>regexName.test(value))
+                onlyLettersAndAccents: helpers.withMessage('El nombre solo puede contener letras y acentos', (value)=>regexName.test(value)),
+                maxLength: helpers.withMessage('El nombre no puede exceder los 60 caracteres', maxLength(60)),
+                minLength: helpers.withMessage('El nombre debe tener al menos 3 caracteres', minLength(3))
             },
             comment: {
                 required: helpers.withMessage('El comentario es requerido', required),
-                onlyLettersAndAccents:helpers.withMessage('El comentario solo puede contener letras y acentos', (value)=>text.test(value))
+                onlyLettersAndAccents:helpers.withMessage('El comentario solo puede contener letras y acentos', (value)=>text.test(value)),
+                maxLength: helpers.withMessage('El comentario no puede exceder los 200 caracteres', maxLength(200)),
+                minLength: helpers.withMessage('El comentario debe tener al menos 3 caracteres', minLength(3))
             }
         }
 
@@ -151,7 +167,7 @@ export default {
                     await onError("Error al enviar la valoración", "Parece que estamos teniendo problemas con el servidor")
                 }
             }else{
-                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: '¡Parece que las horas ingresadas no son válidas!', life: 3000});
+                this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: '¡Parece que tienes algunos campos inválidos!', life: 3000});
             }
         },
         async getFeedbacks(){

@@ -36,10 +36,51 @@ async function encodeBase64(file) {
 const getUserInfoByToken =() => {
     return jwtDecode(localStorage.getItem("token"))
 }
+
+const limitDescription = (description) => {
+    const words = description.split(' ');
+    if (words.length === 10 && words.length < 10) {
+        return description;
+    } else {
+        const limitedWords = words.slice(0, 10);
+        return limitedWords.join(' ') + '...';
+    }
+}
+
+const getErrorMessages = (errorCode) => {
+    const errorMessages = {
+        'User not found': 'Usuario no encontrado',
+        'Not found': 'Cita no encontrada',
+        'Treatment not found': 'Tratamiento no encontrado',
+        'Expedient not found': 'Expediente no encontrado',
+        'Unauthorized user': 'Usuario no autorizado',
+        "Maximum 5 hours": 'La cita no puede durar más de 5 horas',
+        "Minimum 1 hour": 'La cita debe durar al menos 1 hora',
+        "Invalid schedule": 'Horario no válido',
+        "The space is busy in this schedule": 'El espacio está ocupado en este horario',
+        "Cannot be more than one month from now": 'La cita no puede programarse después de un mes',
+        "The appointment has not yet started" : 'Aún no ha comenzado la cita',
+        "Cannot update a canceled or completed appointment": 'No se puede actualizar una cita cancelada o completada',
+    };
+    return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
+}
+
+
+const getSuccesMessage = (successCode) => {
+    const successCodes = {
+        'Appoint rescheduled': 'Cita reprogramada',
+        'Appoint canceled': 'Cita cancelada',
+        'Appoint registered': 'Cita registrada',
+    }
+    return successCodes[successCode] || 'Operación exitosa';
+}
 export default { 
     getRoleNameBytoken,
     getToken,
     removeToken,
     encodeBase64,
-    getUserInfoByToken
+    getUserInfoByToken,
+    limitDescription,
+    getErrorMessages,
+    getSuccesMessage
 }

@@ -111,15 +111,15 @@
                 <b-row>
                   <b-col class="mb-3 d-flex justify-content-center" cols="12" lg="12">
                     <div class="field w-75">
-                                                <span :class="{ 'invalid-field-custom': v$.phone.$error }"
-                                                      class="p-float-label p-input-icon-right">
-                                                    <i class="pi pi-phone"/>
-                                                    <InputText id="field-phone" v-model="v$.phone.$model"
-                                                               :useGrouping="false"
-                                                               type="number"/>
-                                                    <label for="field-phone">Número de
-                                                        teléfono</label>
-                                                </span>
+                      <span :class="{ 'invalid-field-custom': v$.phone.$error }"
+                            class="p-float-label p-input-icon-right">
+                          <i class="pi pi-phone"/>
+                          <InputText id="field-phone" v-model="v$.phone.$model"
+                                      :useGrouping="false"
+                                      type="number"/>
+                          <label for="field-phone">Número de
+                              teléfono</label>
+                      </span>
                       <div class="text-danger text-start pt-1">
                         <p v-if="v$.phone.$dirty && v$.phone.minLength.$invalid"
                            class="error-messages">

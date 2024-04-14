@@ -9,7 +9,7 @@ const saveSpeciality = async (encodedPayload) => {
         })
         return response
     } catch (error) {
-        return error
+        return error.response
     }
 }
 
@@ -18,7 +18,7 @@ const getSpecialities = async (pagination) => {
         const response = await api.doGet("/speciality/", {params: pagination})
         return response
     } catch (error) {
-        return error
+        return error.response
     }
 }
 
@@ -27,7 +27,7 @@ const deleteSpeciality = async (specialityId) => {
         const response = await api.doDelete(`/speciality/${specialityId}`)
         return response
     } catch (error) {
-        return error
+        return error.response
     }
 }
 
@@ -40,7 +40,7 @@ const updateSpeciality = async (updatedSpeciality) => {
         })
         return response
     } catch (error) {
-        return error
+        return error.response
     }
 }
 
