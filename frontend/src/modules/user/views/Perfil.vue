@@ -325,7 +325,7 @@ export default {
         const {status} = await getImage(this.data.img)
         if (status !== 200) {
           this.availableImage = false
-          await onError('Error al cargar la imagen', 'La imagen no fue encontrada')
+          await onWarning('Imagen inexistente', 'La imagen no fue encontrada')
         }
 
       }

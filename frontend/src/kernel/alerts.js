@@ -8,6 +8,14 @@ export const onError = async (title, text) => {
     })
 }
 
+export const onWarning = async (title, text) => {
+    await SweetAlert.fire({
+        icon: 'warning',
+        title: title,
+        text: text
+    })
+}
+
 export const onQuestion = async (title, text) => {
     return await SweetAlert.fire({
         icon: 'question',
