@@ -17,7 +17,7 @@
                                         id="options-selector" 
                                         class="text-start" 
                                         v-model="optionSelected" 
-                                        :options="actions"
+                                        :options="options"
                                         optionLabel="name" 
                                         optionValue="name" 
                                     />
@@ -32,7 +32,7 @@
                             <div class="field mt-3">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-calendar" />
-                                    <Calendar id="disableddays" v-model="appointInfo.date" :dateFormat="'dd/mm/yy'" :disabledDays="[0,6]" :disabledDates="disabledDates(new Date())" :manualInput="false" :readonly="!isEditable()"/>
+                                    <Calendar id="disableddays" :minDate="new Date()" v-model="appointInfo.date" :dateFormat="'dd/mm/yy'" :disabledDays="[0,6]" :manualInput="false" :readonly="!isEditable()"/>
                                     <label for="field-date" class="form-label-required">Fecha:</label>
                                 </span>
                             </div>
@@ -268,6 +268,7 @@ export default {
         async saveChanges(){
             if(this.optionSelected){
                 try {
+                    this.onSave = true
                     switch (this.optionSelected) {
                         case 'Reagendar cita':
                             if(this.formChanged){
@@ -342,6 +343,7 @@ export default {
         async compltAppoint(){
             if (await onQuestion('¿Estás seguro de completar la cita?')) {
                 const encrypted = await encrypt(JSON.stringify({id: this.appointInfo.id}))
+
                 const { status, data } = await appointServices.completeAppoint(encrypted)
                 if (status === 400) {
                     this.onSave = false
@@ -454,6 +456,9 @@ export default {
                            case "Cannot be more than one month from now":
                                message = 'La cita no puede programarse después de un mes'
                                break;
+                            case "Cannot update a canceled or completed appointment":
+                                message = 'No se puede reprogramar una cita cancelada o completada'
+                                break;
                        }
                        await onError('Ocurrió un error al reprogramar', message).then(() => this.closeModal())
                    }
@@ -521,6 +526,10 @@ export default {
         },
         disabledDates(date) {
             return date < this.today;
+        },
+        setMaxDate(){
+            const today = new Date()
+            return new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
         }
     },
     watch:{
