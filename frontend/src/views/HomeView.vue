@@ -24,11 +24,9 @@
       </div>
     </div>
 
-
-
       <div class="w-100 d-flex justify-content-center mb-5 mt-5">
         <div class="w-75">
-          <h3 class="welcome-heading " style="color:black">Bienvenido a nuestro Hospital</h3>
+          <h3 class="welcome-heading" style="color:black">Bienvenido a nuestro Hospital</h3>
           <h6 class="welcome-text">
             Bienvenido a nuestro Hospital San J, donde la salud y el
             bienestar de nuestros pacientes son nuestra máxima prioridad.
@@ -54,7 +52,7 @@
         </div>
         <div class="col-6">
           <h4 class="text-white">Quienes somos</h4>
-          <h6 class="text-white">
+          <h6 class="text-white" style=" text-align: justify !important;">
             Somos el Hospital San J, una institución de salud comprometida
             con brindar atención médica de alta calidad a nuestra comunidad.
             Contamos con un equipo de profesionales altamente capacitados y

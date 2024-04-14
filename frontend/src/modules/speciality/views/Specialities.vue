@@ -4,6 +4,9 @@
         <div class="w-100">
         <b-row>
             <b-col cols="12">
+                <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
+            </b-col>
+            <b-col cols="12">
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
@@ -26,14 +29,14 @@
                         <b-col cols="12" md="6" lg="3" v-for="(speciality, index) in specialities" :key="index"
                             class="d-flex justify-content-center align-items-center">
                             <Card class="mb-1 mt-2 card-custom">
-                                <template #header>
-                                    <img style="border-radius: 10px 10px; width: 100%; height: 120px!important;"
-                                        src="https://picsum.photos/600/300/?image=25"
-                                        :alt="`medical-service-${speciality.name}`">
-                                </template>
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
-                                        {{ speciality.name }}
+                                        <h5>{{ speciality.name }}</h5>
+                                    </div>
+                                </template>
+                                <template #content>
+                                    <div class="description">
+                                        <p>{{  limitDescription(speciality.description) }}</p>
                                     </div>
                                 </template>
                                 <template #footer>
@@ -47,8 +50,8 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col cols="1" :style="{marginTop: '20px'}">
-                            <small >Registros: </small> {{ totalRecords }}
+                        <b-col cols="1" :style="{ marginTop: '35px' }">
+                            <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
                         </b-col>
                         <b-col>
                              <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
@@ -73,6 +76,7 @@ import ModalSaveSpeciality from './ModalSaveSpeciality.vue';
 import Paginator from 'primevue/paginator';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
 import {decrypt, encrypt} from "@/config/security"
+import utils from '@/kernel/utils';
 import Toast from 'primevue/toast';
 import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
 import Header from '@/components/Header.vue';
@@ -153,6 +157,9 @@ export default {
            } catch (error) {}
            
         },
+        limitDescription(description){
+            return utils.limitDescription(description)
+        }
     },
     mounted(){
         this.pagination()
@@ -188,12 +195,14 @@ export default {
     transform: scale(1.05);
 }
 
-.label{
-    text-align: justify;
-    font-size: 14px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 10;
-    color: #000;
+.description{
+    font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  font-weight: normal; 
+  color: #666;
+  margin-top: 0;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .button-style{

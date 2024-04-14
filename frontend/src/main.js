@@ -47,6 +47,9 @@ import ToastService from 'primevue/toastservice';
 
 Vue.use(ToastService);
 
+import Dialog from 'primevue/dialog/Dialog';
+Vue.component('Dialog', Dialog)
+
 import VueMoment from 'vue-moment'
 Vue.use(VueMoment)
 

@@ -153,6 +153,7 @@ import appointServices from '../services/appoint-services';
 import { decrypt, encrypt } from '@/config/security';
 import { onError,  onQuestion, onSuccess} from '@/kernel/alerts';
 import Divider from 'primevue/divider';
+import utils from '@/kernel/utils';
 export default {
     name: 'ModalDetailAppoint',
     components: {
@@ -188,7 +189,6 @@ export default {
                     id: 0,
                     name: '',
                 },
-                startHour: 0,
                 status: '',
                 date: null
             },
@@ -217,12 +217,12 @@ export default {
     },
     methods: {
         closeModal() {
-            this.areSame = false,
-            this.isBeforeEnd = false,
-            this.isFormValid = false,
-            this.isBeforeCurrent = false,
-            this.isGraterThanFive = false,
-            this.onSave = false,
+            this.areSame = false
+            this.isBeforeEnd = false
+            this.isFormValid = false
+            this.isBeforeCurrent = false
+            this.isGraterThanFive = false
+            this.onSave = false
             this.formChanged = false
             this.optionSelected = null
             this.$emit('update:visible', false);
@@ -290,9 +290,6 @@ export default {
                             this.compltAppoint()
                             this.$emit("onSpaceSelected")
                             break;
-                        default:
-                            this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Selecciona una opción válida', life: 3000});
-                            break;
                     }
                 } catch (error) {
                     this.$toast.add({severity:'error', summary: '¡Error!', detail:'Ocurrió un error al procesar la solicitud', life: 3000});
@@ -343,35 +340,8 @@ export default {
         async compltAppoint(){
             if (await onQuestion('¿Estás seguro de completar la cita?')) {
                 const encrypted = await encrypt(JSON.stringify({id: this.appointInfo.id}))
-
-                const { status, data } = await appointServices.completeAppoint(encrypted)
-                if (status === 400) {
-                    this.onSave = false
-                    let message = 'Ocurrion un error al completar la cita'
-                    switch (data.text) {
-                        case 'User not found':
-                            message = 'Usuario no encontrado'
-                            break;
-                        case 'Not found':
-                            message = 'Cita no encontrada'
-                            break;
-                        case 'Treatment not found':
-                            message = 'Tratamiento no encontrado'
-                            break;
-                        case 'Expedient not found':
-                            message = 'Expediente no encontrado'
-                            break;
-                        case 'Unauthorized user':
-                            message = 'Usuario no autorizado'
-                            break;
-                    }
-                    await onError('Ocurrió un error', message).then(() => this.closeModal())
-                }
-                if (status === 200) {
-                    this.onSave = false
-                    await onSuccess('Cita completada', 'La cita ha sido completada con éxito')
-                        .then(() => this.closeModal())
-                }
+                const response = await appointServices.completeAppoint(encrypted)
+                this.handleResponse(response)
             }
         },
         async canclAppoint(){
@@ -379,34 +349,8 @@ export default {
                 if (await onQuestion('¿Estás seguro de cancelar la cita?')) {
                     this.onSave = true
                     const encrypted = await encrypt(JSON.stringify({id: this.appointInfo.id}))
-                    const { status, data } = await appointServices.cancelAppoint(encrypted)
-                    if (status === 400) {
-                        this.onSave = false
-                        let message = 'Ocurrion un error al cancelar la cita'
-                        switch (data.text) {
-                            case 'User not found':
-                                message = 'Usuario no encontrado'
-                                break;
-                            case 'Not found':
-                                message = 'Cita no encontrada'
-                                break;
-                            case 'Treatment not found':
-                                message = 'Tratamiento no encontrado'
-                                break;
-                            case 'Expedient not found':
-                                message = 'Expediente no encontrado'
-                                break;
-                            case 'Unauthorized user':
-                                message = 'Usuario no autorizado'
-                                break;
-                        }
-                        await onError('Ocurrió un error', message).then(() => this.closeModal())
-                    }
-                    if (status === 200) {
-                        this.onSave = false
-                        await onSuccess('Cita cancelada', 'La cita ha sido cancelada con éxito')
-                            .then(() => this.closeModal())
-                    }
+                    const response = await appointServices.cancelAppoint(encrypted)
+                    this.handleResponse(response)
                 }
             } catch (error) {}
         },
@@ -421,56 +365,8 @@ export default {
                        end_hour: this.formmatDate(endHour)
                    }
                    const encrypted = await encrypt(JSON.stringify(rescheduledAppoint))
-                   const { status, data } = await appointServices.reschedule(encrypted)
-                   if (status === 400) {
-                       this.onSave = false
-                       let message = 'Ocurrion un error al reprogramar la cita'
-                       switch (data.text) {
-                           case 'User not found':
-                               message = 'Usuario no encontrado'
-                               break;
-                           case 'Not found':
-                               message = 'Cita no encontrada'
-                               break;
-                           case 'Treatment not found':
-                               message = 'Tratamiento no encontrado'
-                               break;
-                           case 'Expedient not found':
-                               message = 'Expediente no encontrado'
-                               break;
-                           case 'Unauthorized user':
-                               message = 'Usuario no autorizado'
-                               break;
-                           case "Maximum 5 hours":
-                               message = 'La cita no puede durar más de 5 horas'
-                               break;
-                           case "Minimum 1 hour":
-                               message = 'La cita debe durar al menos 1 hora'
-                               break;
-                           case "Invalid schedule":
-                               message = 'Horario no válido'
-                               break;
-                           case "The space is busy in this schedule":
-                               message = 'El espacio está ocupado en este horario'
-                               break;
-                           case "Cannot be more than one month from now":
-                               message = 'La cita no puede programarse después de un mes'
-                               break;
-                            case "Cannot update a canceled or completed appointment":
-                                message = 'No se puede reprogramar una cita cancelada o completada'
-                                break;
-                       }
-                       await onError('Ocurrió un error al reprogramar', message).then(() => this.closeModal())
-                   }
-                   if (status === 200) {
-                       this.onSave = false
-                       await onSuccess('Cita reprogramada', 'La cita ha sido reprogramada con éxito')
-                           .then(() => {
-                               this.$emit("onSpaceSelected")
-                               this.closeModal()
-                           }
-                        )
-                   }
+                   const repsonse = await appointServices.reschedule(encrypted)
+                   this.handleResponse(repsonse)
                }
            } catch (error) {}
         },
@@ -530,6 +426,18 @@ export default {
         setMaxDate(){
             const today = new Date()
             return new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+        },
+        handleResponse({status, data: {text}}){
+            this.onSave = false
+            let message = ''
+            if(status === 400){
+                message = utils.getErrorMessages(text)
+                onError('Ocurrió un error', message).then(() => this.closeModal())
+            }else if(status === 200 || status === 201){
+                message = utils.getSuccesMessage(text)
+                onSuccess("Éxito", message).then(() => this.closeModal())
+            }
+            
         }
     },
     watch:{
