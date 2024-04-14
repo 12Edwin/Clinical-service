@@ -1,5 +1,7 @@
 <template>
-    <div class="w-100">
+    <div>
+        <Header style="margin-bottom: 20px" title="Especialidades"/>
+        <div class="w-100">
         <b-row>
             <b-col cols="12">
                 <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
@@ -8,7 +10,7 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <p class="h5"><b>Gestión de especialidades</b></p>
+                            <p class="h5 text-secondary"><b>Gestión de especialidades</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpeciality()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -63,6 +65,7 @@
         <ModalUpdateSpecialityVue :visible.sync="displayModal" :speciality="speciality" />
         <ModalSaveSpeciality :visible.sync="displaySaveModal" />
         <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
+    </div>
     </div>
 </template>
 <script>

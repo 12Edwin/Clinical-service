@@ -8,7 +8,7 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <p class="h5"><b>Gestión de patologías</b></p>
+                            <p class="h5 text-secondary"><b>Gestion de patologías</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSavePathology()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>

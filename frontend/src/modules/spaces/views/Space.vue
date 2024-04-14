@@ -8,7 +8,7 @@
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <p class="h5"><b>Gestión de espacios</b></p>
+                            <p class="h5 text-secondary"><b>Gestión de espacios</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpace()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -83,7 +83,7 @@ import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
 import ModalUpdateSpace from './ModalUpdateSpace.vue';
 import Header from '@/components/Header.vue';
-import utils from '@/kernel/utils';
+
 export default {
     components: {
         Card,
