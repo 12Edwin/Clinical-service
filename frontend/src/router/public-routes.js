@@ -18,6 +18,11 @@ export default [
                 }
             },
             {
+                path: 'blog',
+                name: 'blog',
+                component: ()=> import("@/modules/valorations/views/Feedback.vue"),
+            },
+            {
                 path: 'our_doctors',
                 name: 'our_doctors',
                 component: FreeDoctorsVue,
