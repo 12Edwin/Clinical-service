@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.backend.access.role.model.RoleRepository;
+import utez.edu.mx.backend.access.role.model.RoleTypes;
 import utez.edu.mx.backend.access.sms.control.SmsService;
 import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.access.user.model.User;
@@ -207,7 +208,7 @@ public class UserService {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         User updatedUser = user.get();
-        if (!updatedUser.isAvailable()) {
+        if (!updatedUser.isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
             return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         RandomString tickets = new RandomString(5);
@@ -235,7 +236,7 @@ public class UserService {
         if (user.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
-        if (!user.get().isAvailable()) {
+        if (!user.get().isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
             return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         if (!dto.getToken().equals(user.get().getToken())) {
@@ -250,6 +251,7 @@ public class UserService {
         }
         updatedUser.setToken("");
         updatedUser.setExpiration(null);
+        updatedUser.setAvailable(true);
         updatedUser.setPassword(encoder.encode(dto.getPassword()));
         repository.saveAndFlush(updatedUser);
         return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
