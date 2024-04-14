@@ -38,7 +38,6 @@ public class SmsService {
 
             return new ResponseEntity<>( new utez.edu.mx.backend.utils.entity.Message(message.getStatus(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK) ;
         }catch (Exception e){
-            System.out.println(e.getMessage());
             if (e.getMessage().contains("unverified")){
                 return new ResponseEntity<>(new utez.edu.mx.backend.utils.entity.Message("Phone not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
             }

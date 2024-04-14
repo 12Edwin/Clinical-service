@@ -110,6 +110,8 @@ export default {
       password: ''
     })
 
+    const passwordPattern = /^(?!.*['"%--]).*$/;
+
     const rules = {
       username: {
         required: helpers.withMessage("Ingrese codigo de acceso", required),
@@ -117,7 +119,7 @@ export default {
       },
       password: {
         required: helpers.withMessage("Ingrese su contraseña", required),
-        text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+        text: helpers.withMessage("Caracteres no permitidos", value => passwordPattern.test(value))
       },
     }
     const v$ = useVuelidate(rules, credentials)

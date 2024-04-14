@@ -9,7 +9,7 @@ const send_number = async (data) => {
         })
         return response;
     } catch (error) {
-        return error;
+        return error.response;
     }
 }
 
@@ -22,7 +22,7 @@ const new_pass = async (data) => {
         })
         return response;
     } catch (error) {
-        return error;
+        return error.response;
     }
 }
 
