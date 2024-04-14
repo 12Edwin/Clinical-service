@@ -1,11 +1,12 @@
 <template>
     <div class="w-100">
+        <Header style="margin-bottom: 20px" title="Espacios"/>
         <b-row>
             <b-col cols="12">
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de Espacios</h5>
+                            <p class="h5 text-secondary"><b>Gestión de espacios</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpace()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -77,6 +78,7 @@ import ModalDetailSpace from './ModalDetailSpace.vue'
 import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
 import ModalUpdateSpace from './ModalUpdateSpace.vue';
+import Header from '@/components/Header.vue';
 export default {
     components: {
         Card,
@@ -87,7 +89,8 @@ export default {
         Toast,
         ModalDetailSpace,
         ModalSaveSpace,
-        ModalUpdateSpace
+        ModalUpdateSpace,
+        Header
     },
     data() {
         return {

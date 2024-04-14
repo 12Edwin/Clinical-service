@@ -224,8 +224,8 @@ import InputText from 'primevue/inputtext/InputText';
 import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
-import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
 import Header from '@/components/Header.vue';
+
 
 export default {
     name: 'SaveDoctor',

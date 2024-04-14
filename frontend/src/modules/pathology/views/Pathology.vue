@@ -1,11 +1,12 @@
 <template>
     <div class="w-100">
+        <Header style="margin-bottom: 20px" title="Patologías"/>
         <b-row>
             <b-col cols="12">
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de patologías</h5>
+                            <p class="h5 text-secondary"><b>Gestion de patologías</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSavePathology()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -77,6 +78,7 @@ import { decrypt, encrypt } from "@/config/security"
 import ModalSavePathology from './ModalSavePathology.vue'
 import ModalDetailPathology from './ModalDetailPathology.vue';
 import ModalUpdatePathology from './ModalUpdatePathology.vue';
+import Header from '@/components/Header.vue';
 export default {
     components: {
         Card,
@@ -87,7 +89,8 @@ export default {
         Toast,
         ModalSavePathology,
         ModalDetailPathology,
-        ModalUpdatePathology
+        ModalUpdatePathology,
+        Header
     },
     data() {
         return {

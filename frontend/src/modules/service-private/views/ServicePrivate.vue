@@ -1,11 +1,12 @@
 <template>
     <div class="w-100">
+        <Header style="margin-bottom: 20px" title="Servicios"/>
         <b-row>
             <b-col cols="12">
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de Servicios</h5>
+                            <p class="h5 text-secondary"><b>Gestion de servicios</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -79,6 +80,7 @@ import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
 import servicios from '../service-services/Services';
 import { decrypt, encrypt } from "@/config/security"
+import Header from '@/components/Header.vue';
 export default {
     components: {
         Card,
@@ -89,7 +91,8 @@ export default {
         ModalUpdateService,
         ModalDetailService,
         Paginator,
-        Toast
+        Toast,
+        Header
     },
     data() {
         return {
