@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import SplitButton from 'primevue/splitbutton'
 import utils from '@/kernel/utils';
 import Avatar from 'primevue/avatar';
 export default {

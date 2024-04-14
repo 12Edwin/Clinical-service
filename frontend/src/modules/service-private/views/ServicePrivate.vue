@@ -2,10 +2,13 @@
     <div class="w-100">
         <b-row>
             <b-col cols="12">
+                <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
+            </b-col>
+            <b-col cols="12">
                 <panel>
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
-                            <h5>Gestion de Servicios</h5>
+                            <p class="h5"><b>Gestión de servicios</b></p>
                             <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
@@ -26,15 +29,18 @@
                             <Card class="mb-1 mt-2 custom-card">
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
-                                        {{ service.name }}
+                                       <h5>{{ service.name }}</h5>
                                     </div>
-                                    <p style="font-weight: normal; color: black; padding-top: 10px;">
-                                        {{ limitDescription(service.description) }}
-                                    </p>
-                                    <p style="font-weight: normal; color: black; ">${{ service.price
-                                        }}</p>
                                 </template>
                                 <template #content>
+                                    <div class="description">
+                                        <p>
+                                        {{ service.description !== "" ? limitTitle(service.description) : 'Sin descripción'}}
+                                        </p>
+                                        <p style="font-weight: normal; color: black; ">${{ service.price }}</p>
+                                    </div>
+                                </template>
+                                <template #footer>
                                     <Button icon="pi pi-pencil" class="p-button-rounded button-style"
                                         @click="openModal(service)" v-tooltip.top="'Editar'" />
                                     <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
@@ -48,8 +54,8 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col cols="1" :style="{ marginTop: '20px' }">
-                            <small style="">Registros: </small> {{ totalRecords }}
+                        <b-col cols="1" :style="{ marginTop: '35px' }">
+                            <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
                         </b-col>
                         <b-col>
                             <Paginator :rows="pageable.size" :totalRecords="totalRecords"
@@ -79,6 +85,7 @@ import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
 import servicios from '../service-services/Services';
 import { decrypt, encrypt } from "@/config/security"
+import Header from '@/components/Header.vue';
 export default {
     components: {
         Card,
@@ -89,7 +96,8 @@ export default {
         ModalUpdateService,
         ModalDetailService,
         Paginator,
-        Toast
+        Toast,
+        Header
     },
     data() {
         return {
@@ -168,6 +176,15 @@ export default {
                 const limitedWords = words.slice(0, 10);
                 return limitedWords.join(' ') + '...';
             }
+        },
+        limitTitle(title){
+            const words = title.split(' ');
+            if (words.length === 3 && words.length < 3) {
+                return title;
+            } else {
+                const limitedWords = words.slice(0, 3);
+                return limitedWords.join(' ') + '...';
+            }
         }
     },
     mounted() {
@@ -222,5 +239,15 @@ export default {
 
 .p-button.p-button-icon-only {
     border-radius: 0;
+}
+
+.description{
+    font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  font-weight: normal; 
+  color: #666;
+  margin-top: 0;
+  text-align: center;
+  line-height: 1.5;
 }
 </style>

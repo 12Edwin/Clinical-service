@@ -27,18 +27,8 @@ const new_pass = async (data) => {
 }
 
 const exist_user = async () => {
-    try{
-        const auth_token = localStorage.getItem('token')
-        if (auth_token) {
-            return true;
-        } else {
-           return false; 
-        }
-    } catch (error){
-        return error;
-    }
+    return !!localStorage.getItem('token')
 }
-
 
 export default {
     send_number,
