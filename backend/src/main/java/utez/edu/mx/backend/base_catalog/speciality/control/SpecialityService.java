@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.speciality.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.service.model.ServiceRepository;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.base_catalog.speciality.model.SpecialityRepository;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -21,16 +20,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SpecialityService {
 
-    @Autowired
-    private SpecialityRepository repository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
+    private final SpecialityRepository repository;
+    private final UserRepository userRepository;
+    private final ServiceRepository serviceRepository;
 
     @Transactional(readOnly = true)
     public Optional<Speciality> findFirsByName(String name){

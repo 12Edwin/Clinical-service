@@ -1,10 +1,11 @@
 package utez.edu.mx.backend.base_catalog.physicalRecord.model;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
+
+import javax.persistence.*;
 
 @Getter
 @Setter

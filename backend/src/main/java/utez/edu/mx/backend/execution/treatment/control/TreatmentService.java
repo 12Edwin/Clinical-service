@@ -2,7 +2,6 @@ package utez.edu.mx.backend.execution.treatment.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,22 +22,16 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class TreatmentService {
 
-    @Autowired
     private final TreatmentRepository repository;
-    @Autowired
     private final ExpedientRepository expedientRepository;
-    @Autowired
     private final ServiceRepository serviceRepository;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final PatientRepository patientRepository;
 
     @Transactional(readOnly = true)
@@ -139,6 +132,9 @@ public class TreatmentService {
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Expedient> expedientOld = expedientRepository.findById(treatmentOptional.get().getExpedient().getId());
+        if (expedientOld.isEmpty()){
+            return new ResponseEntity<>(new Message("Invalid expedient", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         if (!expedientOld.get().getPatient().getCreatedBy().equals(user.get())){
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }

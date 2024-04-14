@@ -3,7 +3,6 @@ package utez.edu.mx.backend.access.user.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +28,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class UserController {
 
-    private static final String SESSION = "SESSION";
-
-    @Autowired
-    private UserService service;
+    private final UserService service;
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;

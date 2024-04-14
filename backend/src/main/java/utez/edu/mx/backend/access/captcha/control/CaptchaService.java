@@ -1,7 +1,6 @@
 package utez.edu.mx.backend.access.captcha.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,11 @@ import java.util.Map;
 @Service
 public class CaptchaService {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    private CaptchaService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Value("${FRIEDLYCAPTCHA.CAPTCHAKEY}")
     private String captchaKey;
