@@ -63,7 +63,7 @@
                                 :class="{ 'invalid-field-custom': v$.lastname.$error }">
                                 <i class="pi pi-user" />
                                 <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
-                                <label for="field-lastname" >2do Apellido</label>
+                                <label for="field-lastname">2do Apellido</label>
                             </span>
                             <div class="text-danger text-start pt-1">
                                 <p class="error-messages"
@@ -196,7 +196,7 @@
             <b-row class="mt-2">
                 <b-col cols="12" class="d-flex justify-content-end">
                     <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
-                         :loading="isLoading" />
+                        :loading="isLoading" :disabled="v$.$invalid" />
                 </b-col>
             </b-row>
             <Toast />
@@ -281,11 +281,6 @@ export default {
                 required: helpers.withMessage("Agrega un código de acceso", required),
                 minLength: helpers.withMessage("El código debe de contar con mímino 10 digitos", minLength(10)),
                 maxLength: helpers.withMessage("El código debe de contar con maximo 10 digitos", maxLength(10))
-            },
-            password: {
-                required: helpers.withMessage("Debes de agregar una constraseña", required),
-                minLength: helpers.withMessage("La contraseña debe de contar con mínimo 6 digitos", minLength(6)),
-                maxLength: helpers.withMessage("La contraseña debe de contar con maximo 20 digitos", maxLength(20))
             }
 
         }
@@ -338,19 +333,31 @@ export default {
         },
 
         async verifyDoctors() {
-            if (this.doctor.name || this.doctor.lastname
-                || this.doctor.surname || this.doctor.birthDate
-                || this.doctor.phone != ""
-            ) {
-                this.saveDoctor();
-            } else {
+            this.v$.$touch();
+            const mandatoryFields = ['name', 'lastname', 'surname', 'birthDate', 'phone', 'code'];
+            const anyEmpty = mandatoryFields.some(field => !this.doctor[field]);
+
+            if (anyEmpty) {
                 this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos requeridos', life: 3000 });
+                return;
             }
+
+            for (const fieldName in this.v$.$params) {
+                if (!this.v$[fieldName].$dirty && !this.v$[fieldName].$error) {
+                    continue;
+                }
+
+                if (!this.v$[fieldName].$dirty && this.v$[fieldName].$error) {
+                    this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: `El campo ${fieldName} no cumple con las validaciones requeridas`, life: 3000 });
+                    return;
+                }
+            }
+            this.saveDoctor();
         },
 
 
         async saveDoctor() {
-            let pass = "root";
+            let pass = "DOC" + this.doctor.name;
             let selectedGender = this.doctor.sex.value;
             let selectedSpeciality = this.doctor.speciality.id;
             let dateFormat = this.formatDate(this.doctor.birthDate);
@@ -388,7 +395,7 @@ export default {
             const date = new Date(dateString);
 
             const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0'); 
+            const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
 
             const formattedDate = `${year}-${month}-${day}`;

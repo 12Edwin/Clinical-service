@@ -3,7 +3,7 @@
         <Panel class="w-100 shadow-lg">
             <template #header>
                 <div class="d-flex justify-content-between w-100 align-items-center">
-                    <p class="h5 text-secondary"><b>Gestion de doctores</b></p>
+                    <p class="h5 text-secondary"><b>Gestión de doctores</b></p>
                     <Button class="p-button-rounded p-button-outlined px-2 style" @click="$router.push(
                         { name: 'register' }
                     )">
@@ -177,7 +177,7 @@ export default {
                         const { status } = await service.deleteDoctor(encodedId)
                         if (status === 200 || status === 201) {
                             this.getDoctors();
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Doctor eliminado correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Se ha cambiado la disponibilidad con éxito', life: 3000 });
                         }
                     } catch (error) { }
                 },

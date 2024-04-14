@@ -164,11 +164,6 @@ import {reactive} from '@vue/composition-api'
 import service from "@/modules/password-recovery/service/recovery-pass"
 import {encrypt} from '@/config/security';
 import Toast from 'primevue/toast';
-import Navbar from '@/components/Navbar.vue';
-import NavbarPublic from '@/components/NavbarPublic.vue';
-import Sidebar from '@/components/Sidebar.vue';
-import Header from '@/components/Header.vue';
-import FooterPublic from '@/components/FooterPublic.vue'
 
 export default {
   name: 'RecoveryPassword',
@@ -176,11 +171,6 @@ export default {
     Card,
     InputNumber,
     Toast,
-    Navbar,
-    NavbarPublic,
-    Sidebar,
-    Header,
-    FooterPublic
   },
   data() {
     return {
@@ -244,17 +234,29 @@ export default {
             life: 3000
           });
           this.validCode();
-        } else {
+        } else if(status === 500) {
           this.$toast.add({
-            severity: 'warn',
+            severity: 'error',
             summary: '¡Ups!',
             detail: 'No se pudo enviar el código por sms',
             life: 3000
           });
+        } else if(status === 400) {
+          this.$toast.add({
+            severity: 'error',
+            summary: '¡Ups!',
+            detail: 'El número no éxiste',
+            life: 3000
+          });
+        } else {
+          this.$toast.add({
+            severity: 'warn',
+            summary: '¡Ups!',
+            detail: 'No se pudo enviar el código por sms!',
+            life: 3000
+          });
         }
-      } else {
-
-      }
+      } 
     },
 
     validCode() {
@@ -262,9 +264,7 @@ export default {
         this.writeCode = true;
         this.writeNumber = false;
         this.writePass = false;
-      } else {
-
-      }
+      } 
     },
 
     writePassword() {
@@ -272,9 +272,7 @@ export default {
         this.writeCode = false;
         this.writeNumber = false;
         this.writePass = true;
-      } else {
-
-      }
+      } 
     },
     async sentNewPass() {
       if (this.recovery.password && this.recovery.password2 !== "") {
