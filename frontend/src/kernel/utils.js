@@ -61,6 +61,10 @@ const getErrorMessages = (errorCode) => {
         "Cannot be more than one month from now": 'La cita no puede programarse después de un mes',
         "The appointment has not yet started" : 'Aún no ha comenzado la cita',
         "Cannot update a canceled or completed appointment": 'No se puede actualizar una cita cancelada o completada',
+        "Speciality is used" : "La especialidad está en uso",
+        "Speciality not deleted" : "La especialidad no se pudo eliminar",
+        "Duplicated speciality" : "Esta especialidad ya existe",
+        "Speciality not updated" : "La especialidad no se pudo actualizar",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }
@@ -74,6 +78,51 @@ const getSuccesMessage = (successCode) => {
     }
     return successCodes[successCode] || 'Operación exitosa';
 }
+
+const getIconByStatus = (status) => {
+    let icon = "";
+    switch (status) {
+      case "Pendiente":
+        icon = "pi pi-clock";
+        break;
+      case "Completada":
+        icon = "pi pi-check";
+        break;
+      case "Cancelada":
+        icon = "pi pi-calendar-minus";
+        break;
+      default:
+        icon = "pi pi-question";
+        break;
+    }
+    return icon;
+}
+
+const getColorByStatus = (status) => {
+    let color = "";
+    switch (status) {
+      case "Pendiente":
+        color = "orange";
+        break;
+      case "Completada":
+        color = "#368368";
+        break;
+      case "Cancelada":
+        color = "gray";
+        break;
+      case "Reprogramada":
+        color = "#2196F3";
+        break;
+      default:
+        color = "red";
+        break;
+    }
+    return color;
+}
+
+const filterByName = (array, name) => {
+    return array.filter((item) => item.name.toLowerCase().includes(name.toLowerCase()));
+}
 export default { 
     getRoleNameBytoken,
     getToken,
@@ -82,5 +131,8 @@ export default {
     getUserInfoByToken,
     limitDescription,
     getErrorMessages,
-    getSuccesMessage
+    getSuccesMessage,
+    getIconByStatus,
+    filterByName,
+    getColorByStatus,
 }

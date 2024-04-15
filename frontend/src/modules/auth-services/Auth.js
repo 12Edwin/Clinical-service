@@ -5,7 +5,7 @@ const login = async (credentials) => {
     const response = await api.doPost("/auth/login", credentials);
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -18,7 +18,7 @@ const captcha = async (solution) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 

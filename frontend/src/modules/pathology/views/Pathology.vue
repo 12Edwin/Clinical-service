@@ -2,8 +2,9 @@
     <div class="w-100">
         <b-row>
             <b-col cols="12">
-                <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
+                <Header style="margin-bottom: 20px;" :title="'Catálogos'" />
             </b-col>
+            <loader v-if="isLoading" key="load" />
             <b-col cols="12">
                 <panel>
                     <template #header>
@@ -34,7 +35,7 @@
                                 </template>
                                 <template #content>
                                     <div class="description">
-                                        <p>{{  limitDescription(pathology.description) }}</p>
+                                        <p>{{ limitDescription(pathology.description) }}</p>
                                     </div>
                                 </template>
                                 <template #footer>
@@ -55,9 +56,8 @@
                             <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
                         </b-col>
                         <b-col>
-                            <Paginator :rows="pageable.size" :totalRecords="totalRecords"
-                                :rowsPerPageOptions="[5, 10, 15]" :first="0" :pageLinkSize="1"
-                                :style="{ marginTop: '20px' }" @page="pagination($event)" />
+                            <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5, 10, 15]"
+                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="pagination($event)" />
                         </b-col>
                     </b-row>
                 </panel>
@@ -83,6 +83,10 @@ import ModalSavePathology from './ModalSavePathology.vue'
 import ModalDetailPathology from './ModalDetailPathology.vue';
 import ModalUpdatePathology from './ModalUpdatePathology.vue';
 import Header from '@/components/Header.vue';
+import { onError } from "@/kernel/alerts";
+import Loader from "@/components/loader.vue";
+import utils from "@/kernel/utils";
+
 export default {
     components: {
         Card,
@@ -94,7 +98,8 @@ export default {
         ModalSavePathology,
         ModalDetailPathology,
         ModalUpdatePathology,
-        Header
+        Header,
+        Loader,
     },
     data() {
         return {
@@ -102,6 +107,7 @@ export default {
             displayModal: false,
             displaySaveModal: false,
             displayDetailModal: false,
+            isLoading: false,
             pathology: {
                 name: '',
                 description: '',
@@ -127,21 +133,27 @@ export default {
         },
 
         async pagination(event) {
+            this.isLoading = true
             if (event != undefined) {
                 const { page, rows } = event;
                 this.pageable.page = page;
                 this.pageable.size = rows;
-                this.rowsPerPage = rows;
             }
             try {
-                const { status, data: { result } } = await pathologyService.get_pathology(this.pageable)
+                const { status, data } = await pathologyService.get_pathology(this.pageable)
+        
                 if (status === 200 || status === 201) {
-                    const decripted = await decrypt(result)
+                    const decripted = await decrypt(data.result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.pathologies = content
+                }else {
+                    let message = utils.getErrorMessages(data.text);
+                    await onError('Ha ocurrido un error', message);
                 }
-            } catch (error) { }
+                this.isLoading = false
+            } catch (error) {
+             }
 
         },
         deletePathology(pathologyId) {
@@ -154,10 +166,13 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(pathologyId)
-                        const { status } = await pathologyService.delete_Pathology(encodedId)
+                        const { status, data } = await pathologyService.delete_Pathology(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
                             this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Patología eliminada correctamente', life: 3000 });
+                        }else {
+                            let message = utils.getErrorMessages(data.text);
+                            await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
                 },
@@ -228,13 +243,13 @@ export default {
     border-radius: 0;
 }
 
-.description{
+.description {
     font-family: 'Arial', sans-serif;
-  font-size: 18px;
-  font-weight: normal; 
-  color: #666;
-  margin-top: 0;
-  text-align: center;
-  line-height: 1.5;
+    font-size: 18px;
+    font-weight: normal;
+    color: #666;
+    margin-top: 0;
+    text-align: center;
+    line-height: 1.5;
 }
 </style>

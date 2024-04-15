@@ -1,7 +1,6 @@
 <template>
   <div id="login">
-
-    <Card class="cards mx-5 h-auto">
+    <Card class="cards mx-5 h-auto fadeClass">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
           <img src="../assets/img/logo.png" alt="">
@@ -61,8 +60,9 @@
 
         <Button class="p-button-rounded" :disabled="!disbaleButton()" label="Iniciar sesión"
           @click="login(credentials)" />
-        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3"
-                                                @click="$router.push({ name: 'recovery-password' })" />
+        <Button label="Recuperar Contraseña" class="p-button-link w-75 m-3" @click="$router.push({ name: 'recovery-password' })" 
+          :loading="isLogging"
+        />
       </template>
     </Card>
 
@@ -84,6 +84,7 @@ import { reactive, ref } from '@vue/composition-api'
 import { newregex } from "@/utils/regex"
 import { WidgetInstance } from 'friendly-challenge'
 import { encrypt } from '@/config/security';
+import { onError } from '@/kernel/alerts';
 export default {
   name: 'login',
   components: {
@@ -101,7 +102,8 @@ export default {
       loginError: false,
       container: ref(),
       widget: ref(),
-      captchaToken: ''
+      captchaToken: '',
+      isLogging: false
     }
   },
   setup() {
@@ -126,12 +128,25 @@ export default {
     return { credentials, v$ }
   },
 
-  methods: {     
+  methods: { 
+    clearFields() {
+      this.v$.username.$model = ''
+      this.v$.password.$model = ''
+      this.v$.$reset();
+    },    
     async login(credentials){
-      const {data, status} = await services.login(credentials)
+      this.isLogging = true
+      const {data: {text, token}, status} = await services.login(credentials)
+      if(status === 400){
+        this.isLogging = false
+        onError("Error", text).then(()=> {
+          this.clearFields()
+        })
+      }
       if(status === 200 || status === 201){
-        localStorage.setItem('token', data.token)
-        const roleName = utils.getRoleNameBytoken(data.token)
+        this.isLogging = false
+        localStorage.setItem('token', token)
+        const roleName = utils.getRoleNameBytoken(token)
         if(roleName.toLowerCase() === 'admin'){
           this.$router.push({ name: 'doctors' })
         }else{
@@ -293,5 +308,19 @@ Button {
   cursor: pointer;
   color: $btn-link; 
   text-decoration: none; 
+}
+
+.fadeClass{
+  animation-name: fade;
+  animation-duration: 1s;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

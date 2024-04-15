@@ -107,7 +107,7 @@
                                     <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
                                         class="form-label-required text-start" v-model="v$.speciality.$model"
                                         :options="specialitys" optionLabel="name" id="dropdown"
-                                          />
+                                         placeholder="Selecciona una especialidad" />
                                     <label for="dropdown">Especialidad</label>
                                     <div class="text-danger text-start pt-1">
                                         <p class="error-messages"
