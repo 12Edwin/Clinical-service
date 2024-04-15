@@ -29,7 +29,7 @@ public class EmailService {
         return String.format("%s-%s", prefix, UUID.randomUUID());
     }
 
-    public ResponseEntity<?> sendSimpleMessage(String to, String subject, String html) {
+    public ResponseEntity<Object> sendSimpleMessage(String to, String subject, String html) {
         try {
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");

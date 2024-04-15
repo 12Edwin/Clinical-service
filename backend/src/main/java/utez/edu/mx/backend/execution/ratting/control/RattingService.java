@@ -21,17 +21,17 @@ public class RattingService {
     private final RattingRepository rattingRepository;
 
     @Transactional
-    public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok( new Message(rattingRepository.findAll(pageable), "Request success", TypeResponse.SUCCESS));
     }
 
     @Transactional
-    public ResponseEntity<?> save(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok(new Message(rattingRepository.save(ratting), "Request success", TypeResponse.SUCCESS));
     }
 
     @Transactional
-    public ResponseEntity<?> update(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok(new Message(rattingRepository.save(ratting), "Request success", TypeResponse.SUCCESS));
     }
 

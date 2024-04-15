@@ -31,7 +31,7 @@ public class RattingController {
     private final ObjectMapper mapper;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll(Pageable pageable) {
+    ResponseEntity<Object> findAll(Pageable pageable) {
         try {
             return service.findAll(pageable);
         } catch (UnsupportedEncodingException ex) {
@@ -42,7 +42,7 @@ public class RattingController {
     }
 
     @PostMapping("/")
-    ResponseEntity<?> save(@RequestBody String str_ratting) {
+    ResponseEntity<Object> save(@RequestBody String str_ratting) {
         try {
             String decrypt = cryptService.decrypt(str_ratting);
             DtoRatting ratting = mapper.readValue(decrypt, DtoRatting.class);

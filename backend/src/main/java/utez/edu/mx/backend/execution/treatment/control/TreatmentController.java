@@ -35,7 +35,7 @@ public class TreatmentController {
 
     @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/")
-    ResponseEntity<?> findAll ( @RequestHeader("Authorization") String str_token, Pageable pageable) {
+    ResponseEntity<Object> findAll ( @RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -49,7 +49,7 @@ public class TreatmentController {
 
     @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -64,7 +64,7 @@ public class TreatmentController {
 
     @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @GetMapping("/findByExp/{str_id}")
-    ResponseEntity<?> findByExpedient (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findByExpedient (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -79,7 +79,7 @@ public class TreatmentController {
 
     @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -103,7 +103,7 @@ public class TreatmentController {
 
     @PreAuthorize("hasAnyAuthority('TREATMENTS')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_treatment) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);

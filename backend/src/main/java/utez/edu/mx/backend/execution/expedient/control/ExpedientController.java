@@ -39,7 +39,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/")
-    ResponseEntity<?> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
+    ResponseEntity<Object> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -53,7 +53,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -68,7 +68,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByFolio/")
-    ResponseEntity<?> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -92,7 +92,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByEmail/")
-    ResponseEntity<?> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -116,7 +116,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -152,7 +152,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);

@@ -33,7 +33,7 @@ public class PathologicalController {
     private final CustomRestExceptionHandler<DtoTypePathological> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll (Pageable pageable) {
+    ResponseEntity<Object> findAll (Pageable pageable) {
         try {
             return service.findAllTypes(pageable);
         }catch (JsonProcessingException ex) {
@@ -45,7 +45,7 @@ public class PathologicalController {
 
     @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findTypeById(Long.valueOf(id));
@@ -58,7 +58,7 @@ public class PathologicalController {
 
     @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_Pathology) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestBody String str_Pathology) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_Pathology);
             DtoTypePathological pathology = mapper.readValue(decrypt, DtoTypePathological.class);
@@ -80,7 +80,7 @@ public class PathologicalController {
 
     @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_pathology) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestBody String str_pathology) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_pathology);
             DtoTypePathological pathology = mapper.readValue(decrypt, DtoTypePathological.class);
@@ -102,7 +102,7 @@ public class PathologicalController {
 
     @PreAuthorize("hasAnyAuthority('PATHOLOGIES')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.deleteType(Long.valueOf(id));

@@ -34,7 +34,7 @@ public class PersonService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save (Person person) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save (Person person) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (person.getName() == null || person.getSurname() == null
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
@@ -61,7 +61,7 @@ public class PersonService {
 
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> update (Person person) throws IllegalArgumentException {
+    public ResponseEntity<Object> update (Person person) throws IllegalArgumentException {
         if (person.getName() == null || person.getSurname() == null || person.getId() <= 0
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")

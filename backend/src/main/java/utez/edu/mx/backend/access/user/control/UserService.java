@@ -63,17 +63,17 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updatePassword (UserDto user){
+    public ResponseEntity<Object> updatePassword (UserDto user){
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> verifyCode (UserDto user){
+    public ResponseEntity<Object> verifyCode (UserDto user){
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (user.getCode() == null || user.getPassword() == null
         ) throw new IllegalArgumentException("missing fields");
 
@@ -96,7 +96,7 @@ public class UserService {
     }
 
     @Transactional(value = "transactionManager",rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateUserDoctor (User user) throws IllegalArgumentException {
+    public ResponseEntity<Object> updateUserDoctor (User user) throws IllegalArgumentException {
         if (user.getId() <= 0
         ) throw new IllegalArgumentException("missing fields");
 
@@ -112,7 +112,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<User> userOptional = repository.findById(id);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -130,7 +130,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
+    public ResponseEntity<Object> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
         Optional<User> userOptional = repository.findById(user.getId());
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -178,7 +178,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> lockUser (Long id) throws IllegalArgumentException {
+    public ResponseEntity<Object> lockUser (Long id) throws IllegalArgumentException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<User> user = findById(id);
         if (user.isEmpty()){
@@ -192,7 +192,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -221,7 +221,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -251,7 +251,7 @@ public class UserService {
         return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> uploadProfilePicture(Long userId, MultipartFile file) {
+    public ResponseEntity<Object> uploadProfilePicture(Long userId, MultipartFile file) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -287,7 +287,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> getProfilePicture(Long userId) {
+    public ResponseEntity<Object> getProfilePicture(Long userId) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
