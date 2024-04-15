@@ -97,7 +97,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
         }).exceptionHandling()
                 .authenticationEntryPoint(entryPoint)
                 .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);;
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

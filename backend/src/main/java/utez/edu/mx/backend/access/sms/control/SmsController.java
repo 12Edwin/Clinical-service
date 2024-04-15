@@ -21,7 +21,7 @@ public class SmsController {
     private final CryptService cryptService;
 
     @PostMapping("/")
-    ResponseEntity<?> sendSMS (@RequestBody String str_phone) throws IllegalArgumentException{
+    ResponseEntity<Object> sendSMS (@RequestBody String str_phone) throws IllegalArgumentException{
         try {
             String phone = cryptService.decrypt(str_phone);
             return service.sendSMS(phone, "CODE");

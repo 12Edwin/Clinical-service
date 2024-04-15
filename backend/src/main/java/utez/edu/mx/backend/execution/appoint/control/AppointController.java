@@ -36,7 +36,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/findByDate/")
-    ResponseEntity<?> findByDate (@RequestBody String str_appoint) throws IllegalArgumentException {
+    ResponseEntity<Object> findByDate (@RequestBody String str_appoint) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -60,7 +60,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
+    ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -75,7 +75,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -103,7 +103,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -129,7 +129,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/reschedule/")
-    ResponseEntity<?> reschedule (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
+    ResponseEntity<Object> reschedule (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -155,7 +155,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/complete/")
-    ResponseEntity<?> complete (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
+    ResponseEntity<Object> complete (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -181,7 +181,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @PostMapping("/cancel/")
-    ResponseEntity<?> cancel (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
+    ResponseEntity<Object> cancel (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -207,7 +207,7 @@ public class AppointController {
 
     @PreAuthorize("hasAnyAuthority('APPOINTS')")
     @GetMapping("/space/{str_id}")
-    ResponseEntity<?> findBySpace (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
+    ResponseEntity<Object> findBySpace (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);

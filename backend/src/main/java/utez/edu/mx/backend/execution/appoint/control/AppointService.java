@@ -40,7 +40,7 @@ public class AppointService {
     private final EmailService emailService;
 
     @Transactional
-    public ResponseEntity<?> findByDate(Appoint appoint) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findByDate(Appoint appoint) throws UnsupportedEncodingException, JsonProcessingException {
         if (appoint.getStartHour() == null || appoint.getEndHour() == null
         ) throw new IllegalArgumentException();
 
@@ -48,7 +48,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) return new ResponseEntity<>(new Message("missing fields", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
 
         Optional<User> user = userRepository.findById(id_user);
@@ -80,7 +80,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> save(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException, IllegalArgumentException {
+    public ResponseEntity<Object> save(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException, IllegalArgumentException {
         if (appoint.getSpace().getId() <= 0 || appoint.getStartHour() == null
             || appoint.getEndHour() == null || appoint.getTreatment().getId() <= 0
             ) throw new IllegalArgumentException();
@@ -152,7 +152,7 @@ public class AppointService {
         String name = res.split("~")[0];
         String email = res.split("~")[1];
         HtmlString html = new HtmlString(name, date, start, end, appoint.getSpace().getName(), appoint.getSpace().getDescription(), "777-376-0183", Integer.toString(java.time.Year.now().getValue()) );
-        ResponseEntity<?> response = emailService.sendSimpleMessage(email, "Cita médica", html.getHtml());
+        ResponseEntity<Object> response = emailService.sendSimpleMessage(email, "Cita médica", html.getHtml());
         if (response.getStatusCode() != HttpStatus.OK){
             return new ResponseEntity<>(new Message("Appoint not sent", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -160,7 +160,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> update(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (appoint.getSpace().getId() <= 0 || appoint.getStartHour() == null
                 || appoint.getEndHour() == null || appoint.getTreatment().getId() <= 0
                 || appoint.getId() <= 0 || appoint.getStatus() == null) throw new IllegalArgumentException();
@@ -243,7 +243,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> reschedule(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> reschedule(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (appoint.getStartHour() == null
                 || appoint.getEndHour() == null
                 || appoint.getId() <= 0) throw new IllegalArgumentException();
@@ -311,7 +311,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> complete(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> complete(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (appoint.getId() <= 0 ) throw new IllegalArgumentException();
 
         Optional<User> user = userRepository.findById(id_user);
@@ -352,7 +352,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> cancel(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> cancel(Appoint appoint, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (appoint.getId() <= 0) throw new IllegalArgumentException();
 
         Optional<User> user = userRepository.findById(id_user);
@@ -390,7 +390,7 @@ public class AppointService {
     }
 
     @Transactional
-    public ResponseEntity<?> findBySpace(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findBySpace(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) return new ResponseEntity<>(new Message("missing fields", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
 
         Optional<User> user = userRepository.findById(id_user);

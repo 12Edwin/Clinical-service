@@ -38,7 +38,7 @@ public class AccessService {
 
     final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> login(LoginDto loginDto) throws SQLException {
+    public ResponseEntity<Object> login(LoginDto loginDto) throws SQLException {
         Optional<User> optionalUser = userService.findFirstByCode(loginDto.getUsername());
         if (optionalUser.isEmpty()) {
             return new ResponseEntity<>(new Message("Usuario no encontrado", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);

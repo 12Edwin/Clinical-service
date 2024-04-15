@@ -1,6 +1,7 @@
 package utez.edu.mx.backend.access.captcha.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,8 @@ import java.util.Map;
 @Service
 public class CaptchaService {
 
-    private final RestTemplate restTemplate;
-
-    private CaptchaService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${FRIEDLYCAPTCHA.CAPTCHAKEY}")
     private String captchaKey;
@@ -28,7 +26,7 @@ public class CaptchaService {
     @Value("${FRIEDLYCAPTCHA.SITEKEY}")
     private String siteKey;
 
-    public ResponseEntity<?> verify(String solution) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> verify(String solution) throws UnsupportedEncodingException, JsonProcessingException {
         String url = "https://api.friendlycaptcha.com/api/v1/siteverify";
 
         HttpHeaders headers = new org.springframework.http.HttpHeaders();

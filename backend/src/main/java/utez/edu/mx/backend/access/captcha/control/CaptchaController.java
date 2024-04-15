@@ -19,7 +19,7 @@ public class CaptchaController {
     private final CaptchaService service;
     private final CryptService cryptService;
     @PostMapping("/")
-    ResponseEntity<?> verify (@RequestBody String str_solution) throws IllegalArgumentException{
+    ResponseEntity<Object> verify (@RequestBody String str_solution) throws IllegalArgumentException{
         try {
             String solution = cryptService.decrypt(str_solution);
             return service.verify(solution);

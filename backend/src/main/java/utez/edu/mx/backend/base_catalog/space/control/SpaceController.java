@@ -32,7 +32,7 @@ public class SpaceController {
     private final CustomRestExceptionHandler<DtoSpace> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll (Pageable pageable) {
+    ResponseEntity<Object> findAll (Pageable pageable) {
         try {
             return service.findAll(pageable);
         }catch (JsonProcessingException ex) {
@@ -43,7 +43,7 @@ public class SpaceController {
     }
 
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findById(Long.valueOf(id));
@@ -56,7 +56,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_space) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestBody String str_space) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_space);
             DtoSpace space = mapper.readValue(decrypt, DtoSpace.class);
@@ -78,7 +78,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_space) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestBody String str_space) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_space);
             DtoSpace space = mapper.readValue(decrypt, DtoSpace.class);
@@ -100,7 +100,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> delete (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> delete (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.delete(Long.valueOf(id));

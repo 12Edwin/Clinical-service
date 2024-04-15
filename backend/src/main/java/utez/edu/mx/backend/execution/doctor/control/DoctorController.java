@@ -33,7 +33,7 @@ public class DoctorController {
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) {
+    ResponseEntity<Object> findAllDoctors (Pageable pageable) {
         try {
             return service.findAllDoctors(pageable);
         }catch (JsonProcessingException ex) {
@@ -45,7 +45,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findDoctor(Long.valueOf(id));
@@ -58,7 +58,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PostMapping("/")
-    ResponseEntity<?> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<Object> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_doctor);
             ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
@@ -80,7 +80,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PutMapping("/")
-    ResponseEntity<?> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<Object> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_doctor);
             ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
@@ -102,7 +102,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.lockDoctor(Long.valueOf(id));
