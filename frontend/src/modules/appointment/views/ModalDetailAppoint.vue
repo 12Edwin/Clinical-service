@@ -141,18 +141,15 @@
 import Toast from 'primevue/toast';
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import Menu from 'primevue/menu';
 import Calendar from 'primevue/calendar';
 import moment from 'moment'
 import { formatTime } from '@/utils/regex';
 import Dropdown from 'primevue/dropdown';
 import InputText from "primevue/inputtext"
 import Chip from 'primevue/chip/Chip';
-import ConfirmPopup from 'primevue/confirmpopup';
 import appointServices from '../services/appoint-services';
 import { decrypt, encrypt } from '@/config/security';
 import { onError,  onQuestion, onSuccess} from '@/kernel/alerts';
-import Divider from 'primevue/divider';
 import utils from '@/kernel/utils';
 export default {
     name: 'ModalDetailAppoint',
@@ -160,13 +157,10 @@ export default {
         Dialog,
         Textarea,
         Toast,
-        Menu,
         Calendar,
         InputText,
         Dropdown,
         Chip,
-        ConfirmPopup,
-        Divider
     },
     props: {
         visible: {
@@ -274,7 +268,6 @@ export default {
                             if(this.formChanged){
                                 if(this.isFormValid){
                                     this.rescheduleAppoint()
-                                    this.$emit("onSpaceSelected")
                                 }else{
                                     this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail:'Verifica los campos', life: 3000});
                                 }
@@ -284,11 +277,9 @@ export default {
                             break;
                         case 'Cancelar cita':
                             this.canclAppoint()
-                            this.$emit("onSpaceSelected")
                             break;
                         case 'Completar cita':
                             this.compltAppoint()
-                            this.$emit("onSpaceSelected")
                             break;
                     }
                 } catch (error) {
@@ -299,43 +290,10 @@ export default {
             }
         },
         setIconByStatus(status){
-            let icon = ''
-            switch (status) {
-                case 'Pendiente':
-                    icon = 'pi pi-clock'
-                    break;
-                case 'Completada':
-                    icon = 'pi pi-check'
-                    break;
-                case 'Cancelada':
-                    icon = 'pi pi-times'
-                    break;
-                default:
-                    icon = 'pi pi-question'
-                    break;
-            }
-            return icon
+            return utils.getIconByStatus(status)
         },
         setColorByStatus(status){
-            let color = ''
-            switch (status) {
-                case 'Pendiente':
-                    color = 'orange'
-                    break;
-                case 'Completada':
-                    color = '#368368'
-                    break;
-                case 'Cancelada':
-                    color = 'gray'
-                    break;
-                case 'Reprogramada':
-                    color = '#2196F3'
-                    break;
-                default:
-                    color = 'red'
-                    break;
-            }
-            return color
+            return utils.getColorByStatus(status)
         },
         async compltAppoint(){
             if (await onQuestion('¿Estás seguro de completar la cita?')) {
@@ -434,10 +392,10 @@ export default {
                 message = utils.getErrorMessages(text)
                 onError('Ocurrió un error', message).then(() => this.closeModal())
             }else if(status === 200 || status === 201){
+                this.$emit("onSpaceSelected")
                 message = utils.getSuccesMessage(text)
                 onSuccess("Éxito", message).then(() => this.closeModal())
             }
-            
         }
     },
     watch:{

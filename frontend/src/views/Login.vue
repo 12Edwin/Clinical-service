@@ -1,7 +1,6 @@
 <template>
   <div id="login">
-
-    <Card class="cards mx-5 h-auto">
+    <Card class="cards mx-5 h-auto fadeClass">
       <template #header>
         <div class="d-flex justify-content-center align-items-center">
           <img src="../assets/img/logo.png" alt="">
@@ -293,5 +292,19 @@ Button {
   cursor: pointer;
   color: $btn-link; 
   text-decoration: none; 
+}
+
+.fadeClass{
+  animation-name: fade;
+  animation-duration: 1s;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

@@ -1,3 +1,4 @@
+<template>
     <div  class="w-100">
         <b-row>
             <b-col cols="12">
@@ -152,27 +153,26 @@
 </template>
 <script> 
 
-import Header from '@/components/Header.vue';
-import Loader from "@/components/loader.vue";
-import { decrypt, encrypt } from '@/config/security';
-import { onError, onQuestion, onSuccess } from '@/kernel/alerts';
-import appointServices from "@/modules/appointment/services/appoint-services";
-import spaceServices from "@/modules/spaces/services/spaces-services";
-import { format12Time, formatDate, formatDate2, formatTime } from '@/utils/regex';
+import FullCalendar from '@fullcalendar/vue'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 import esLocale from '@fullcalendar/core/locales/es';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import FullCalendar from '@fullcalendar/vue';
-import moment from 'moment';
-import Calendar from 'primevue/calendar';
-import Dialog from 'primevue/dialog';
-import Divider from 'primevue/divider';
 import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext/InputText';
-import Toast from 'primevue/toast';
+import Divider from 'primevue/divider';
+import Calendar from 'primevue/calendar';
 import ModalSaveAppoint from './ModalDetailAppoint.vue';
+import spaceServices from "@/modules/spaces/services/spaces-services"
+import appointServices from "@/modules/appointment/services/appoint-services"
+import { decrypt, encrypt } from '@/config/security';
+import Toast from 'primevue/toast';
+import InputText from 'primevue/inputtext/InputText';
+import moment from 'moment'
+import Loader from "@/components/loader.vue";
+import Dialog from 'primevue/dialog';
+import { format12Time, formatDate, formatDate2, formatTime } from '@/utils/regex';
+import Header from '@/components/Header.vue';
+import { onQuestion, onError, onSuccess } from '@/kernel/alerts';
 import utils from '@/kernel/utils';
-
 export default {
     components: {
         FullCalendar,
@@ -256,25 +256,7 @@ export default {
             }
         },
         setDotBackgrund(status){
-            let color = '';
-            switch (status) {
-                case 'Pendiente':
-                    color = 'orange'
-                    break;
-                case 'Completada':
-                    color = 'green'
-                    break;
-                case 'Cancelada':
-                    color = 'gray'
-                    break;
-                case 'Reprogramada':
-                    color = 'blue'
-                    break;
-                default:
-                    color = 'red'
-                    break;
-            }
-            return color
+            return utils.getColorByStatus(status)
         },
         async saveAppoint() {
             if (!this.inputsAreValid()) {
@@ -295,7 +277,6 @@ export default {
                     this.onSave = false;
                     return;
                 }
-
                 const appoint = await this.prepareAppointment();
                 const result = await this.saveAppointment(appoint);
                 this.handleSaveResult(result);
@@ -431,14 +412,15 @@ export default {
             this.isGraterThanFive = false
         },
         handleSaveResult({status, data: {text}}) {
+            this.onSave = false;
             if (status === 400) {
-                let message = this.getErrorMessages(text);
-                onError('Ocurrió un error al agendar la cita', message).then(() => {
+                let message = utils.getErrorMessages(text);
+                onError('Ocurrió un error', message).then(() => {
                     this.cleanFields();
                     this.onSpaceSelected();
                 });
             } else if (status === 200 || status === 201) {
-                onSuccess('Cita agendada', 'La cita ha sido agendada con éxito').then(() => {
+                onSuccess('¡Éxito!', 'La cita ha sido agendada con éxito').then(() => {
                     this.cleanFields();
                     this.onSpaceSelected();
                 });
@@ -447,11 +429,9 @@ export default {
             this.showDate = false;
         },
         async saveAppointment(appoint) {
+            this.onSave = true;
             const appointEncrypted = await encrypt(JSON.stringify(appoint));
             return await appointServices.saveAppointment(appointEncrypted);
-        },
-        getErrorMessages(errorCode) {
-            return utils.getErrorMessages(errorCode);
         },
         inputsAreValid() {
             return this.newAppoint.startHour && this.newAppoint.startHour !== '' &&

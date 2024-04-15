@@ -1,69 +1,78 @@
 <template>
-    <div>
-        <Header style="margin-bottom: 20px" title="Especialidades"/>
-        <div class="w-100">
+    <div style="position: relative;" class="w-100 h-100">
         <b-row>
             <b-col cols="12">
                 <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
             </b-col>
             <b-col cols="12">
-                <panel>
-                    <template #header>
-                        <div class="d-flex justify-content-between w-100 align-items-center">
-                            <p class="h5 text-secondary"><b>Gestión de especialidades</b></p>
-                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpeciality()">
-                                <BIcon icon="plus-circle" scale="2" />
-                            </Button>
+                <transition-group name="fade">
+                    <Loader v-if="isLoading" key="load"/>
+                    <panel v-else class="w-100 h-100" key="content">
+                        <template #header>
+                            <div class="d-flex justify-content-between w-100 align-items-center">
+                                <p class="h5"><b>Gestión de especialidades</b></p>
+                                <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveSpeciality()">
+                                    <BIcon icon="plus-circle" scale="2" />
+                                </Button>
+                            </div>
+                        </template>
+                        <b-row>
+                            <b-col cols="12" md="8" lg="10"
+                                class="mb-4 d-flex justify-content-end align-items-center w-100">
+                                <span class="p-input-icon-right">
+                                    <i class="pi pi-search" />
+                                    <InputText placeholder="Buscar..." v-model="search" @input="filter(search)"/>
+                                </span>
+                            </b-col>
+                        </b-row>
+                        <div v-if="specialities.length != 0">
+                            <b-row>
+                                <b-col cols="12" md="6" lg="3" v-for="(speciality, index) in specialities" :key="index"
+                                class="d-flex justify-content-center align-items-center">
+                                    <Card class="mb-1 mt-2 card-custom fadeclass">
+                                        <template #title>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <h5>{{ speciality.name }}</h5>
+                                            </div>
+                                        </template>
+                                        <template #content>
+                                            <div class="description">
+                                                <p>{{  limitDescription(speciality.description) }}</p>
+                                            </div>
+                                        </template>
+                                        <template #footer>
+                                            <Button icon="pi pi-pencil" class="p-button-rounded button-style"
+                                                @click="openModal(speciality)" v-tooltip.top="'Editar'" />
+                                            <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
+                                                style="margin-left: .5em" v-tooltip.top="'Detalle'" @click="openModalDetail(speciality)"/>
+                                            <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality(speciality.id)" />
+                                        </template>
+                                    </Card>
+                                </b-col>
+                            </b-row>
                         </div>
-                    </template>
-                    <b-row>
-                        <b-col cols="12" md="8" lg="10"
-                            class="mb-4 d-flex justify-content-end align-items-center w-100">
-                            <span class="p-input-icon-right">
-                                <i class="pi pi-search" />
-                                <InputText placeholder="Buscar..." />
-                            </span>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col cols="12" md="6" lg="3" v-for="(speciality, index) in specialities" :key="index"
-                            class="d-flex justify-content-center align-items-center">
-                            <Card class="mb-1 mt-2 card-custom">
-                                <template #title>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <h5>{{ speciality.name }}</h5>
-                                    </div>
-                                </template>
-                                <template #content>
-                                    <div class="description">
-                                        <p>{{  limitDescription(speciality.description) }}</p>
-                                    </div>
-                                </template>
-                                <template #footer>
-                                    <Button icon="pi pi-pencil" class="p-button-rounded button-style"
-                                        @click="openModal(speciality)" v-tooltip.top="'Editar'" />
-                                    <Button icon="pi pi-eye" class="p-button-rounded p-button-success"
-                                        style="margin-left: .5em" v-tooltip.top="'Detalle'" @click="openModalDetail(speciality)"/>
-                                    <Button icon="pi pi-trash" v-tooltip.top="'Eliminar'" class="p-button-rounded p-button-secondary" style="margin-left: .5em" @click="deleteSpeciality(speciality.id)" />
-                                </template>
-                            </Card>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col cols="1" :style="{ marginTop: '35px' }">
-                            <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
-                        </b-col>
-                        <b-col>
-                             <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
-                        </b-col>
-                    </b-row>
-                </panel>
-                <Toast/>
+                        <div v-else class="d-flex justify-content-center align-items-center">
+                            <h4>Sin registros</h4>
+                        </div>
+                        <b-row>
+                            <b-col cols="1" :style="{ marginTop: '35px' }">
+                                <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
+                            </b-col>
+                            <b-col>
+                                <Paginator 
+                                    :rows="10" 
+                                    :totalRecords="totalRecords" 
+                                    :currentPage="totalRecords > 0 ? pageable.page : 0"
+                                    :rowsPerPageOptions="[5,10,15]" :first="0" :pageLinkSize="1" :style="{marginTop: '20px'}"  @page="pagination($event)"/> 
+                            </b-col>
+                        </b-row>
+                    </panel>
+                </transition-group>
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateSpecialityVue :visible.sync="displayModal" :speciality="speciality" />
-        <ModalSaveSpeciality :visible.sync="displaySaveModal" />
+        <ModalUpdateSpecialityVue :visible.sync="displayModal" :speciality="speciality" @pagination="pagination"/>
+        <ModalSaveSpeciality :visible.sync="displaySaveModal"  @pagination="pagination" />
         <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
     </div>
     </div>
@@ -80,6 +89,9 @@ import utils from '@/kernel/utils';
 import Toast from 'primevue/toast';
 import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
 import Header from '@/components/Header.vue';
+import NotFound from '@/components/NotFound.vue';
+import { onError } from '@/kernel/alerts';
+import Loader from "@/components/loader.vue";
 export default {
     components: {
         AccordionTab,
@@ -89,7 +101,9 @@ export default {
         Paginator,
         Toast,
         ModalDetailSpeciality,
-        Header
+        Header,
+        NotFound,
+        Loader
     },	
     data(){
         return {
@@ -105,7 +119,9 @@ export default {
                 page: 0,
                 size: 10
             },
-            totalRecords: 0
+            totalRecords: 0,
+            search: '',
+            isLoading: false
         }
     },
     methods:{
@@ -147,22 +163,38 @@ export default {
                 this.pageable.size = rows;
            }
            try {
-            const {status, data : { result } } = await specialitiesServices.getSpecialities(this.pageable)  
-            if(status === 200 || status === 201){
-                const decripted = await decrypt(result)
-                const {content, totalElements} = JSON.parse(decripted)
-                this.totalRecords = totalElements
-                this.specialities = content
-            }
-           } catch (error) {}
+                this.isLoading = true
+                const {status, data : { result, text } } = await specialitiesServices.getSpecialities(this.pageable)
+                if(status === 200 || status === 201){
+                    this.isLoading = false
+                    const decripted = await decrypt(result)
+                    const {content, totalElements} = JSON.parse(decripted)
+                    this.totalRecords = totalElements
+                    this.specialities = content
+                }else{
+                    this.isLoading = false
+                    const message = utils.getErrorMessages(text)
+                    onError('Error', message).then(() => {})
+                }
+           } catch (error) {
+                this.isLoading = false
+                onError('Error', 'Ha ocurrido un error inesperado').then(() => {})
+           }
            
         },
         limitDescription(description){
             return utils.limitDescription(description)
-        }
+        },
+        filter(name){
+           if(name === ''){
+               this.pagination({page: 0, rows: 10})
+            }else{
+               this.specialities = utils.filterByName(this.specialities, name)
+            }
+        },
     },
     mounted(){
-        this.pagination()
+        this.pagination({page: 0, rows: 10})
     }
 }
 </script>
@@ -215,5 +247,18 @@ export default {
 
 .p-button.p-button-icon-only {
     border-radius: 0;
+}
+
+.fadeclass{
+    animation: fade 1s;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 </style>

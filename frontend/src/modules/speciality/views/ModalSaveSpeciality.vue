@@ -60,7 +60,7 @@
                             <Button icon="pi pi-times" @click="closeModal()" label="Cancelar"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Registrar" icon="pi pi-plus" @click="saveSpeciality()" :disabled="v$.$invalid"
-                                class="p-button-rounded button-style" />
+                                class="p-button-rounded button-style" :loading="onSave" />
                         </b-col>
                     </b-row>
                 </template>
@@ -80,6 +80,8 @@ import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
 import { encrypt } from "@/config/security"
 import specialityService from "@/modules/speciality/services/speciality-services"
 import Toast from 'primevue/toast';
+import { onError } from '@/kernel/alerts';
+import utils from '@/kernel/utils';
 
 export default {
     name: 'ModalSaveSpeciality',
@@ -120,6 +122,7 @@ export default {
 
     data(){
         return{
+            onSave: false
         }
     },
     methods:{
@@ -133,17 +136,26 @@ export default {
             if(this.speciality.name || this.speciality.name != "" || this.speciality.description || this.speciality.description != "" ){
                 const encoded = await encrypt(JSON.stringify(this.speciality))
                 try {
-                    const {status} = await specialityService.saveSpeciality(encoded)
+                    const {status, data: {text}} = await specialityService.saveSpeciality(encoded)
+                    this.onSave = true
                     if(status === 200 || status === 201){
+                        this.onSave = false
                         this.closeModal()
                         this.$toast.add({severity:'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000});
+                        this.$emit('pagination')
                     }else{
-                        console.log("error en la peticion" )
+                        const message = utils.getErrorMessages(text)
+                        onError("Error al registrar la especialidad", message).then(() => {
+                            this.onSave = false
+                            this.closeModal()
+                        })
                     }
                 } catch (error) {
+                    this.onSave = false
                     console.log("error en la peticion",error)
                 }
             }else{
+
                 this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos', life: 3000});
             }
         }

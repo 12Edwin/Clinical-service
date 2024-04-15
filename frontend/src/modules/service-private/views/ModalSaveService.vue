@@ -2,7 +2,7 @@
     <b-row>
         <b-col cols="12">
             <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
-                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
+                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
                 <div class="p-fluid grid">
                     <b-row>
                         <b-col class="mt-4 mb-2" lg="12">
