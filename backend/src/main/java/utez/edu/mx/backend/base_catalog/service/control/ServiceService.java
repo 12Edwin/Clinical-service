@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.service.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +22,13 @@ import java.util.Optional;
 
 @org.springframework.stereotype.Service
 @Transactional
+@AllArgsConstructor
 public class ServiceService {
 
-    @Autowired
-    private ServiceRepository repository;
-    @Autowired
-    private SpecialityRepository specialityRepository;
-    @Autowired
-    private TreatmentRepository treatmentRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ServiceRepository repository;
+    private final SpecialityRepository specialityRepository;
+    private final TreatmentRepository treatmentRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public Optional<Service> findFirstByName(String name){

@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
-import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.execution.treatment.model.Treatment;
 
@@ -15,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Getter
 @Setter

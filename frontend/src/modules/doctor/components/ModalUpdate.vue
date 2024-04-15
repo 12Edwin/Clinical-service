@@ -106,8 +106,9 @@
                                     <i class="pi pi-star" />
                                     <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
                                         class="form-label-required text-start" v-model="v$.speciality.$model"
-                                        :options="specialitys" optionLabel="name"
-                                        placeholder="Seleccione una especialidad" :value="selectedSpeciality" />
+                                        :options="specialitys" optionLabel="name" id="dropdown"
+                                          />
+                                    <label for="dropdown">Especialidad</label>
                                     <div class="text-danger text-start pt-1">
                                         <p class="error-messages"
                                             v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
@@ -292,7 +293,7 @@ export default {
                 this.newDoctor.sex = oldDoctor.sex;
                 this.newDoctor.birthday = formattedDate;
                 this.newDoctor.speciality = oldDoctor.speciality_id;
-                this.selectedSpeciality = this.specialitys.find(speciality => speciality.id === oldDoctor.speciality_id);
+                this.v$.speciality.$model = {name: oldDoctor.speciality, value: oldDoctor.speciality_id}
             },
             deep: true
         }

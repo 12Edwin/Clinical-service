@@ -3,16 +3,12 @@ package utez.edu.mx.backend.base_catalog.pathology.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
-import utez.edu.mx.backend.base_catalog.service.control.ServiceService;
-import utez.edu.mx.backend.base_catalog.service.model.DtoService;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -30,10 +26,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 public class PathologicalController {
 
-    private static final String PATHOLOGIES = "PATHOLOGIES";
-
-    @Autowired
-    private PathologicalService service;
+    private final PathologicalService service;
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;

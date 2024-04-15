@@ -3,7 +3,6 @@ package utez.edu.mx.backend.base_catalog.service.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class ServiceController {
 
-    private static final String SERVICE = "SERVICE";
-
-    @Autowired
-    private ServiceService serv;
+    private final ServiceService serv;
 
     private final CryptService cryptService;
     private final JwtProvider provider;

@@ -2,7 +2,6 @@ package utez.edu.mx.backend.execution.appoint.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,21 +30,13 @@ import java.util.*;
 @Transactional
 public class AppointService {
 
-    @Autowired
     private final AppointRepository repository;
-    @Autowired
     private final ViewRepositoryAppoint viewRepositoryAppoint;
-    @Autowired
     private final SpaceRepository spaceRepository;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final TreatmentRepository treatmentRepository;
-    @Autowired
     private final ExpedientRepository expedientRepository;
-    @Autowired
     private final PatientRepository patientRepository;
-    @Autowired
     private final EmailService emailService;
 
     @Transactional

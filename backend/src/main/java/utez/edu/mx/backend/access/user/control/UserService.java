@@ -1,10 +1,8 @@
 package utez.edu.mx.backend.access.user.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -44,13 +42,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository repository;
-    @Autowired
     private final RoleRepository roleRepository;
-    @Autowired
     private final SmsService smsService;
-    @Autowired
     private final PersonRepository personRepository;
     private final PasswordEncoder encoder;
     private final CryptService cryptService;

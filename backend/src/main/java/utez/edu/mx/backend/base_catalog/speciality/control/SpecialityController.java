@@ -3,16 +3,12 @@ package utez.edu.mx.backend.base_catalog.speciality.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.common.util.impl.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.speciality.model.DtoSpeciality;
-import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -30,11 +26,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class SpecialityController {
 
-    private static final String SPECIALITY = "SPECIALITY";
-
-    @Autowired
-    private SpecialityService service;
-
+    private final SpecialityService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoSpeciality> exceptionHandler;

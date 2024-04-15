@@ -3,7 +3,6 @@ package utez.edu.mx.backend.execution.doctor.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,12 @@ import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.execution.doctor.model.DoctorRepository;
+import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
+
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -35,17 +35,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DoctorService {
 
-    @Autowired
     private final DoctorRepository viewRepository;
-    @Autowired
     private final PersonService personService;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final RoleService roleService;
-    @Autowired
     private final SpecialityService specialityService;
 
     private final ObjectMapper mapper;

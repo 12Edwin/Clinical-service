@@ -1,7 +1,5 @@
 package utez.edu.mx.backend.execution.treatment.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +8,7 @@ import utez.edu.mx.backend.base_catalog.service.model.Service;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter

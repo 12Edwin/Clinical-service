@@ -1,7 +1,5 @@
 package utez.edu.mx.backend.execution.patient.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +9,7 @@ import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 
-import java.sql.Timestamp;
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter

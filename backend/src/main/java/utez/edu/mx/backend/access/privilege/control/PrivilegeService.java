@@ -1,7 +1,6 @@
 package utez.edu.mx.backend.access.privilege.control;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backend.access.privilege.model.Privilege;
@@ -16,7 +15,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class PrivilegeService {
 
-    @Autowired
     private final PrivilegeRepository repository;
     @Transactional(readOnly = true)
     public Optional<Privilege> findByName(PrivilegeNames name) {

@@ -4,20 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import utez.edu.mx.backend.security.control.MainSecurity;
 import utez.edu.mx.backend.security.service.CryptService;
 
-import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 @Getter
 @Setter

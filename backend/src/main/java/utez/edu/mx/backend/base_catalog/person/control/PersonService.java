@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.person.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,16 +14,15 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class PersonService {
 
-    @Autowired
-    private PersonRepository repository;
+    private final PersonRepository repository;
 
     @Transactional(readOnly = true)
     public Optional<Person> findByName (String name){

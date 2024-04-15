@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import utez.edu.mx.backend.access.role.model.Role;
-import utez.edu.mx.backend.access.role.model.RoleTypes;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 
