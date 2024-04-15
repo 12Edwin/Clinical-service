@@ -61,6 +61,10 @@ const getErrorMessages = (errorCode) => {
         "Cannot be more than one month from now": 'La cita no puede programarse después de un mes',
         "The appointment has not yet started" : 'Aún no ha comenzado la cita',
         "Cannot update a canceled or completed appointment": 'No se puede actualizar una cita cancelada o completada',
+        "Speciality is used" : "La especialidad está en uso",
+        "Speciality not deleted" : "La especialidad no se pudo eliminar",
+        "Duplicated speciality" : "Esta especialidad ya existe",
+        "Speciality not updated" : "La especialidad no se pudo actualizar",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }
@@ -117,7 +121,7 @@ const getColorByStatus = (status) => {
 }
 
 const filterByName = (array, name) => {
-    return array.filter((item) => item.name === name);
+    return array.filter((item) => item.name.toLowerCase().includes(name.toLowerCase()));
 }
 export default { 
     getRoleNameBytoken,
@@ -129,6 +133,6 @@ export default {
     getErrorMessages,
     getSuccesMessage,
     getIconByStatus,
+    filterByName,
     getColorByStatus,
-    filterByName
 }

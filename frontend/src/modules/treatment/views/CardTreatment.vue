@@ -10,7 +10,7 @@
         <Accordion>
           <Unautorized message="No tienes permisos para ver estos tratamientos" v-if="unauthorized"/>
           <NotFound message="No se encontraron tratamientos" v-if="treatments.length === 0 && !unauthorized"/>
-          <AccordionTab v-for="treatment in treatments" class="mb-4">
+          <AccordionTab v-for="(treatment, index) in treatments" class="mb-4" :key="index">
             <template v-slot:header>
               <div class="d-flex justify-content-between w-100">
                 <label for="service"> <b> Servicio: </b> <span v-tooltip="treatment.service.name">
