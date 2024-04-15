@@ -3,16 +3,12 @@ package utez.edu.mx.backend.base_catalog.space.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.base_catalog.space.model.DtoSpace;
-import utez.edu.mx.backend.base_catalog.space.model.Space;
-import utez.edu.mx.backend.execution.treatment.model.DtoTreatment;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -30,11 +26,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class SpaceController {
 
-    private static final String SPACE = "SPACE";
-
-    @Autowired
-    private SpaceService service;
-    @Autowired
+    private final SpaceService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoSpace> exceptionHandler;

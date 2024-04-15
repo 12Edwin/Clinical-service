@@ -1,5 +1,6 @@
 <template>
     <div>
+        <Header style="margin-bottom: 20px" title="Doctores"/>
         <Panel class="w-100 shadow-lg">
             <template #header>
                 <div class="d-flex justify-content-between w-100 align-items-center">
@@ -16,7 +17,7 @@
                     <DataTable class="p-datatable-lg w-100" :value="doctors" responsiveLayout="scroll" dataKey="id"
                         :loading="loading" :selection.sync="selectedDoctors"
                         :globalFilterFields="['fullname', 'speciality', 'phone', 'sex']" :filters.sync="filters1"
-                        filterDisplay="menu" :rows="3">
+                        filterDisplay="menu" :rows="2">
                         <template #header>
                             <b-row>
                                 <b-col cols="12" class="d-flex justify-content-end align-items-center">
@@ -84,7 +85,7 @@
                         <b-col cols="1" :style="{ marginTop: '20px' }">
                             <small>Registros: </small> {{ totalRecords }}
                         </b-col>
-                        <Paginator :rows="3" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
+                        <Paginator :rows="2" :totalRecords="totalRecords" :rowsPerPageOptions="[2, 3, 5, 10, 15]"
                             :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="getDoctors($event)" />
                     </div>
                 </b-col>
@@ -107,6 +108,7 @@ import Badge from 'primevue/badge';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
+import Header from '@/components/Header.vue';
 
 export default {
     components: {
@@ -117,7 +119,8 @@ export default {
         Paginator,
         Toast,
         ModalUpdateVue,
-        Badge
+        Badge, 
+        Header
     },
     data() {
         return {
@@ -132,7 +135,7 @@ export default {
             },
             pageable: {
                 page: 0,
-                size: 3
+                size: 2
             },
             totalRecords: 0,
             selectedDoctors: null,

@@ -1,13 +1,12 @@
 package utez.edu.mx.backend.base_catalog.space.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter

@@ -6,15 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
-import utez.edu.mx.backend.base_catalog.space.model.DtoSpace;
-import utez.edu.mx.backend.execution.appoint.model.DtoAppoint;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 @Getter

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

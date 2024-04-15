@@ -20,10 +20,10 @@ import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.person.control.PersonService;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
-import utez.edu.mx.backend.base_catalog.space.control.SpaceService;
-import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.base_catalog.service.control.ServiceService;
 import utez.edu.mx.backend.base_catalog.service.model.Service;
+import utez.edu.mx.backend.base_catalog.space.control.SpaceService;
+import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 
@@ -212,10 +212,10 @@ public class InitialDatabase implements CommandLineRunner {
                 person = optionalPerson.get();
             }else {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                person = new Person("Administrador", "root", "root", format.parse("2000-01-01") , SexType.Masculino, "0000000000");
+                person = new Person("Administrador", "root", "root", format.parse("2000-01-01") , SexType.Masculino, "7773760183");
                 person = personService.saveInitial(person);
             }
-            User user = new User("6666666666", passwordEncoder.encode("root"), "", person.getId(), roleAdmin, null);
+            User user = new User("6666666666", passwordEncoder.encode("En123456."), "", person.getId(), roleAdmin, null);
             userService.saveInitial(user);
         }
 

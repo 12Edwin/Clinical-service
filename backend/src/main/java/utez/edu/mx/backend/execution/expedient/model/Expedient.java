@@ -1,6 +1,5 @@
 package utez.edu.mx.backend.execution.expedient.model;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +8,7 @@ import utez.edu.mx.backend.base_catalog.physicalRecord.model.Physical_record;
 import utez.edu.mx.backend.execution.patient.model.Patient;
 import utez.edu.mx.backend.execution.treatment.model.Treatment;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 

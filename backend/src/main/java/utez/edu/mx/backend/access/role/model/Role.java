@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +13,7 @@ import org.hibernate.annotations.TypeDef;
 import utez.edu.mx.backend.access.privilege.model.Privilege;
 import utez.edu.mx.backend.access.user.model.User;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter

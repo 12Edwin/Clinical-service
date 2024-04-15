@@ -75,6 +75,7 @@
         <ModalSaveSpeciality :visible.sync="displaySaveModal"  @pagination="pagination" />
         <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality"/>
     </div>
+    </div>
 </template>
 <script>
 import AccordionTab from 'primevue/accordiontab';

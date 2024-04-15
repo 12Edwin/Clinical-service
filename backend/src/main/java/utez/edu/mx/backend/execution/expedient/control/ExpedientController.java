@@ -3,16 +3,13 @@ package utez.edu.mx.backend.execution.expedient.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
-import utez.edu.mx.backend.base_catalog.pathology.control.PathologicalService;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
-import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
 import utez.edu.mx.backend.execution.expedient.model.DtoExpedient;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
@@ -32,11 +29,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 public class ExpedientController {
 
-    private static final String EXPEDIENT = "EXPEDIENT";
-
-    @Autowired
-    private ExpedientService service;
-
+    private final ExpedientService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final JwtProvider provider;

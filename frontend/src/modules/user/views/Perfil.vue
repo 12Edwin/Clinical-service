@@ -189,7 +189,7 @@ import {useVuelidate} from "@vuelidate/core";
 import {isBefore, subYears} from "date-fns";
 import Dropdown from "primevue/dropdown";
 import myUpload from 'vue-image-crop-upload';
-import {onError, onQuestion, onSuccess} from "@/kernel/alerts";
+import {onError, onQuestion, onSuccess, onWarning} from "@/kernel/alerts";
 import ChangePassword from '@/modules/user/views/Change-password.vue';
 export default {
   components: {Dropdown, Loader, Header, 'my-upload': myUpload, ChangePassword},

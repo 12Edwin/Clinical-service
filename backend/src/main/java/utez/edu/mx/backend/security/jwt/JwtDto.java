@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import utez.edu.mx.backend.access.role.model.Role;
-
-import java.util.List;
 
 @Getter
 @Setter
