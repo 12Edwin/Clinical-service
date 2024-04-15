@@ -2,7 +2,7 @@ import api from "@/config/http-client.gateway";
 
 const getAllSpaces = async (pagination) => {
   try {
-    const response = await api.doGet("/space/", pagination);
+    const response = await api.doGet("/space/", {params: pagination});
     return response;
   } catch (error) {
     throw new Error(error);

@@ -109,6 +109,8 @@ import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
 import Header from '@/components/Header.vue';
+import { onError } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 
 export default {
     components: {
@@ -156,12 +158,15 @@ export default {
                 this.pageable.size = rows;
             }
             try {
-                const { status, data: { result } } = await service.get_doctors(this.pageable)
+                const { status, data: { result, text } } = await service.get_doctors(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.doctors = content;
+                }else {
+                    let message = utils.getErrorMessages(text);
+                    await onError('Ha ocurrido un error', message);
                 }
             } catch (error) {
             }
@@ -169,7 +174,7 @@ export default {
         },
         deleteDoctor(doctorId) {
             this.$confirm.require({
-                message: '¿Está seguro de eliminar este Doctor?',
+                message: '¿Está seguro de actualizar la disponibilidad este Doctor?',
                 header: 'Confirmación',
                 icon: 'pi pi-info-circle',
                 acceptLabel: 'Sí',
@@ -177,10 +182,13 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(doctorId)
-                        const { status } = await service.deleteDoctor(encodedId)
+                        const { status, data } = await service.deleteDoctor(encodedId)
                         if (status === 200 || status === 201) {
                             this.getDoctors();
                             this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Se ha cambiado la disponibilidad con éxito', life: 3000 });
+                        }else {
+                            let message = utils.getErrorMessages(data.text);
+                            await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
                 },

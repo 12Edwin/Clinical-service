@@ -2,8 +2,9 @@
     <div class="w-100">
         <b-row>
             <b-col cols="12">
-                <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
+                <Header style="margin-bottom: 20px;" :title="'Catálogos'" />
             </b-col>
+            <loader v-if="isLoading" key="load" />
             <b-col cols="12">
                 <panel>
                     <template #header>
@@ -34,7 +35,7 @@
                                 </template>
                                 <template #content>
                                     <div class="description">
-                                        <p>{{  space.description !== "" ? limitDescription(space.description) : 'Sin descripción' }}</p>
+                                        <p>{{ space.description !== "" ? space.description : "Sin descripción" }}</p>
                                     </div>
                                 </template>
                                 <template #footer>
@@ -55,9 +56,8 @@
                             <p class="h6"><b>Registros: </b> {{ totalRecords }}</p>
                         </b-col>
                         <b-col>
-                            <Paginator :rows="pageable.size" :totalRecords="totalRecords"
-                                :rowsPerPageOptions="[5, 10, 15]" :first="0" :pageLinkSize="1"
-                                :style="{ marginTop: '20px' }" @page="pagination($event)" />
+                            <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[5, 10, 15]"
+                                :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="pagination($event)" />
                         </b-col>
                     </b-row>
                 </panel>
@@ -83,6 +83,9 @@ import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
 import ModalUpdateSpace from './ModalUpdateSpace.vue';
 import Header from '@/components/Header.vue';
+import { onError } from "@/kernel/alerts";
+import Loader from "@/components/loader.vue";
+import utils from "@/kernel/utils";
 
 export default {
     components: {
@@ -95,7 +98,8 @@ export default {
         ModalDetailSpace,
         ModalSaveSpace,
         ModalUpdateSpace,
-        Header
+        Header,
+        Loader
     },
     data() {
         return {
@@ -128,20 +132,25 @@ export default {
         },
 
         async pagination(event) {
+            this.isLoading = true
             if (event != undefined) {
                 const { page, rows } = event;
                 this.pageable.page = page;
                 this.pageable.size = rows;
-                this.rowsPerPage = rows;
             }
+
             try {
-                const { status, data: { result } } = await spaceService.getAllSpaces(this.pageable)
+                const { status, data: { result, text } } = await spaceService.getAllSpaces(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.spaces = content
+                } else {
+                    let message = utils.getErrorMessages(text);
+                    await onError('Ha ocurrido un error', message);
                 }
+                this.isLoading = false
             } catch (error) { }
 
         },
@@ -155,10 +164,13 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(spaceId)
-                        const { status } = await spaceService.delete_space(encodedId)
+                        const { status, data } = await spaceService.delete_space(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
                             this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Espacio medico eliminado correctamente', life: 3000 });
+                        } else {
+                            let message = utils.getErrorMessages(data.text);
+                            await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
                 },
@@ -223,13 +235,13 @@ export default {
     border-radius: 0;
 }
 
-.description{
+.description {
     font-family: 'Arial', sans-serif;
-  font-size: 18px;
-  font-weight: normal; 
-  color: #666;
-  margin-top: 0;
-  text-align: center;
-  line-height: 1.5;
+    font-size: 18px;
+    font-weight: normal;
+    color: #666;
+    margin-top: 0;
+    text-align: center;
+    line-height: 1.5;
 }
 </style>
