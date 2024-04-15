@@ -6,7 +6,7 @@
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
                             <h5>Gestion de Servicios</h5>
-                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService()">
+                            <Button class="p-button-rounded p-button-outlined px-2" @click="openModalSaveService(service)">
                                 <BIcon icon="plus-circle" scale="2" />
                             </Button>
                         </div>
@@ -22,7 +22,7 @@
                     </b-row>
                     <b-row>
                         <b-col cols="12" md="6" lg="3" v-for="(service, index) in services" :key="index"
-                            class="d-flex justify-content-center align-items-center">
+                            class="d-flex justify-content-center align-items-center">``
                             <Card class="mb-1 mt-2 custom-card">
                                 <template #title>
                                     <div class="d-flex justify-content-center align-items-center">
@@ -53,7 +53,7 @@
                         <b-col>
                             <Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
                                 :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }"
-                                @page="pagination($event)" />
+                                @page="pagination()" />
                         </b-col>
                     </b-row>
                 </panel>
@@ -76,7 +76,7 @@ import ModalDetailService from './ModalDetailService.vue';
 import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
 import servicios from '../service-services/Services';
-import { decrypt, encrypt } from "@/config/security"
+import { decrypt, encrypt } from "@/config/security";
 export default {
     components: {
         Card,
@@ -87,7 +87,7 @@ export default {
         ModalUpdateService,
         ModalDetailService,
         Paginator,
-        Toast
+        Toast,
     },
     data() {
         return {
@@ -127,8 +127,10 @@ export default {
                 this.pageable.size = rows;
             }
             try {
+                this.isLoading = true
                 const { status, data: { result } } = await servicios.get_services(this.pageable)
                 if (status === 200 || status === 201) {
+                    this.isLoading = false
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements

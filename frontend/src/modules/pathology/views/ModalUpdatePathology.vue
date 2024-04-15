@@ -161,7 +161,7 @@ export default {
         },
         disableButton() {
             if (
-                !this.v$.name.$dirty ||
+                !this.v$.name.$dirty &&
                 !this.v$.description.$dirty
             ) {
                 return true;
@@ -198,7 +198,7 @@ export default {
                     life: 3000,
                 });
             }
-        },
+        }
     },
     watch: {
         pathology: {
@@ -213,9 +213,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-@import "../../../styles/colors.scss";
-
+<style scoped>
 .button-style {
     background: #2a715a;
     border: none;
@@ -233,5 +231,26 @@ export default {
     .my-custom-dialog .p-dialog {
         max-width: 95%;
     }
+}
+
+.invalid-field-custom {
+    border-color: rgba(255, 0, 0, 1) !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
+
+.error-messages {
+    margin-bottom: 0;
+    font-weight: 350;
+    font-size: 15px;
+}
+
+.error-messages::before {
+    content: "* ";
+    color: red;
+}
+
+.form-label-required::after {
+    content: " *";
+    color: red;
 }
 </style>

@@ -1,9 +1,11 @@
 <template>
     <b-row>
+        <Loader v-if="isLoading" key="load" />
         <b-col cols="12">
             <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
+
                     <b-row>
                         <b-col class="mt-4 mb-2" lg="12">
                             <div class="field">
@@ -30,6 +32,7 @@
                                 </div>
                             </div>
                         </b-col>
+
                         <b-col class="mt-3" lg="12">
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
@@ -73,8 +76,9 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
-                                        optionValue="id" v-model="selectedSpeciality"
+                                    <Dropdown id="field-speciality"
+                                        :options="specialities"
+                                        optionLabel="name" optionValue="id" v-model="selectedSpeciality"
                                         :class="{ 'invalid-field-custom': v$.speciality.$error }" />
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
@@ -93,11 +97,12 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveService()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus"
+                                @click="saveService()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
+
             </Dialog>
             <Toast />
         </b-col>
@@ -115,6 +120,7 @@ import { decrypt, encrypt } from '@/config/security';
 import servicios from '../service-services/Services'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
+import Loader from '@/components/loader.vue';
 export default {
     name: 'ModalSaveService',
     props: {
@@ -127,7 +133,8 @@ export default {
         Dialog,
         Textarea,
         Dropdown,
-        Toast
+        Toast,
+        Loader
     },
     setup() {
         const services = reactive({
@@ -140,19 +147,20 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre para el servicio", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => words.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 50 caracteres", maxLength(60))
             },
             description: {
                 required: helpers.withMessage("Debes agregar una descripción para el servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => text.test(value)),
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },
             price: {
                 required: helpers.withMessage("Debes agregar un precio al servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
             },
             speciality: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
@@ -166,7 +174,8 @@ export default {
     data() {
         return {
             specialities: [],
-            selectedSpeciality: null
+            selectedSpeciality: null,
+            isLoading: false
         }
     },
     methods: {
@@ -179,16 +188,16 @@ export default {
             this.v$.$reset()
         },
         async saveService() {
+            this.isLoading = true
             this.services.speciality = +this.selectedSpeciality
             this.services.price = +this.services.price
             const encoded = await encrypt(JSON.stringify(this.services))
             try {
-                const { status, data } = await servicios.save_Service(encoded);
+                const { status } = await servicios.save_Service(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
+                    this.isLoading = true
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                } else {
-                    return data.result
                 }
             } catch (error) {
                 return error
@@ -204,7 +213,13 @@ export default {
             } catch (error) {
                 console.log("error en la peticion", error);
             }
-        }
+        },
+        disableButton() {
+            if (this.v$.name.$dirty && this.v$.description.$dirty && this.price != 0 && this.selectedSpeciality != null) {
+                return true;
+            }
+            return !this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$dirty && !this.selectedSpeciality != null
+        },
     },
     mounted() {
         this.getSpecialities()

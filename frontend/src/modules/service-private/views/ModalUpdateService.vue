@@ -111,13 +111,14 @@
 import { reactive } from "@vue/composition-api";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, maxLength, minLength } from "@vuelidate/validators";
-import { newregex, text, words } from "@/utils/regex";
+import { newregex } from "@/utils/regex";
 import Toast from "primevue/toast";
 import { encrypt, decrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
+import Loader from "@/components/loader.vue";
 export default {
     props: {
         visible: {
@@ -131,7 +132,8 @@ export default {
     data() {
         return {
             specialities: [],
-            selectedSpeciality: null
+            selectedSpeciality: null,
+            isLoading: false,
         }
     },
     components: {
@@ -139,6 +141,7 @@ export default {
         Textarea,
         Toast,
         Dropdown,
+        Loader
     },
     name: "ModalUpdateService",
     setup() {
@@ -156,7 +159,7 @@ export default {
                 ),
                 onlyLettersAndAccents: helpers.withMessage(
                     "Caracteres no válidos",
-                    (value) => words.test(value)
+                    (value) => newregex.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "El nombre debe tener al menos 3 caracteres",
@@ -173,7 +176,7 @@ export default {
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
-                    text.test(value)
+                    newregex.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "La descripción debe tener al menos 3 caracteres",
@@ -186,13 +189,13 @@ export default {
             },
             price: {
                 required: helpers.withMessage(
-                    "Debes agregar una descripción para la servicio",
+                    "Debes agregar un precio al servicio",
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
                     newregex.test(value)
                 ),
-                precio: helpers.withMessage("EL precio debe ser mayor a 0", (value) => +value > 0),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
             },
         };
         const v$ = useVuelidate(rules, newService);
@@ -262,7 +265,13 @@ export default {
             } catch (error) {
                 console.log("error en la peticion", error);
             }
-        }
+        },
+        disableButton() {
+            if (!this.v$.name.$dirty && !this.v$.description.$dirty && this.price != 0 && this.selectedSpeciality != null) {
+                return true;
+            }
+            return !this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$dirty && !this.selectedSpeciality != null
+        },
     },
     mounted() {
         this.getSpecialities()
@@ -282,9 +291,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-@import "../../../styles/colors.scss";
-
+<style scoped>
 .button-style {
     background: #2a715a;
     border: none;
@@ -304,5 +311,24 @@ export default {
     }
 }
 
+.invalid-field-custom {
+    border-color: rgba(255, 0, 0, 1) !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
 
+.error-messages {
+    margin-bottom: 0;
+    font-weight: 350;
+    font-size: 15px;
+}
+
+.error-messages::before {
+    content: "* ";
+    color: red;
+}
+
+.form-label-required::after {
+    content: " *";
+    color: red;
+}
 </style>

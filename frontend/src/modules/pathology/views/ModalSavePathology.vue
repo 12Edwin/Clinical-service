@@ -58,7 +58,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="savePathology()"
+                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus" @click="savePathology()"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -131,13 +131,24 @@ export default {
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log(data);
                 } else {
                     return data.result
                 }
             } catch (error) {
                 return error
             }
+        },
+        disableButton() {
+            if (
+                !this.v$.name.$dirty &&
+                !this.v$.description.$dirty
+            ) {
+                return false;
+            }
+            return (
+                !this.v$.name.$invalid &&
+                !this.v$.description.$invalid
+            );
         },
     },
 }   
