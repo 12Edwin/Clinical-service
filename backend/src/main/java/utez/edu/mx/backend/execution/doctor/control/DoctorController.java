@@ -3,7 +3,6 @@ package utez.edu.mx.backend.execution.doctor.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,10 @@ import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
@@ -25,17 +27,13 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class DoctorController {
 
-    private static final String DOCTOR = "DOCTOR";
-
-    @Autowired
     private final DoctorService service;
-
     private final CryptService cryptService;
     private final ObjectMapper objectMapper;
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAllDoctors (Pageable pageable) {
+    ResponseEntity<Object> findAllDoctors (Pageable pageable) {
         try {
             return service.findAllDoctors(pageable);
         }catch (JsonProcessingException ex) {
@@ -47,7 +45,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findDoctor(Long.valueOf(id));
@@ -60,7 +58,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PostMapping("/")
-    ResponseEntity<?> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<Object> saveDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_doctor);
             ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
@@ -82,7 +80,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @PutMapping("/")
-    ResponseEntity<?> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
+    ResponseEntity<Object> updateDoctor (@RequestBody String str_doctor) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_doctor);
             ViewDoctors doctor = objectMapper.readValue(decrypt, ViewDoctors.class);
@@ -104,7 +102,7 @@ public class DoctorController {
 
     @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> lockDoctor (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.lockDoctor(Long.valueOf(id));

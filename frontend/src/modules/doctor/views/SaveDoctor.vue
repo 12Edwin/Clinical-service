@@ -1,4 +1,6 @@
 <template>
+<div>
+    <Header style="margin-bottom: 20px" title="Doctores"/>
     <Card class="shadow shadow-lg rounded">
         <template #header>
             <div class="header">
@@ -38,34 +40,15 @@
                     <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
                         <div class="field">
                             <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.lastname.$error }">
-                                <i class="pi pi-user" />
-                                <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
-                                <label for="field-lastname" class="form-label-required">1er Apellido</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.lastname.$dirty && v$.lastname.required.$invalid">
-                                    {{ v$.lastname.required.$message }}
-                                </p>
-                                <p class="error-messages"
-                                    v-if="v$.lastname.$dirty && v$.lastname.onlyLettersAndAccents.$invalid">
-                                    {{ v$.lastname.onlyLettersAndAccents.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.lastname.$dirty && v$.lastname.minLength.$invalid">
-                                    {{ v$.lastname.minLength.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
                                 :class="{ 'invalid-field-custom': v$.surname.$error }">
                                 <i class="pi pi-user" />
                                 <InputText id="field-surname" type="text" v-model="v$.surname.$model" />
-                                <label for="field-surname">2do Apellido</label>
+                                <label for="field-surname" class="form-label-required">1er Apellido</label>
                             </span>
                             <div class="text-danger text-start pt-1">
+                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.required.$invalid">
+                                    {{ v$.surname.required.$message }}
+                                </p>
                                 <p class="error-messages"
                                     v-if="v$.surname.$dirty && v$.surname.onlyLettersAndAccents.$invalid">
                                     {{ v$.surname.onlyLettersAndAccents.$message }}
@@ -76,7 +59,25 @@
                             </div>
                         </div>
                     </b-col>
-
+                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                        <div class="field">
+                            <span class="p-float-label p-input-icon-right"
+                                :class="{ 'invalid-field-custom': v$.lastname.$error }">
+                                <i class="pi pi-user" />
+                                <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
+                                <label for="field-lastname">2do Apellido</label>
+                            </span>
+                            <div class="text-danger text-start pt-1">
+                                <p class="error-messages"
+                                    v-if="v$.lastname.$dirty && v$.lastname.onlyLettersAndAccents.$invalid">
+                                    {{ v$.lastname.onlyLettersAndAccents.$message }}
+                                </p>
+                                <p class="error-messages" v-if="v$.lastname.$dirty && v$.lastname.minLength.$invalid">
+                                    {{ v$.lastname.minLength.$message }}
+                                </p>
+                            </div>
+                        </div>
+                    </b-col>
                 </b-row>
                 <b-row>
                     <b-col class="mt-4" cols="12" md="6" lg="4">
@@ -85,7 +86,7 @@
                                 :class="{ 'invalid-field-custom': v$.birthDate.$error }">
                                 <i class="pi pi-calendar" />
                                 <Calendar id="field-birthdate" :maxDate="getNewDate()" v-model="v$.birthDate.$model"
-                                    dateFormat="dd-mm-yy" style="cursor: pointer;" />
+                                    dateFormat="dd-mm-yy" style="cursor: pointer;" :manualInput="false" />
                                 <label for="field-birthdate" class="form-label-required">Fecha de nacimiento</label>
                             </span>
                             <div class="text-danger text-start pt-1">
@@ -161,15 +162,6 @@
                             </div>
                         </div>
                     </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-at" />
-                                <InputText id="field-email" type="email" :useGrouping="false" />
-                                <label for="field-email">Correo electrónico</label>
-                            </span>
-                        </div>
-                    </b-col>
                 </b-row>
 
                 <b-row>
@@ -200,36 +192,19 @@
                         </div>
                     </b-col>
                 </b-row>
-                <!-- <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                            :class="{ 'invalid-field-custom': v$.photo.$error }"
-                            >
-                                <FileUpload mode="basic" name="perfil_photo[]" :fileLimit="1"
-                                    accept="png, jpeg" v-model="v$.photo.$model" />
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.photo.$dirty && v$.photo.file.$invalid">
-                                    {{ v$.photo.file.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                </b-row> -->
-
             </div>
         </template>
         <template #footer>
             <b-row class="mt-2">
                 <b-col cols="12" class="d-flex justify-content-end">
                     <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
-                        :disabled="v$.$invalid" :loading="isLoading" />
+                        :loading="isLoading" :disabled="v$.$invalid" />
                 </b-col>
             </b-row>
             <Toast />
         </template>
     </Card>
+</div>
 </template>
 
 <script>
@@ -249,6 +224,9 @@ import InputText from 'primevue/inputtext/InputText';
 import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
+import Header from '@/components/Header.vue';
+import { onError, onSuccess } from '@/kernel/alerts';
+
 
 export default {
     name: 'SaveDoctor',
@@ -260,7 +238,8 @@ export default {
         InputMask,
         Dropdown,
         Toast,
-        FileUpload
+        FileUpload,
+        Header
     },
     setup() {
         const doctor = reactive({
@@ -282,24 +261,23 @@ export default {
                 minLength: helpers.withMessage("El nombre debe de contener al menos 3 caracteres", minLength(3))
             },
             lastname: {
-                required: helpers.withMessage("Debes agregar un apellido", required),
                 onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
             surname: {
+                required: helpers.withMessage("Debes agregar un apellido", required),
                 onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
             birthDate: {
                 required: helpers.withMessage("Debes agregar una fecha de nacimiento", required),
-                // dateFormat: helpers.withMessage("El formato ingresado no coincide con el requerido", (value) => dateFormatRegex.test(value))
             },
             sex: {
                 required: helpers.withMessage("Debes seleccionar un género", required),
 
             },
             phone: {
-                required: helpers.withMessage("Debes seleccionar un género", required),
+                required: helpers.withMessage("Debes agregar un número", required),
                 minLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", minLength(10)),
                 maxLength: helpers.withMessage("El número debe de contar con maximo 10 digitos", maxLength(10))
             },
@@ -310,24 +288,6 @@ export default {
                 required: helpers.withMessage("Agrega un código de acceso", required),
                 minLength: helpers.withMessage("El código debe de contar con mímino 10 digitos", minLength(10)),
                 maxLength: helpers.withMessage("El código debe de contar con maximo 10 digitos", maxLength(10))
-            },
-            password: {
-                required: helpers.withMessage("Debes de agregar una constraseña", required),
-                minLength: helpers.withMessage("La contraseña debe de contar con mínimo 6 digitos", minLength(6)),
-                maxLength: helpers.withMessage("La contraseña debe de contar con maximo 20 digitos", maxLength(20))
-            },
-            photo: {
-                file: helpers.withMessage("La foto debe ser un archivo válido", file => {
-                    if (!file) return false;
-                    const maxFileSize = 10 * 1024 * 1024; // 10MB
-
-                    // Verificar el tipo de archivo
-                    const fileTypeValid = acceptedFormats.includes(file.type);
-
-                    // Verificar el tamaño del archivo
-                    const fileSizeValid = file.size <= maxFileSize;
-                    return fileTypeValid && fileSizeValid;
-                })
             }
 
         }
@@ -380,23 +340,33 @@ export default {
         },
 
         async verifyDoctors() {
-            if (this.doctor.name || this.doctor.lastname
-                || this.doctor.surname || this.doctor.birthDate
-                || this.doctor.phone || this.doctor.curp != ""
-            ) {
-                this.saveDoctor();
-            } else {
-                // this.v$.$touch();
+            this.v$.$touch();
+            const mandatoryFields = ['name', 'lastname', 'surname', 'birthDate', 'phone', 'code'];
+            const anyEmpty = mandatoryFields.some(field => !this.doctor[field]);
+
+            if (anyEmpty) {
                 this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos requeridos', life: 3000 });
+                return;
             }
+
+            for (const fieldName in this.v$.$params) {
+                if (!this.v$[fieldName].$dirty && !this.v$[fieldName].$error) {
+                    continue;
+                }
+
+                if (!this.v$[fieldName].$dirty && this.v$[fieldName].$error) {
+                    this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: `El campo ${fieldName} no cumple con las validaciones requeridas`, life: 3000 });
+                    return;
+                }
+            }
+            this.saveDoctor();
         },
 
-
         async saveDoctor() {
-            var pass = "root";
-            var selectedGender = this.doctor.sex.value;
+            let pass = "DOC" + this.doctor.name;
+            let selectedGender = this.doctor.sex.value;
             let selectedSpeciality = this.doctor.speciality.id;
-            var dateFormat = this.formatDate(this.doctor.birthDate);
+            let dateFormat = this.formatDate(this.doctor.birthDate);
 
             const newData = {
                 name: this.doctor.name,
@@ -406,7 +376,7 @@ export default {
                 phone: this.doctor.phone,
                 sex: selectedGender,
                 code: this.doctor.code,
-                password: 'root',
+                password: pass,
                 speciality_id: selectedSpeciality,
             }
 
@@ -414,16 +384,16 @@ export default {
                 const encoded = await encrypt(JSON.stringify(newData));
                 const { status } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    onSuccess("¡Éxito!", "¡Doctor guardado exitosamente")
                     setTimeout(() => {
                         this.$router.push('/doctors');
                     }, 500);
                 } else {
                     console.log("error en la peticion");
-                    this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal!!', life: 3000 });
+                    onError("¡Error!")
                 }
             } catch (error) {
-                this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
+                onError("¡Error!")
             }
         },
 
@@ -431,7 +401,7 @@ export default {
             const date = new Date(dateString);
 
             const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // El mes es base 0, por lo que sumamos 1
+            const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
 
             const formattedDate = `${year}-${month}-${day}`;

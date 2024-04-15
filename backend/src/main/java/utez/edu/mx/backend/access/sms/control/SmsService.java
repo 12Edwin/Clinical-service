@@ -23,7 +23,7 @@ public class SmsService {
     @Value("${TWILIO_PHONE}")
     private String PHONE;
 
-    public ResponseEntity<?> sendSMS(String toPhone, String code) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> sendSMS(String toPhone, String code) throws UnsupportedEncodingException, JsonProcessingException {
         try {
             String pattern = "^(\\d{10}|\\d{3}-\\d{3}-\\d{4}|\\d{3} \\d{3} \\d{4}|\\(\\d{3}\\) \\d{3}-\\d{4})$";
             if (!toPhone.matches(pattern)){
@@ -38,7 +38,6 @@ public class SmsService {
 
             return new ResponseEntity<>( new utez.edu.mx.backend.utils.entity.Message(message.getStatus(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK) ;
         }catch (Exception e){
-            System.out.println(e.getMessage());
             if (e.getMessage().contains("unverified")){
                 return new ResponseEntity<>(new utez.edu.mx.backend.utils.entity.Message("Phone not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
             }

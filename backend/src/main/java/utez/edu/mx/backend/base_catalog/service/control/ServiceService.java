@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.service.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +22,13 @@ import java.util.Optional;
 
 @org.springframework.stereotype.Service
 @Transactional
+@AllArgsConstructor
 public class ServiceService {
 
-    @Autowired
-    private ServiceRepository repository;
-    @Autowired
-    private SpecialityRepository specialityRepository;
-    @Autowired
-    private TreatmentRepository treatmentRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ServiceRepository repository;
+    private final SpecialityRepository specialityRepository;
+    private final TreatmentRepository treatmentRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public Optional<Service> findFirstByName(String name){
@@ -39,12 +36,12 @@ public class ServiceService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findServices(Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findServices(Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
@@ -53,7 +50,7 @@ public class ServiceService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Service> service = repository.findById(id);
         if (service.isEmpty()){
@@ -63,7 +60,7 @@ public class ServiceService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (service.getName() == null || service.getDescription() == null || service.getPrice() <= 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
         if (findFirstByName(service.getName()).isPresent()){
             return new ResponseEntity<>(new Message("Duplicated service", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -81,7 +78,7 @@ public class ServiceService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> update(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (service.getName() == null || service.getDescription() == null || service.getPrice() <= 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(service.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -99,7 +96,7 @@ public class ServiceService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> delete(Long id) throws IllegalArgumentException{
+    public ResponseEntity<Object> delete(Long id) throws IllegalArgumentException{
         if (id <= 0) throw new IllegalArgumentException();
         Optional<Service> service = repository.findById(id);
         if (service.isEmpty()){

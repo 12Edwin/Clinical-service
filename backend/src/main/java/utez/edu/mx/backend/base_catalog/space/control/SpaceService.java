@@ -2,7 +2,6 @@ package utez.edu.mx.backend.base_catalog.space.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SpaceService {
 
-    @Autowired
     private final SpaceRepository repository;
     @Transactional
     public Space saveInitial(Space space){
@@ -34,12 +32,12 @@ public class SpaceService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<>(new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Space> space = repository.findById(id);
         if (space.isEmpty()){
@@ -49,7 +47,7 @@ public class SpaceService {
     }
 
     @Transactional
-    public ResponseEntity<?> save(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (space.getName() == null || space.getDescription() == null) throw new IllegalArgumentException("missing fields");
         if (repository.findFirstByName(space.getName()).isPresent()) {
             return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
@@ -62,7 +60,7 @@ public class SpaceService {
     }
 
     @Transactional
-    public ResponseEntity<?> update(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (space.getId() <= 0 || space.getName() == null || space.getDescription() == null) throw new IllegalArgumentException("missing fields");
         Optional<Space> oldSpace = repository.findById(space.getId());
         if (oldSpace.isEmpty()) {
@@ -79,7 +77,7 @@ public class SpaceService {
     }
 
     @Transactional
-    public ResponseEntity<?> delete(Long id) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> delete(Long id) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Space> space = repository.findById(id);
         if (space.isEmpty()) {

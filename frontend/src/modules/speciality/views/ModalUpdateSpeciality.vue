@@ -59,7 +59,7 @@
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Actualizar" icon="pi pi-pencil" @click="updateSpeciality()" :disabled="!disableButton()"
-                                class="p-button-rounded button-style" />
+                                class="p-button-rounded button-style" :loading="onUpdate"/>
                         </b-col>
                     </b-row>
                 </template>
@@ -79,6 +79,7 @@ import { newregex, text, words } from "@/utils/regex"
 import Toast from 'primevue/toast';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
 import { encrypt } from '@/config/security';
+import { onSuccess } from '@/kernel/alerts';
 export default {
     props: {
         visible: {
@@ -112,6 +113,11 @@ export default {
         const v$ = useVuelidate(rules, newSpeciality )
         return { newSpeciality, v$ }
     },
+    data(){
+        return {
+            onUpdate: false
+        }
+    },
     components:{
         Dialog,
         Textarea,
@@ -122,7 +128,7 @@ export default {
         closeModal() {
             this.$emit('update:visible', false);
             const oldSpeciality = JSON.parse(this.speciality)
-            this.newSpeciality.id
+            this.newSpeciality.id = oldSpeciality.id
             this.newSpeciality.name = oldSpeciality.name
             this.newSpeciality.description = oldSpeciality.description
             this.v$.$reset()
@@ -138,10 +144,21 @@ export default {
                 try {
                     this.newSpeciality.id = JSON.parse(this.speciality).id
                     const encodedSpeciality = await encrypt(JSON.stringify(this.newSpeciality))
-                    const {status} = await specialitiesServices.updateSpeciality(encodedSpeciality)
+                    this.onUpdate = true
+                    const {status, data: { text }} = await specialitiesServices.updateSpeciality(encodedSpeciality)
                     if(status === 200 || status === 201){
-                        this.closeModal()
-                        this.$toast.add({severity:'success', summary: 'Éxito', detail: 'Especialidad actualizada correctamente', life: 3000});
+                        this.onUpdate = false
+                        onSuccess("¡Éxito!", "Especialidad actualizada exitosamente").then(() => {
+                            this.closeModal()
+                        })
+                        this.$emit('pagination', {page: 0, rows: 10})
+                    }else{
+                        this.onUpdate = false
+                        const message = utils.getErrorMessages(text)
+                        onError("Error al actualizar la especialidad", message).then(() => {
+                            this.onSave = false
+                            this.closeModal()
+                        })
                     }
                 } catch (error) {
                     console.log("error en la peticion",error)

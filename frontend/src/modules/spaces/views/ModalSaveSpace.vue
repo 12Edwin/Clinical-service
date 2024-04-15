@@ -58,8 +58,8 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus" @click="saveSpace()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus"
+                                @click="saveSpace()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
@@ -80,6 +80,7 @@ import { encrypt } from '@/config/security';
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import spacesServices from '../services/spaces-services';
+import { onError, onSuccess } from "@/kernel/alerts";
 export default {
     name: 'ModalSaveSpace',
     props: {
@@ -127,10 +128,13 @@ export default {
         async saveSpace() {
             const encoded = await encrypt(JSON.stringify(this.spaces))
             try {
-                const { status, data } = await spacesServices.save_space(encoded);
+                const { status, data: { text } } = await spacesServices.save_space(encoded);
                 if (status === 200 || status === 201) {
-                    this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    this.closeModal();
+                    onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
+                    this.$emit("pagination", { page: 0, rows: 10 });
+                } else {
+                    onError("¡Error!", text).then(() => this.closeModal())
                 }
             } catch (error) {
                 return error

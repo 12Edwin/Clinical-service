@@ -1,6 +1,5 @@
 package utez.edu.mx.backend.security.entity;
 
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +9,10 @@ import utez.edu.mx.backend.access.privilege.model.Privilege;
 import utez.edu.mx.backend.access.role.model.Role;
 import utez.edu.mx.backend.access.user.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class MyUserDetails implements UserDetails {
 

@@ -6,6 +6,10 @@ const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
 })
+
+export const getServerUrl = () => {
+    return SERVER_URL
+}
 AxiosClient.interceptors.request.use(
     function(config){
         const auth_token = localStorage.getItem('token')
@@ -44,9 +48,6 @@ AxiosClient.interceptors.response.use(
                             router.push({name: 'login'})
                         })
                     return Promise.resolve()
-                case 404:
-                    await router.push({name: '404'})
-                    break;
                 case 500:
                     await onError('Error interno del servidor', 'Por favor contacte a soporte técnico')
                     break;

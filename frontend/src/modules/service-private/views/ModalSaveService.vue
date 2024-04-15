@@ -3,7 +3,7 @@
         <Loader v-if="isLoading" key="load" />
         <b-col cols="12">
             <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
-                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
+                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
                 <div class="p-fluid grid">
 
                     <b-row>
@@ -121,6 +121,7 @@ import servicios from '../service-services/Services'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import Loader from '@/components/loader.vue';
+import { onError, onSuccess } from '@/kernel/alerts';
 export default {
     name: 'ModalSaveService',
     props: {
@@ -196,8 +197,10 @@ export default {
                 const { status } = await servicios.save_Service(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
-                    this.isLoading = true
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
+                    this.$emit("pagination", {page: 0, rows: 10})
+                } else{
+                    onError("¡Error!", text).then(() => this.closeModal())
                 }
             } catch (error) {
                 return error
@@ -215,7 +218,7 @@ export default {
             }
         },
         disableButton() {
-            if (this.v$.name.$dirty && this.v$.description.$dirty && this.price != 0 && this.selectedSpeciality != null) {
+            if (this.v$.name.$dirty && this.v$.description.$dirty && this.price != 0 && !this.selectedSpeciality != null) {
                 return true;
             }
             return !this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$dirty && !this.selectedSpeciality != null

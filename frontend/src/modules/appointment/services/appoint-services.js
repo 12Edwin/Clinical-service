@@ -5,7 +5,7 @@ const getAppointmentsBySpace = async (spaceId) => {
         const response = await api.doGet(`/appoint/space/${spaceId}`)
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -20,7 +20,7 @@ const saveAppointment = async (appointment) => {
         )
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -34,7 +34,7 @@ const reschedule = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -47,7 +47,7 @@ const cancelAppoint = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
 }
 
@@ -60,8 +60,19 @@ const completeAppoint = async (appointment) => {
         })
         return response
     } catch (error) {
-        throw new Error(error)
+        return error.response
     }
+}
+
+
+const getAppointById = async (id) => {
+    try {
+        const response = await api.doGet(`/appoint/${id}`)
+        return response
+    } catch (error) {
+        return error.response
+    }
+
 }
 
 export default {
@@ -69,5 +80,6 @@ export default {
     saveAppointment,
     reschedule,
     cancelAppoint,
-    completeAppoint
+    completeAppoint,
+    getAppointById
 }

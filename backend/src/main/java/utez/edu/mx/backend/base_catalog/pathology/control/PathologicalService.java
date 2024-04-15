@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.pathology.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import utez.edu.mx.backend.base_catalog.pathology.model.PathologicalRepository;
 import utez.edu.mx.backend.base_catalog.pathology.model.Pathological_record;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathologicalRepository;
-import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 import utez.edu.mx.backend.execution.expedient.model.ExpedientRepository;
 import utez.edu.mx.backend.utils.entity.Message;
@@ -23,16 +22,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class PathologicalService {
 
-    @Autowired
-    private PathologicalRepository repository;
+    private final PathologicalRepository repository;
 
-    @Autowired
-    private TypePathologicalRepository typePathologicalRepository;
+    private final TypePathologicalRepository typePathologicalRepository;
 
-    @Autowired
-    private ExpedientRepository expedientRepository;
+    private final ExpedientRepository expedientRepository;
 
     @Transactional(readOnly = true)
     public Optional<TypePathological> findFirstByName(String name){
@@ -40,16 +37,16 @@ public class PathologicalService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAllPathologies(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAllPathologies(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAllTypes(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAllTypes(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<> ( new Message(typePathologicalRepository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findPathologyById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findPathologyById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Pathological_record> pathology = repository.findById(id);
         if (pathology.isEmpty()){
@@ -59,7 +56,7 @@ public class PathologicalService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findTypeById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findTypeById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<TypePathological> pathology = typePathologicalRepository.findById(id);
         if (pathology.isEmpty()){
@@ -69,7 +66,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> savePathology(Pathological_record pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> savePathology(Pathological_record pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null || pathology.getExpedient().getId() <= 0 || pathology.getTypePathological().getId() <= 0) throw new IllegalArgumentException();
 
         Optional<Expedient> expedient = expedientRepository.findById(pathology.getExpedient().getId());
@@ -91,7 +88,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> saveType(TypePathological pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> saveType(TypePathological pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null) throw new IllegalArgumentException();
 
         if (typePathologicalRepository.findByName(pathology.getName()).isPresent()){
@@ -106,7 +103,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updatePathology(Pathological_record pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> updatePathology(Pathological_record pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null || pathology.getExpedient().getId() <= 0 || pathology.getTypePathological().getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(pathology.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -129,7 +126,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateType(TypePathological pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> updateType(TypePathological pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null) throw new IllegalArgumentException();
         if (!typePathologicalRepository.existsById(pathology.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -143,7 +140,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> deletePathology(Long id) throws IllegalArgumentException{
+    public ResponseEntity<Object> deletePathology(Long id) throws IllegalArgumentException{
         if (id <= 0) throw new IllegalArgumentException();
         Optional<Pathological_record> pathology = repository.findById(id);
         if (pathology.isEmpty()){
@@ -158,7 +155,7 @@ public class PathologicalService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> deleteType(Long id) throws IllegalArgumentException{
+    public ResponseEntity<Object> deleteType(Long id) throws IllegalArgumentException{
         if (id <= 0) throw new IllegalArgumentException();
         Optional<TypePathological> pathology = typePathologicalRepository.findById(id);
         if (pathology.isEmpty()){

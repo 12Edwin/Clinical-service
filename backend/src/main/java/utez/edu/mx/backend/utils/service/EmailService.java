@@ -1,15 +1,14 @@
 package utez.edu.mx.backend.utils.service;
 
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import utez.edu.mx.backend.execution.appoint.model.AppointRepository;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -18,18 +17,19 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
+@Transactional
 public class EmailService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
     String generateContentId(String prefix) {
         return String.format("%s-%s", prefix, UUID.randomUUID());
     }
 
-    public ResponseEntity<?> sendSimpleMessage(String to, String subject, String html) {
+    public ResponseEntity<Object> sendSimpleMessage(String to, String subject, String html) {
         try {
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");

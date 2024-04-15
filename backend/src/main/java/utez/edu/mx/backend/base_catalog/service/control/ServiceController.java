@@ -3,7 +3,6 @@ package utez.edu.mx.backend.base_catalog.service.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class ServiceController {
 
-    private static final String SERVICE = "SERVICE";
-
-    @Autowired
-    private ServiceService serv;
+    private final ServiceService serv;
 
     private final CryptService cryptService;
     private final JwtProvider provider;
@@ -39,7 +35,7 @@ public class ServiceController {
     private final CustomRestExceptionHandler<DtoService> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll (Pageable pageable) {
+    ResponseEntity<Object> findAll (Pageable pageable) {
         try {
             return serv.findAll(pageable);
         }catch (JsonProcessingException ex) {
@@ -50,7 +46,7 @@ public class ServiceController {
     }
 
     @GetMapping("/findByUser/")
-    ResponseEntity<?> findServices (@RequestHeader("Authorization") String str_token) {
+    ResponseEntity<Object> findServices (@RequestHeader("Authorization") String str_token) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -63,7 +59,7 @@ public class ServiceController {
     }
 
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return serv.findById(Long.valueOf(id));
@@ -76,7 +72,7 @@ public class ServiceController {
 
     @PreAuthorize("hasAnyAuthority('SERVICES')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_service) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestBody String str_service) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_service);
             DtoService service = mapper.readValue(decrypt, DtoService.class);
@@ -98,7 +94,7 @@ public class ServiceController {
 
     @PreAuthorize("hasAnyAuthority('SERVICES')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_service) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestBody String str_service) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_service);
             DtoService service = mapper.readValue(decrypt, DtoService.class);
@@ -120,7 +116,7 @@ public class ServiceController {
 
     @PreAuthorize("hasAnyAuthority('SERVICES')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return serv.delete(Long.valueOf(id));

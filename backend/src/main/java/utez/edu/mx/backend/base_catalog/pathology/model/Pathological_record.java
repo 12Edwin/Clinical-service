@@ -1,12 +1,12 @@
 package utez.edu.mx.backend.base_catalog.pathology.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
+
+import javax.persistence.*;
 
 @Getter
 @Setter

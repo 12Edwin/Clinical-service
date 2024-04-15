@@ -18,6 +18,11 @@ export default [
                 }
             },
             {
+                path: 'blog',
+                name: 'blog',
+                component: ()=> import("@/modules/valorations/views/Feedback.vue"),
+            },
+            {
                 path: 'our_doctors',
                 name: 'our_doctors',
                 component: FreeDoctorsVue,
@@ -35,7 +40,7 @@ export default [
             },
             {
                 path: 'recovery-password',
-                name: 'recover-password',
+                name: 'recovery-password',
                 component: () => import("../modules/password-recovery/views/RecoveryPassword.vue"),
                 meta:{
                     title: 'Recuperar contraseña'

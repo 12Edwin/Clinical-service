@@ -2,7 +2,6 @@ package utez.edu.mx.backend.execution.treatment.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +22,22 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class TreatmentService {
 
-    @Autowired
     private final TreatmentRepository repository;
-    @Autowired
     private final ExpedientRepository expedientRepository;
-    @Autowired
     private final ServiceRepository serviceRepository;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final PatientRepository patientRepository;
 
+    private static final String INVALID_EXPEDIENT = "Invalid expedient";
+
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
@@ -52,7 +47,7 @@ public class TreatmentService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findByExpedient(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findByExpedient(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Expedient> expedient = expedientRepository.findById(id);
         if (expedient.isEmpty()){
@@ -69,7 +64,7 @@ public class TreatmentService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
@@ -90,7 +85,7 @@ public class TreatmentService {
     }
 
     @Transactional
-    public ResponseEntity<?> save(Treatment treatment, Long id_user)throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Treatment treatment, Long id_user)throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (treatment.getRecommendation() == null || treatment.getStudies_description() == null
             || treatment.getSupport_home() == null || treatment.getService().getId() <= 0
             || treatment.getExpedient().getId() <= 0) throw new IllegalArgumentException();
@@ -100,7 +95,7 @@ public class TreatmentService {
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Invalid expedient", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(INVALID_EXPEDIENT, TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
@@ -119,7 +114,7 @@ public class TreatmentService {
     }
 
     @Transactional
-    public ResponseEntity<?> update(Treatment treatment, Long id_user)throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Treatment treatment, Long id_user)throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (treatment.getRecommendation() == null || treatment.getStudies_description() == null || treatment.getId() <= 0
                 || treatment.getSupport_home() == null || treatment.getService().getId() <= 0
                 || treatment.getExpedient().getId() <= 0) throw new IllegalArgumentException();
@@ -133,12 +128,15 @@ public class TreatmentService {
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Invalid expedient", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(INVALID_EXPEDIENT, TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!expedient.get().getPatient().getCreatedBy().equals(user.get())){
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Expedient> expedientOld = expedientRepository.findById(treatmentOptional.get().getExpedient().getId());
+        if (expedientOld.isEmpty()){
+            return new ResponseEntity<>(new Message(INVALID_EXPEDIENT, TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         if (!expedientOld.get().getPatient().getCreatedBy().equals(user.get())){
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }

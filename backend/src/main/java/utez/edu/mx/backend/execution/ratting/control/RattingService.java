@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.execution.ratting.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,23 +15,23 @@ import java.io.UnsupportedEncodingException;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class RattingService {
 
-    @Autowired
-    private RattingRepository rattingRepository;
+    private final RattingRepository rattingRepository;
 
     @Transactional
-    public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok( new Message(rattingRepository.findAll(pageable), "Request success", TypeResponse.SUCCESS));
     }
 
     @Transactional
-    public ResponseEntity<?> save(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok(new Message(rattingRepository.save(ratting), "Request success", TypeResponse.SUCCESS));
     }
 
     @Transactional
-    public ResponseEntity<?> update(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Ratting ratting) throws UnsupportedEncodingException, JsonProcessingException {
         return ResponseEntity.ok(new Message(rattingRepository.save(ratting), "Request success", TypeResponse.SUCCESS));
     }
 

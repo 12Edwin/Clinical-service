@@ -2,7 +2,7 @@ import api from "@/config/http-client.gateway";
 
 const get_services = async (pagination) => {
   try {
-    const response = await api.doGet("/service/", pagination);
+    const response = await api.doGet("/service/", { params: pagination });
     return response;
   } catch (error) {
     return error;

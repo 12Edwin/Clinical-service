@@ -3,7 +3,6 @@ package utez.edu.mx.backend.execution.doctor.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,12 @@ import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.base_catalog.speciality.control.SpecialityService;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.execution.doctor.model.DoctorRepository;
+import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.service.CryptService;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
+
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -35,24 +35,18 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DoctorService {
 
-    @Autowired
     private final DoctorRepository viewRepository;
-    @Autowired
     private final PersonService personService;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final RoleService roleService;
-    @Autowired
     private final SpecialityService specialityService;
 
     private final ObjectMapper mapper;
     private static final CryptService cryptService = new CryptService();
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findDoctor(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findDoctor(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<ViewDoctors> doctor = viewRepository.findById(id);
         if (doctor.isEmpty()){
@@ -62,12 +56,12 @@ public class DoctorService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAllDoctors(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findAllDoctors(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException {
         return new ResponseEntity<> ( new Message(viewRepository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
 
         if (doctor.getSpeciality_id() <= 0  || doctor.getCode() == null || doctor.getPassword() == null)
             throw new IllegalArgumentException("missing fields");
@@ -98,7 +92,7 @@ public class DoctorService {
     }
 
     @Transactional(value = "transactionManager", propagation = Propagation.REQUIRES_NEW, rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateDoctor(ViewDoctors doctor) throws IllegalArgumentException {
+    public ResponseEntity<Object> updateDoctor(ViewDoctors doctor) throws IllegalArgumentException {
 
         if (doctor.getSpeciality_id() <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Role> role = roleService.findByName(RoleTypes.DOCTOR);
@@ -125,7 +119,7 @@ public class DoctorService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> lockDoctor(Long id) throws IllegalArgumentException {
+    public ResponseEntity<Object> lockDoctor(Long id) throws IllegalArgumentException {
         return userService.lockUser(id);
     }
 }

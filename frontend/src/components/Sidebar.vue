@@ -26,6 +26,9 @@
         <li class="item" @click="() => $router.push({name : 'perfil'})">
           <i class="pi pi-user"></i><span class="ms-3">Perfil</span>
         </li>
+        <li class="item" @click="() => $router.push({name : 'recovery-password'})">
+          <i class="pi pi-key"></i><span class="ms-3">Cambiar Contraseña</span>
+        </li>
         <li class="item" @click="logout()">
           <i class="pi pi-sign-out"></i><span class="ms-3">Cerrar sesión</span>
         </li>
@@ -119,7 +122,7 @@ export default {
 <style scoped>
 .sidebar {
   height: 92vh;
-  width: 14rem;
+  width: 15rem;
   box-shadow: 5px 2px 20px 1px rgba(0, 0, 0, 0.2);
   border-radius: 1px;
   transition: all ease-out 0.8s;
@@ -211,5 +214,3 @@ div ul {
   font-size: 20px;
 }
 </style>
-
-<style></style>

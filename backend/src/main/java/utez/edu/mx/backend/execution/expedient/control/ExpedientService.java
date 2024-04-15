@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.execution.expedient.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,32 +31,26 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class ExpedientService {
 
-    @Autowired
-    private ExpedientRepository repository;
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private Physical_recordRepository recordRepository;
-    @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
-    private PathologicalRepository pathologicalRepository;
-    @Autowired
-    private DiseaseRepository diseaseRepository;
-    @Autowired
-    private ViewExpedientRepository viewRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ExpedientRepository repository;
+    private final PersonRepository personRepository;
+    private final Physical_recordRepository recordRepository;
+    private final PatientRepository patientRepository;
+    private final PathologicalRepository pathologicalRepository;
+    private final DiseaseRepository diseaseRepository;
+    private final ViewExpedientRepository viewRepository;
+    private final UserRepository userRepository;
+
+    private static final String NOT_FOUND = "Not found";
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findAll(Pageable pageable, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -72,7 +66,7 @@ public class ExpedientService {
         return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> findAllByFolio(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findAllByFolio(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -88,7 +82,7 @@ public class ExpedientService {
         return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> findAllByEmail(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findAllByEmail(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -104,7 +98,7 @@ public class ExpedientService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findById(Long id, Long id_user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> findById(Long id, Long id_user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -112,20 +106,23 @@ public class ExpedientService {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<ViewExpedients> optional = viewRepository.findById(id);
         if (optional.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(NOT_FOUND, TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
         if (!(Objects.equals(optional.get().getCreatedBy(), id_user))){
             return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         DtoExpedient expedient = optional.get().cast();
         Optional<Expedient> exp = repository.findById(expedient.getId());
+        if (exp.isEmpty()){
+            return new ResponseEntity<>(new Message(NOT_FOUND, TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
         expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
         expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
         return new ResponseEntity<>(new Message(expedient, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> save(DtoExpedient expedient, Long idUser) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(DtoExpedient expedient, Long idUser) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
             || expedient.getGender() == null || expedient.getHeight() <= 0
             || expedient.getOccupation() == null || expedient.getMarital_status() == null
@@ -169,7 +166,7 @@ public class ExpedientService {
     }
 
     @Transactional
-    public ResponseEntity<?> update(DtoExpedient expedient, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(DtoExpedient expedient, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         if(expedient.getBirthday() == null || expedient.getAllergies() == null || expedient.getName() == null
                 || expedient.getGender() == null || expedient.getHeight() <= 0
                 || expedient.getOccupation() == null || expedient.getMarital_status() == null || expedient.getDiseases() == null
@@ -185,7 +182,7 @@ public class ExpedientService {
 
         Optional<Expedient> optionalExpedient = repository.findById(expedient.getId());
         if (optionalExpedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(NOT_FOUND, TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         if (!(Objects.equals(optionalExpedient.get().getPatient().getCreatedBy().getId(), id_user))){

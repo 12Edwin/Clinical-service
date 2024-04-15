@@ -1,9 +1,10 @@
 <template>
     <div>
+        <Header style="margin-bottom: 20px" title="Doctores"/>
         <Panel class="w-100 shadow-lg">
             <template #header>
                 <div class="d-flex justify-content-between w-100 align-items-center">
-                    <p class="h5 text-secondary"><b>Gestion de doctores</b></p>
+                    <p class="h5 text-secondary"><b>Gestión de doctores</b></p>
                     <Button class="p-button-rounded p-button-outlined px-2 style" @click="$router.push(
                         { name: 'register' }
                     )">
@@ -16,7 +17,7 @@
                     <DataTable class="p-datatable-lg w-100" :value="doctors" responsiveLayout="scroll" dataKey="id"
                         :loading="loading" :selection.sync="selectedDoctors"
                         :globalFilterFields="['fullname', 'speciality', 'phone', 'sex']" :filters.sync="filters1"
-                        filterDisplay="menu" :rows="3">
+                        filterDisplay="menu" :rows="2">
                         <template #header>
                             <b-row>
                                 <b-col cols="12" class="d-flex justify-content-end align-items-center">
@@ -84,7 +85,7 @@
                         <b-col cols="1" :style="{ marginTop: '20px' }">
                             <small>Registros: </small> {{ totalRecords }}
                         </b-col>
-                        <Paginator :rows="3" :totalRecords="totalRecords" :rowsPerPageOptions="[3, 5, 10, 15]"
+                        <Paginator :rows="2" :totalRecords="totalRecords" :rowsPerPageOptions="[2, 3, 5, 10, 15]"
                             :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="getDoctors($event)" />
                     </div>
                 </b-col>
@@ -107,6 +108,9 @@ import Badge from 'primevue/badge';
 import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
+import Header from '@/components/Header.vue';
+import { onError } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 
 export default {
     components: {
@@ -117,7 +121,8 @@ export default {
         Paginator,
         Toast,
         ModalUpdateVue,
-        Badge
+        Badge, 
+        Header
     },
     data() {
         return {
@@ -132,7 +137,7 @@ export default {
             },
             pageable: {
                 page: 0,
-                size: 3
+                size: 2
             },
             totalRecords: 0,
             selectedDoctors: null,
@@ -153,12 +158,15 @@ export default {
                 this.pageable.size = rows;
             }
             try {
-                const { status, data: { result } } = await service.get_doctors(this.pageable)
+                const { status, data: { result, text } } = await service.get_doctors(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.doctors = content;
+                }else {
+                    let message = utils.getErrorMessages(text);
+                    await onError('Ha ocurrido un error', message);
                 }
             } catch (error) {
             }
@@ -166,7 +174,7 @@ export default {
         },
         deleteDoctor(doctorId) {
             this.$confirm.require({
-                message: '¿Está seguro de eliminar este Doctor?',
+                message: '¿Está seguro de actualizar la disponibilidad este Doctor?',
                 header: 'Confirmación',
                 icon: 'pi pi-info-circle',
                 acceptLabel: 'Sí',
@@ -174,10 +182,13 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(doctorId)
-                        const { status } = await service.deleteDoctor(encodedId)
+                        const { status, data } = await service.deleteDoctor(encodedId)
                         if (status === 200 || status === 201) {
                             this.getDoctors();
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Doctor eliminado correctamente', life: 3000 });
+                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Se ha cambiado la disponibilidad con éxito', life: 3000 });
+                        }else {
+                            let message = utils.getErrorMessages(data.text);
+                            await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
                 },

@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.speciality.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.service.model.ServiceRepository;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.base_catalog.speciality.model.SpecialityRepository;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -21,16 +20,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SpecialityService {
 
-    @Autowired
-    private SpecialityRepository repository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
+    private final SpecialityRepository repository;
+    private final UserRepository userRepository;
+    private final ServiceRepository serviceRepository;
 
     @Transactional(readOnly = true)
     public Optional<Speciality> findFirsByName(String name){
@@ -48,7 +43,7 @@ public class SpecialityService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findSpecialityById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findSpecialityById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<Speciality> speciality = repository.findById(id);
         if (speciality.isEmpty()){
@@ -58,12 +53,12 @@ public class SpecialityService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
         return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (speciality.getName() == null || speciality.getDescription() == null) throw new IllegalArgumentException();
         if (existsByName(speciality.getName())){
             return new ResponseEntity<>(new Message("Duplicated speciality", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -77,7 +72,7 @@ public class SpecialityService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> update(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> update(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (speciality.getName() == null || speciality.getDescription() == null || speciality.getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(speciality.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -90,7 +85,7 @@ public class SpecialityService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> delete(Long id) throws IllegalArgumentException{
+    public ResponseEntity<Object> delete(Long id) throws IllegalArgumentException{
         if (id <= 0) throw new IllegalArgumentException();
         Optional<Speciality> speciality = findById(id);
         if (speciality.isEmpty()){

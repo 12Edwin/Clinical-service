@@ -1,7 +1,5 @@
 package utez.edu.mx.backend.access.user.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +11,7 @@ import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.appoint.model.Appoint;
 import utez.edu.mx.backend.execution.patient.model.Patient;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class User {
     @Column(name = "password", columnDefinition = "VARCHAR(100) NOT NULL")
     private String password;
 
-    @Column(name = "img", columnDefinition = "TEXT DEFAULT 'https://res.cloudinary.com/dkrcosw87/image/upload/v1623680134/utez/utez_logo.png'")
+    @Column(name = "img", columnDefinition = "TEXT DEFAULT ''")
     private String img;
 
     @Column(name = "token", columnDefinition = "VARCHAR(200) NOT NULL")

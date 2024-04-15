@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import SplitButton from 'primevue/splitbutton'
 import utils from '@/kernel/utils';
 import Avatar from 'primevue/avatar';
 export default {
@@ -30,6 +29,13 @@ export default {
           icon: 'pi pi-user',
           command: ()=> {
             this.$router.push('/perfil')
+          }
+        },
+        {
+          label: 'Cambiar contraseña',
+          icon: 'pi pi-key',
+          command: ()=> {
+            this.$router.push('/recovery-password')
           }
         },
         {

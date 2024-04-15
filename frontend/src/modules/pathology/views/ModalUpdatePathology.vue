@@ -87,6 +87,7 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from "primevue/dropdown/";
+import { onSuccess } from '@/kernel/alerts';
 export default {
     name: "ModalUpdatePathology",
     props: {
@@ -179,12 +180,10 @@ export default {
                     const { status } = await pathologyService.update_pathology(encodedPathology);
                     if (status === 200 || status === 201) {
                         this.closeModal();
-                        this.$toast.add({
-                            severity: "success",
-                            summary: "Éxito",
-                            detail: "Patología actualizada correctamente",
-                            life: 3000,
-                        });
+                        onSuccess("¡Éxito!", "Patología actualizada con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);

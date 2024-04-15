@@ -3,16 +3,13 @@ package utez.edu.mx.backend.execution.expedient.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.disease.model.DtoDisease;
-import utez.edu.mx.backend.base_catalog.pathology.control.PathologicalService;
 import utez.edu.mx.backend.base_catalog.pathology.model.DtoPathological_record;
-import utez.edu.mx.backend.base_catalog.pathology.model.DtoTypePathological;
 import utez.edu.mx.backend.execution.expedient.model.DtoExpedient;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
@@ -32,11 +29,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 public class ExpedientController {
 
-    private static final String EXPEDIENT = "EXPEDIENT";
-
-    @Autowired
-    private ExpedientService service;
-
+    private final ExpedientService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final JwtProvider provider;
@@ -46,7 +39,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/")
-    ResponseEntity<?> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
+    ResponseEntity<Object> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -60,7 +53,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -75,7 +68,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByFolio/")
-    ResponseEntity<?> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -99,7 +92,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/findByEmail/")
-    ResponseEntity<?> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -123,7 +116,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -159,7 +152,7 @@ public class ExpedientController {
 
     @PreAuthorize("hasAnyAuthority('EXPEDIENTS')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);

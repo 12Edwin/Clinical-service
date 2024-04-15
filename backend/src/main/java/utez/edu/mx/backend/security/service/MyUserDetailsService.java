@@ -1,6 +1,5 @@
 package utez.edu.mx.backend.security.service;
 
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.backend.access.role.control.RoleService;
 import utez.edu.mx.backend.access.role.model.Role;
-import utez.edu.mx.backend.access.role.model.RoleRepository;
 import utez.edu.mx.backend.access.user.control.UserService;
 import utez.edu.mx.backend.access.user.model.User;
 import utez.edu.mx.backend.security.entity.MyUserDetails;

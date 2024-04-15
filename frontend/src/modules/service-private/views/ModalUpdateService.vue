@@ -2,7 +2,8 @@
     <b-row>
         <b-col cols="12">
             <Dialog header="Modificar Servicio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
-                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
+                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false"
+                :contentStyle="{ overflow: 'visible' }">
                 <div class="p-fluid grid">
                     <b-row>
                         <b-col class="mt-4 mb-2" lg="12">
@@ -119,6 +120,7 @@ import Textarea from "primevue/textarea";
 import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
 import Loader from "@/components/loader.vue";
+import { onError, onSuccess } from "@/kernel/alerts";
 export default {
     props: {
         visible: {
@@ -205,7 +207,7 @@ export default {
         closeModal() {
             this.$emit("update:visible", false);
             const oldService = JSON.parse(this.service);
-            this.newService.id;
+            this.newService.id = oldService.id;
             this.newService.name = oldService.name
             this.newService.description = oldService.description
             this.newService.price = oldService.price
@@ -213,16 +215,18 @@ export default {
         },
         disableButton() {
             if (
-                !this.v$.name.$dirty ||
-                !this.v$.description.$dirty ||
-                !this.v$.price.$dirty
+                !this.v$.name.$dirty &&
+                !this.v$.description.$dirty &&
+                this.price != 0 &&
+                this.selectedSpeciality != null
             ) {
                 return true;
             }
             return (
                 !this.v$.name.$invalid &&
                 !this.v$.description.$invalid &&
-                !this.v$.price.$invalid
+                !this.v$.price.$invalid &&
+                !this.selectedSpeciality != null
             );
         },
         async updateService() {
@@ -232,15 +236,13 @@ export default {
                     this.newService.id = JSON.parse(this.service).id;
                     this.newService.speciality = +this.selectedSpeciality
                     const encodedService = await encrypt(JSON.stringify(this.newService));
-                    const { status } = await servicios.update_service(encodedService);
+                    const { status, data: { text } } = await servicios.update_service(encodedService);
                     if (status === 200 || status === 201) {
                         this.closeModal();
-                        this.$toast.add({
-                            severity: "success",
-                            summary: "Éxito",
-                            detail: "Servicio medico actualizado correctamente",
-                            life: 3000,
-                        });
+                        onSuccess("¡Éxito!", "¡Servicio actualizado con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);

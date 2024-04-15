@@ -359,7 +359,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import MultiSelect from 'primevue/multiselect';
-import {getPathologies, saveExpedient, updateExpedient} from "@/modules/expedient/services/service-expedient";
+import {getPathologies, updateExpedient} from "@/modules/expedient/services/service-expedient";
 import {decrypt, encrypt} from "@/config/security";
 import Loader from "@/components/loader.vue";
 import Dropdown from 'primevue/dropdown';
@@ -526,7 +526,7 @@ export default {
       this.isLoading = true
       const {status, data} = await getPathologies()
       if (status !== 200) {
-
+        
       } else {
         const page = JSON.parse(await decrypt(data.result))
         this.pathologies = page.content

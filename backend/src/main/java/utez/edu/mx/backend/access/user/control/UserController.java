@@ -3,7 +3,6 @@ package utez.edu.mx.backend.access.user.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +28,7 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class UserController {
 
-    private static final String SESSION = "SESSION";
-
-    @Autowired
-    private UserService service;
+    private final UserService service;
 
     private final CryptService cryptService;
     private final ObjectMapper mapper;
@@ -41,7 +37,7 @@ public class UserController {
     private final CustomRestExceptionHandler<UserDto> handlerUserDto;
     private final CustomRestExceptionHandler<DtoPerson> handlerDtoPerson;
     @PostMapping("/recovery/")
-    ResponseEntity<?> recovery (@RequestBody String str_session) throws IllegalArgumentException {
+    ResponseEntity<Object> recovery (@RequestBody String str_session) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_session);
             DtoSession session = mapper.readValue(decrypt, DtoSession.class);
@@ -62,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/verify/")
-    ResponseEntity<?> verify (@RequestBody String str_session) throws IllegalArgumentException {
+    ResponseEntity<Object> verify (@RequestBody String str_session) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_session);
             DtoSession session = mapper.readValue(decrypt, DtoSession.class);
@@ -83,7 +79,7 @@ public class UserController {
     }
 
     @GetMapping("/profile/{str_id}")
-    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String str_token, @PathVariable String str_id) {
+    public ResponseEntity<Object> getProfile(@RequestHeader("Authorization") String str_token, @PathVariable String str_id) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -99,7 +95,7 @@ public class UserController {
     }
 
     @PutMapping("/profile/")
-    public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String str_token, @RequestBody String str_profile) {
+    public ResponseEntity<Object> updateProfile(@RequestHeader("Authorization") String str_token, @RequestBody String str_profile) {
         try {
             String token = str_token.replace("Bearer ", "");
             Long idUser = provider.getUserId(token);
@@ -128,14 +124,14 @@ public class UserController {
     }
 
     @PostMapping("/upload/")
-    public ResponseEntity<?> uploadProfilePicture(@RequestHeader("Authorization") String str_token, @RequestParam("profile") MultipartFile file) {
+    public ResponseEntity<Object> uploadProfilePicture(@RequestHeader("Authorization") String str_token, @RequestParam("profile") MultipartFile file) {
         String token = str_token.replace("Bearer ", "");
         Long idUser = provider.getUserId(token);
         return service.uploadProfilePicture(idUser, file);
     }
 
     @GetMapping("/image/{str_id}")
-    public ResponseEntity<?> getImage(@PathVariable String str_id) {
+    public ResponseEntity<Object> getImage(@PathVariable String str_id) {
         try {
             String decrypt = cryptService.decrypt(str_id);
             Long id = Long.parseLong(decrypt);

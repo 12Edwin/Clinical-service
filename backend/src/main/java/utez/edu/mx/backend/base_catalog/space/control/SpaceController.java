@@ -3,16 +3,12 @@ package utez.edu.mx.backend.base_catalog.space.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.base_catalog.space.model.DtoSpace;
-import utez.edu.mx.backend.base_catalog.space.model.Space;
-import utez.edu.mx.backend.execution.treatment.model.DtoTreatment;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -30,17 +26,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class SpaceController {
 
-    private static final String SPACE = "SPACE";
-
-    @Autowired
-    private SpaceService service;
-    @Autowired
+    private final SpaceService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoSpace> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll (Pageable pageable) {
+    ResponseEntity<Object> findAll (Pageable pageable) {
         try {
             return service.findAll(pageable);
         }catch (JsonProcessingException ex) {
@@ -51,7 +43,7 @@ public class SpaceController {
     }
 
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findById(Long.valueOf(id));
@@ -64,7 +56,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_space) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestBody String str_space) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_space);
             DtoSpace space = mapper.readValue(decrypt, DtoSpace.class);
@@ -86,7 +78,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_space) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestBody String str_space) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_space);
             DtoSpace space = mapper.readValue(decrypt, DtoSpace.class);
@@ -108,7 +100,7 @@ public class SpaceController {
 
     @PreAuthorize("hasAnyAuthority('SPACES')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> delete (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> delete (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.delete(Long.valueOf(id));

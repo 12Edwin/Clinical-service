@@ -1,18 +1,15 @@
 <template>
-    <div style="background-color: white;">
-        <Menubar :model="navbarItems"
-            style="background-color: white; justify-content: center; border: none; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold;" />
+    <div class="w-100">
         <h1>Nuestros Servicios</h1>
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <div style=" margin-top: 50px;">
+        <div class="w-100" style="display: flex; align-items: center; justify-content: center;">
+            <div class="w-100" style=" margin-top: 50px;">
                 <Carousel style="margin-top: 20px;" :value="services" :numVisible="1" :numScroll="1"
                     :responsiveOptions="responsiveOptions" :autoplayInterval="3000">
                     <template #header>
                     </template>
                     <template #item="slotProps">
-                        <div class="car-item">
-                            <div class="car-content">
-                                <div>
+                            <div class="w-100">
+                                <div class="w-100">
                                     <img src="https://picsum.photos/600/300/?image=25" class="image-carrusel"
                                         :alt="slotProps.data.title" />
                                 </div>
@@ -29,21 +26,15 @@
                                     <div style="font-weight: bolder; font-size: larger;">
                                         ${{ slotProps.data.price }}
                                     </div>
-
                                 </div>
-                            </div>
-                        </div>
+                              </div>
                     </template>
                 </Carousel>
             </div>
         </div>
-        <footer class="bg-white">
-            <div class="text-center py-2 text-white" style="background-color: #2a715a;">
-                <p style="font-weight: bolder!important; color: white!important;">© Hospital San J 2024. Todos los
-                    derechos
-                    reservados.</p>
-            </div>
-        </footer>
+      <div class="text-center py-2 text-white" style="background-color: #2a715a;">
+        <p style="font-weight: 600 !important;">© Hospital San J 2024. Todos los derechos reservados.</p>
+      </div>
     </div>
 </template>
 
@@ -64,30 +55,6 @@ export default {
     data() {
         return {
             services: [],
-            navbarItems: [
-              {
-                label: 'Hospital San J',
-                to: "/home",
-              },
-              {
-                label: 'Blog',
-                to: '/blog'
-              },
-              {
-                label: 'Servicios',
-                to: '/services'
-              },
-              {
-                label: 'Nuestros Doctores',
-                to: "/our_doctors"
-              },
-              {
-                label: '',
-                icon: 'pi pi-fw pi-user',
-                to: "/login",
-                end: true // this will align the item to the right
-              },
-            ],
             responsiveOptions: [
                 {
                     breakpoint: '1024px',
@@ -142,15 +109,7 @@ export default {
     background-color: #fff;
 }
 
-.image {
-    height: 300px !important;
-    width: 95% !important;
-    margin-top: 15px;
-    border-radius: 10px 10px;
-}
-
 .image-carrusel {
-    overflow: hidden;
     height: 500px;
     width: 75%;
 }
@@ -163,7 +122,6 @@ export default {
 }
 
 h1 {
-    font-weight: bolder !important;
     font-family: Arial, Helvetica, sans-serif;
     color: black !important;
 }
@@ -178,19 +136,7 @@ h2 {
 p {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 300 !important;
-    padding: 30px;
     font-size: larger !important;
-    color: black !important;
 }
 
-.back {
-    padding: 20px;
-}
-
-.buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
 </style>

@@ -1,7 +1,7 @@
 package utez.edu.mx.backend.base_catalog.person.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,16 +14,15 @@ import utez.edu.mx.backend.utils.entity.TypeResponse;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class PersonService {
 
-    @Autowired
-    private PersonRepository repository;
+    private final PersonRepository repository;
 
     @Transactional(readOnly = true)
     public Optional<Person> findByName (String name){
@@ -35,7 +34,7 @@ public class PersonService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> save (Person person) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> save (Person person) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (person.getName() == null || person.getSurname() == null
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
@@ -62,7 +61,7 @@ public class PersonService {
 
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> update (Person person) throws IllegalArgumentException {
+    public ResponseEntity<Object> update (Person person) throws IllegalArgumentException {
         if (person.getName() == null || person.getSurname() == null || person.getId() <= 0
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")

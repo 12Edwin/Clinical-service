@@ -80,6 +80,7 @@ import { encrypt } from '@/config/security';
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
+import { onError, onSuccess } from '@/kernel/alerts';
 export default {
     name: 'ModalSavePathology',
     props: {
@@ -127,12 +128,13 @@ export default {
         async savePathology() {
             const encoded = await encrypt(JSON.stringify(this.pathologies))
             try {
-                const { status, data } = await pathologyService.save_pathology(encoded);
+                const { status } = await pathologyService.save_pathology(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    onSuccess("¡Éxito!", "Patología guardada con éxito!")
+                    this.$emit("pagination", {page:0, rows:10})
                 } else {
-                    return data.result
+                    onError("¡Error!", text).then(() => this.closeModal())
                 }
             } catch (error) {
                 return error

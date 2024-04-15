@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backend.base_catalog.space.model.DtoSpace;
 import utez.edu.mx.backend.execution.ratting.model.DtoRatting;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
@@ -32,7 +31,7 @@ public class RattingController {
     private final ObjectMapper mapper;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll(Pageable pageable) {
+    ResponseEntity<Object> findAll(Pageable pageable) {
         try {
             return service.findAll(pageable);
         } catch (UnsupportedEncodingException ex) {
@@ -43,7 +42,7 @@ public class RattingController {
     }
 
     @PostMapping("/")
-    ResponseEntity<?> save(@RequestBody String str_ratting) {
+    ResponseEntity<Object> save(@RequestBody String str_ratting) {
         try {
             String decrypt = cryptService.decrypt(str_ratting);
             DtoRatting ratting = mapper.readValue(decrypt, DtoRatting.class);

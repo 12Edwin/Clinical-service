@@ -26,7 +26,7 @@ public class CaptchaService {
     @Value("${FRIEDLYCAPTCHA.SITEKEY}")
     private String siteKey;
 
-    public ResponseEntity<?> verify(String solution) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> verify(String solution) throws UnsupportedEncodingException, JsonProcessingException {
         String url = "https://api.friendlycaptcha.com/api/v1/siteverify";
 
         HttpHeaders headers = new org.springframework.http.HttpHeaders();

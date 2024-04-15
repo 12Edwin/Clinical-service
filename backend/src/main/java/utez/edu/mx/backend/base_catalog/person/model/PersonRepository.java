@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import utez.edu.mx.backend.access.role.model.Role;
 
 import java.util.Date;
 import java.util.Optional;

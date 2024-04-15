@@ -3,16 +3,12 @@ package utez.edu.mx.backend.base_catalog.speciality.control;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.common.util.impl.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.base_catalog.speciality.model.DtoSpeciality;
-import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
-import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
@@ -30,17 +26,13 @@ import java.util.Set;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class SpecialityController {
 
-    private static final String SPECIALITY = "SPECIALITY";
-
-    @Autowired
-    private SpecialityService service;
-
+    private final SpecialityService service;
     private final CryptService cryptService;
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoSpeciality> exceptionHandler;
 
     @GetMapping("/")
-    ResponseEntity<?> findAll (Pageable pageable) {
+    ResponseEntity<Object> findAll (Pageable pageable) {
         try {
             return service.findAll(pageable);
         }catch (JsonProcessingException ex) {
@@ -51,7 +43,7 @@ public class SpecialityController {
     }
 
     @GetMapping("/{str_id}")
-    ResponseEntity<?> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
+    ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
             String id = cryptService.decrypt(str_id);
             return service.findSpecialityById(Long.valueOf(id));
@@ -64,7 +56,7 @@ public class SpecialityController {
 
     @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @PostMapping("/")
-    ResponseEntity<?> save (@RequestBody String str_speciality) throws IllegalArgumentException {
+    ResponseEntity<Object> save (@RequestBody String str_speciality) throws IllegalArgumentException {
         try {
             System.out.println(str_speciality);
             String decrypt = cryptService.decrypt(str_speciality);
@@ -88,7 +80,7 @@ public class SpecialityController {
 
     @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @PutMapping("/")
-    ResponseEntity<?> update (@RequestBody String str_speciality) throws IllegalArgumentException {
+    ResponseEntity<Object> update (@RequestBody String str_speciality) throws IllegalArgumentException {
         try {
             String decrypt = cryptService.decrypt(str_speciality);
             DtoSpeciality speciality = mapper.readValue(decrypt, DtoSpeciality.class);
@@ -110,7 +102,7 @@ public class SpecialityController {
 
     @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @DeleteMapping("/{str_id}")
-    ResponseEntity<?> delete (@PathVariable String str_id) throws IllegalArgumentException {
+    ResponseEntity<Object> delete (@PathVariable String str_id) throws IllegalArgumentException {
         try {
             String id = cryptService.decrypt(str_id);
             return service.delete(Long.valueOf(id));

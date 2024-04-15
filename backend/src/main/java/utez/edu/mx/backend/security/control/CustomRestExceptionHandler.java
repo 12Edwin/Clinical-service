@@ -30,7 +30,10 @@ import utez.edu.mx.backend.security.entity.ApiError;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @ControllerAdvice
 public class CustomRestExceptionHandler<T> extends ResponseEntityExceptionHandler {

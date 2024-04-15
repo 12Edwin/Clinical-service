@@ -87,6 +87,7 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown/";
 import spacesServices from '../services/spaces-services';
+import { onError, onSuccess } from "@/kernel/alerts";
 export default {
     name: "ModalUpdateSpace",
     props: {
@@ -178,12 +179,10 @@ export default {
                     const { status } = await spacesServices.update_space(encodedSpace);
                     if (status === 200 || status === 201) {
                         this.closeModal();
-                        this.$toast.add({
-                            severity: "success",
-                            summary: "Éxito",
-                            detail: "Patologia actualizada correctamente",
-                            life: 3000,
-                        });
+                        onSuccess("¡Éxito!", "¡Espacio actualizado con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);

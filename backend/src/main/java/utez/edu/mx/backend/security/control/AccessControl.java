@@ -19,17 +19,17 @@ public class AccessControl {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception {
+    public ResponseEntity<Object> login(@RequestBody LoginDto loginDto) throws Exception {
         return accessService.login(loginDto);
     }
 
     @PostMapping("/verify-code")
-    public ResponseEntity<?> verifyCode(@Validated({UserDto.VerifyCode.class}) @RequestBody UserDto dto){
+    public ResponseEntity<Object> verifyCode(@Validated({UserDto.VerifyCode.class}) @RequestBody UserDto dto){
         return userService.verifyCode(dto);
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Validated({UserDto.ChangePassword.class}) @RequestBody UserDto dto){
+    public ResponseEntity<Object> changePassword(@Validated({UserDto.ChangePassword.class}) @RequestBody UserDto dto){
         return userService.updatePassword(dto);
     }
 

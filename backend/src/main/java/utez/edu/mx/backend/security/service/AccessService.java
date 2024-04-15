@@ -1,8 +1,8 @@
 package utez.edu.mx.backend.security.service;
 
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,24 +21,24 @@ import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class AccessService {
 
     private final static Logger logger = LoggerFactory.getLogger(AccessService.class);
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
 
-    @Autowired
-    JwtProvider jwtProvider;
+    final JwtProvider jwtProvider;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> login(LoginDto loginDto) throws SQLException {
+    public ResponseEntity<Object> login(LoginDto loginDto) throws SQLException {
         Optional<User> optionalUser = userService.findFirstByCode(loginDto.getUsername());
         if (optionalUser.isEmpty()) {
             return new ResponseEntity<>(new Message("Usuario no encontrado", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);

@@ -2,12 +2,12 @@ package utez.edu.mx.backend.access.captcha.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
+
 import java.io.UnsupportedEncodingException;
 
 @RestController
@@ -16,14 +16,10 @@ import java.io.UnsupportedEncodingException;
 @CrossOrigin(origins = {"*"}, methods = {RequestMethod.POST})
 public class CaptchaController {
 
-    private static final String CAPTCHA = "CAPTCHA";
-
-    @Autowired
-    private CaptchaService service;
-
+    private final CaptchaService service;
     private final CryptService cryptService;
     @PostMapping("/")
-    ResponseEntity<?> verify (@RequestBody String str_solution) throws IllegalArgumentException{
+    ResponseEntity<Object> verify (@RequestBody String str_solution) throws IllegalArgumentException{
         try {
             String solution = cryptService.decrypt(str_solution);
             return service.verify(solution);

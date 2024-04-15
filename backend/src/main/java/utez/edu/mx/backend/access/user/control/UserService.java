@@ -1,10 +1,8 @@
 package utez.edu.mx.backend.access.user.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.backend.access.role.model.RoleRepository;
+import utez.edu.mx.backend.access.role.model.RoleTypes;
 import utez.edu.mx.backend.access.sms.control.SmsService;
 import utez.edu.mx.backend.access.user.model.DtoSession;
 import utez.edu.mx.backend.access.user.model.User;
@@ -43,13 +42,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository repository;
-    @Autowired
     private final RoleRepository roleRepository;
-    @Autowired
     private final SmsService smsService;
-    @Autowired
     private final PersonRepository personRepository;
     private final PasswordEncoder encoder;
     private final CryptService cryptService;
@@ -68,17 +63,17 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updatePassword (UserDto user){
+    public ResponseEntity<Object> updatePassword (UserDto user){
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> verifyCode (UserDto user){
+    public ResponseEntity<Object> verifyCode (UserDto user){
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (user.getCode() == null || user.getPassword() == null
         ) throw new IllegalArgumentException("missing fields");
 
@@ -101,7 +96,7 @@ public class UserService {
     }
 
     @Transactional(value = "transactionManager",rollbackFor = {SQLException.class})
-    public ResponseEntity<?> updateUserDoctor (User user) throws IllegalArgumentException {
+    public ResponseEntity<Object> updateUserDoctor (User user) throws IllegalArgumentException {
         if (user.getId() <= 0
         ) throw new IllegalArgumentException("missing fields");
 
@@ -117,7 +112,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<User> userOptional = repository.findById(id);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -135,7 +130,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
+    public ResponseEntity<Object> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
         Optional<User> userOptional = repository.findById(user.getId());
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -150,13 +145,12 @@ public class UserService {
 
 
         User updatedUser = userOptional.get();
-        updatedUser.setPassword(encoder.encode(user.getPassword()));
         updatedUser.setAvailable(true);
 
         Person person = optionalPerson.get();
         person.setName(user.getPersonProfile().getName());
         person.setSurname(user.getPersonProfile().getSurname());
-        person.setLastname(user.getPersonProfile().getLastname());
+        person.setLastname(user.getPersonProfile().getLastname() == null ? "" : user.getPersonProfile().getLastname());
         person.setSex(SexType.valueOf(user.getPersonProfile().getSex()));
         person.setPhone(user.getPersonProfile().getPhone());
         person.setBirthday(user.getPersonProfile().getBirthday());
@@ -184,7 +178,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> lockUser (Long id) throws IllegalArgumentException {
+    public ResponseEntity<Object> lockUser (Long id) throws IllegalArgumentException {
         if (id <= 0) throw new IllegalArgumentException("missing fields");
         Optional<User> user = findById(id);
         if (user.isEmpty()){
@@ -198,7 +192,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -208,7 +202,7 @@ public class UserService {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         User updatedUser = user.get();
-        if (!updatedUser.isAvailable()) {
+        if (!updatedUser.isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
             return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         RandomString tickets = new RandomString(5);
@@ -227,7 +221,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ResponseEntity<?> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -236,7 +230,7 @@ public class UserService {
         if (user.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
-        if (!user.get().isAvailable()) {
+        if (!user.get().isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
             return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         if (!dto.getToken().equals(user.get().getToken())) {
@@ -251,12 +245,13 @@ public class UserService {
         }
         updatedUser.setToken("");
         updatedUser.setExpiration(null);
+        updatedUser.setAvailable(true);
         updatedUser.setPassword(encoder.encode(dto.getPassword()));
         repository.saveAndFlush(updatedUser);
         return new ResponseEntity<>(new Message(user, "Password changed", TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> uploadProfilePicture(Long userId, MultipartFile file) {
+    public ResponseEntity<Object> uploadProfilePicture(Long userId, MultipartFile file) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -278,7 +273,9 @@ public class UserService {
         Path path = Paths.get(folderPath + newFileName);
 
         try {
-            Files.deleteIfExists(Path.of(user.getImg()));
+            if (user.getImg() != null && !user.getImg().isEmpty()) {
+                Files.deleteIfExists(Path.of(user.getImg()));
+            }
             Files.write(path, file.getBytes());
             user.setImg(path.toString());
             repository.saveAndFlush(user);
@@ -290,7 +287,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> getProfilePicture(Long userId) {
+    public ResponseEntity<Object> getProfilePicture(Long userId) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
@@ -309,10 +306,10 @@ public class UserService {
                 String contentType = Files.probeContentType(path);
                 return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
             } else {
-                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new Message("Could not read the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new Message("Error occurred while accessing the file", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
     }
 
