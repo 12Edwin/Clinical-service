@@ -83,6 +83,9 @@ public class ServiceService {
         if (!repository.existsById(service.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (repository.findFirstByNameAndIdNot(service.getName(), service.getId()).isPresent()){
+            return new ResponseEntity<>(new Message("Duplicated service", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Optional<Speciality> speciality = specialityRepository.findById(service.getSpeciality().getId());
         if (speciality.isEmpty()){
             return new ResponseEntity<>(new Message("Speciality not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);

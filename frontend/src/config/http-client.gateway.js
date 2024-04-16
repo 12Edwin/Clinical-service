@@ -1,7 +1,8 @@
 import router from "@/router";
 import axios from "axios";
 import {onError} from "@/kernel/alerts";
-const SERVER_URL = "http://localhost:8080/api"
+
+const SERVER_URL = process.env.VUE_APP_BASE_URL
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000

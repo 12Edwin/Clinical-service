@@ -57,7 +57,6 @@ router.beforeEach((to, from, next)=> {
     if(loggedIn){
         const role = utils.getRoleNameBytoken()
         if(to.meta && to.meta.role && to.meta.role.toString().toLowerCase() !== role.toString().toLowerCase()){
-            console.log(to)
             return next("/unautorized")
         }
         next();

@@ -9,6 +9,8 @@ public interface TypePathologicalRepository extends JpaRepository<TypePathologic
 
     Optional<TypePathological> findByName(String name);
 
+    Optional<TypePathological> findFirstByNameAndIdNot(String name, Long id);
+
     @Modifying
     int deleteTypePathologicalById(Long id);
 }

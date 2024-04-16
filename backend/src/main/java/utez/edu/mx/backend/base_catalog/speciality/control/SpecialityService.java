@@ -77,6 +77,9 @@ public class SpecialityService {
         if (!repository.existsById(speciality.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
+        if (repository.findFirstByNameAndIdNot(speciality.getName(), speciality.getId()).isPresent()){
+            return new ResponseEntity<>(new Message("Duplicated speciality", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         Speciality result = repository.saveAndFlush(speciality);
         if (result.getName() == null || result.getName().isEmpty()){
             return new ResponseEntity<>(new Message("Speciality not updated", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);

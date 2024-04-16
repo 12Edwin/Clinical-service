@@ -50,7 +50,7 @@ public class SpaceService {
     public ResponseEntity<Object> save(Space space) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (space.getName() == null || space.getDescription() == null) throw new IllegalArgumentException("missing fields");
         if (repository.findFirstByName(space.getName()).isPresent()) {
-            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         Space newSpace = repository.save(space);
         if (repository.findFirstByName(space.getName()).isEmpty()) {
@@ -67,7 +67,7 @@ public class SpaceService {
             return new ResponseEntity<>(new Message("Space not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
         if (repository.findFirstByNameAndIdNot(space.getName(), space.getId()).isPresent()) {
-            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new Message("Space already exists", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         Space newSpace = repository.saveAndFlush(space);
         if (repository.findFirstByName(space.getName()).isEmpty()) {
