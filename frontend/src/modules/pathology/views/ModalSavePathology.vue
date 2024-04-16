@@ -58,7 +58,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="savePathology()"
+                            <Button label="Registrar" :disabled="v$.$invalid" :loading="isLoading" icon="pi pi-plus" @click="savePathology()"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -80,6 +80,8 @@ import { encrypt } from '@/config/security';
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
+import { onError, onSuccess } from '@/kernel/alerts';
+import utils from "@/kernel/utils";
 export default {
     name: 'ModalSavePathology',
     props: {
@@ -93,6 +95,11 @@ export default {
         Textarea,
         Dropdown,
         Toast
+    },
+    data(){
+        return {
+            isLoading: false
+        }
     },
     setup() {
         const pathologies = reactive({
@@ -127,18 +134,19 @@ export default {
         async savePathology() {
             const encoded = await encrypt(JSON.stringify(this.pathologies))
             try {
-                const { status, data } = await pathologyService.save_pathology(encoded);
+                this.isLoading = true
+                const { status, data: {text} } = await pathologyService.save_pathology(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log(data);
+                    await onSuccess("¡Éxito!", "Patología guardada con éxito!")
+                    this.$emit("pagination", {page:0, rows:10})
                 } else {
-                    return data.result
+                    const message = utils.getErrorMessages(text)
+                    await onError("¡Error!", message).then(() => this.closeModal())
                 }
-            } catch (error) {
-                return error
-            }
-        },
+            } catch (error) {}
+            this.this.isLoading = false
+        }
     },
 }   
 </script>

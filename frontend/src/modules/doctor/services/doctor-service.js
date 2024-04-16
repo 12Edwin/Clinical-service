@@ -2,6 +2,15 @@ import api from "@/config/http-client.gateway"
 
 const get_doctors = async (pagination) => {
     try {
+        const response = await api.doGet('/doctor/all/', {params: pagination});
+        return response;
+    } catch (error) {
+        return error;
+    }
+}
+
+const getPublicDoctors = async (pagination) => {
+    try {
         const response = await api.doGet('/doctor/', {params: pagination});
         return response;
     } catch (error) {
@@ -51,4 +60,5 @@ export default {
     save_doctor,
     updateDoctor,
     deleteDoctor,
+    getPublicDoctors
 }

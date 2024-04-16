@@ -47,7 +47,7 @@
               <b-row>
                 <b-col cols="12" class="d-flex justify-content-center w-100">
                   <Button icon="pi pi-camera" class="p-button-rounded p-button-outlined button-margin" @click="toggleShow" v-tooltip.top="'Cambiar foto'" />
-                  <Button icon="pi pi-lock-open" class="p-button-rounded p-button-outlined button-margin" @click="openChangePassword" v-tooltip.bottom="'Cambiar contraseña'"/>
+                  <Button icon="pi pi-lock-open" class="p-button-rounded p-button-outlined button-margin" @click="() => $router.push({name : 'recovery-password'})" v-tooltip.bottom="'Cambiar contraseña'"/>
                 </b-col>
               </b-row>
             </b-col>
@@ -300,7 +300,7 @@ export default {
   methods: {
     async getProfile() {
       this.isLoading = true
-      const id = getUserIdByToken()
+      const id = await getUserIdByToken()
       const {status, data} = await getProfile(id)
       if (status !== 200) {
         let message = 'Error al obtener el perfil'
@@ -402,7 +402,7 @@ export default {
   computed: {
     getImage() {
       const timestamp = Date.now();
-      return this.availableImage ? `${getServerUrl()}${this.data.img}?t=${timestamp}` : 'assets/latido-del-corazon.gif'
+      return this.availableImage ? `${process.env.VUE_APP_BASE_URL}${this.data.img}?t=${timestamp}` : 'assets/latido-del-corazon.gif'
     },
     fullName(){
       return this.data.id ? `${this.data.person.name} ${this.data.person.surname} ${(this.data.person.lastname || '')}` : ''

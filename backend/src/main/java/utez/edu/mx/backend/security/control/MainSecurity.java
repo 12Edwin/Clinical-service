@@ -78,7 +78,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
             req.antMatchers("/api/user/**").permitAll();
             req.antMatchers("/api/pathology/**").authenticated();
             req.antMatchers("/api/service/**").permitAll();
-            req.antMatchers("/api/space/**").permitAll();
+            req.antMatchers("/api/space/**").authenticated();
             req.antMatchers("/api/speciality/**").permitAll();
             req.antMatchers("/api/appointment/**").authenticated();
             req.antMatchers("/api/doctor/**").permitAll();

@@ -61,7 +61,7 @@ public class ServiceService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> save(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
-        if (service.getName() == null || service.getDescription() == null || service.getPrice() <= 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
+        if (service.getName() == null || service.getDescription() == null || service.getPrice() < 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
         if (findFirstByName(service.getName()).isPresent()){
             return new ResponseEntity<>(new Message("Duplicated service", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
@@ -79,9 +79,12 @@ public class ServiceService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> update(Service service) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
-        if (service.getName() == null || service.getDescription() == null || service.getPrice() <= 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
+        if (service.getName() == null || service.getDescription() == null || service.getPrice() < 0 || service.getSpeciality().getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(service.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
+        if (repository.findFirstByNameAndIdNot(service.getName(), service.getId()).isPresent()){
+            return new ResponseEntity<>(new Message("Duplicated service", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Speciality> speciality = specialityRepository.findById(service.getSpeciality().getId());
         if (speciality.isEmpty()){

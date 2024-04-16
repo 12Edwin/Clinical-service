@@ -4,9 +4,10 @@
             <b-col cols="12">
                 <Header style="margin-bottom: 20px;" :title="'Catálogos'" />
             </b-col>
-            <loader v-if="isLoading" key="load" />
             <b-col cols="12">
-                <panel>
+                <TransitionGroup name="fade">
+                    <loader v-if="isLoading" key="load" />
+                    <panel v-else key="content">
                     <template #header>
                         <div class="d-flex justify-content-between w-100 align-items-center">
                             <p class="h5 text-secondary"><b>Gestión de espacios</b></p>
@@ -61,6 +62,7 @@
                         </b-col>
                     </b-row>
                 </panel>
+                </TransitionGroup>
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
@@ -83,10 +85,9 @@ import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
 import ModalUpdateSpace from './ModalUpdateSpace.vue';
 import Header from '@/components/Header.vue';
-import { onError } from "@/kernel/alerts";
+import { onError, onSuccess } from "@/kernel/alerts";
 import Loader from "@/components/loader.vue";
 import utils from "@/kernel/utils";
-
 export default {
     components: {
         Card,
@@ -104,6 +105,7 @@ export default {
     data() {
         return {
             spaces: [],
+            isLoading: false,
             displayModal: false,
             displaySaveModal: false,
             displayDetailModal: false,
@@ -132,7 +134,6 @@ export default {
         },
 
         async pagination(event) {
-            this.isLoading = true
             if (event != undefined) {
                 const { page, rows } = event;
                 this.pageable.page = page;
@@ -140,17 +141,19 @@ export default {
             }
 
             try {
+                this.isLoading = true
                 const { status, data: { result, text } } = await spaceService.getAllSpaces(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.spaces = content
+                    this.isLoading = false
                 } else {
                     let message = utils.getErrorMessages(text);
                     await onError('Ha ocurrido un error', message);
+                    this.isLoading = false
                 }
-                this.isLoading = false
             } catch (error) { }
 
         },
@@ -167,7 +170,7 @@ export default {
                         const { status, data } = await spaceService.delete_space(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Espacio medico eliminado correctamente', life: 3000 });
+                           await onSuccess('¡Éxito!', '¡Espacio eliminado con éxito!');
                         } else {
                             let message = utils.getErrorMessages(data.text);
                             await onError('Ha ocurrido un error', message);

@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Registrar espacio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
@@ -58,8 +58,8 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveSpace()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
+                                @click="saveSpace()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
@@ -72,7 +72,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex } from "@/utils/regex"
+import { backRegex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
@@ -80,6 +80,8 @@ import { encrypt } from '@/config/security';
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import spacesServices from '../services/spaces-services';
+import { onError, onSuccess } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 export default {
     name: 'ModalSaveSpace',
     props: {
@@ -94,6 +96,11 @@ export default {
         Dropdown,
         Toast
     },
+    data(){
+        return {
+            isLoading: true,
+        }
+    },
     setup() {
         const spaces = reactive({
             name: '',
@@ -103,13 +110,13 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre para el espacio medico", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => backRegex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 70 caracteres", maxLength(70))
             },
             description: {
                 required: helpers.withMessage("Debes agregar una descripción para el espacio medico", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos", (value) => backRegex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },
@@ -125,17 +132,38 @@ export default {
             this.v$.$reset()
         },
         async saveSpace() {
-            const encoded = await encrypt(JSON.stringify(this.spaces))
-            try {
-                const { status, data } = await spacesServices.save_space(encoded);
-                if (status === 200 || status === 201) {
-                    this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log(data);
+            if(!this.v$.$invalid){
+                const encoded = await encrypt(JSON.stringify(this.spaces))
+                try {
+                    this.isLoading = true
+                    const { status, data: { text } } = await spacesServices.save_space(encoded);
+                    if (status === 200 || status === 201) {
+                        this.closeModal();
+                        await onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        let message = utils.getErrorMessages(text);
+                        await onError("¡Error!", message).then(() => this.closeModal())
+                    }
+                } catch (error) {
+                    onError("¡Error!", "Ocurrió un error al guardar el espacio")
                 }
-            } catch (error) {
-                return error
+            }else{
+                onError("¡Error!", "Debes completar los campos correctamente")
             }
+            this.isLoading= false
+        },
+        disableButton() {
+            if (
+                !this.v$.name.$dirty &&
+                !this.v$.description.$dirty
+            ) {
+                return false;
+            }
+            return (
+                !this.v$.name.$invalid &&
+                !this.v$.description.$invalid
+            );
         },
     },
 }   

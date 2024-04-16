@@ -2,11 +2,11 @@
     <div style="position: relative;" class="w-100 h-100">
         <b-row>
             <b-col cols="12">
-                <Header style="margin-bottom: 20px;" :title="'Catálogos'"/>
+                <Header style="margin-bottom: 20px;" :title="'Catálogos'" />
             </b-col>
             <b-col cols="12">
-                <transition-group name="fade" >
-                    <Loader v-if="isLoading" key="load"/>
+                <transition-group name="fade">
+                    <Loader v-if="isLoading" key="load" />
                     <panel v-else class="w-100 h-100" key="content">
                         <template #header>
                             <div class="d-flex justify-content-between w-100 align-items-center">
@@ -21,7 +21,7 @@
                                 class="mb-4 d-flex justify-content-end align-items-center w-100">
                                 <span class="p-input-icon-right">
                                     <i class="pi pi-search" />
-                                    <InputText placeholder="Buscar..." v-model="search" @input="filter(search)"/>
+                                    <InputText placeholder="Buscar..." v-model="search" @input="filter(search)" />
                                 </span>
                             </b-col>
                         </b-row>
@@ -31,15 +31,16 @@
                                 <Card class="mb-1 mt-2 custom-card">
                                     <template #title>
                                         <div class="d-flex justify-content-center align-items-center">
-                                        <h5>{{ service.name }}</h5>
+                                            <h5>{{ service.name }}</h5>
                                         </div>
                                     </template>
                                     <template #content>
                                         <div class="description">
                                             <p>
-                                            {{ service.description !== "" ? limitTitle(service.description) : 'Sin descripción'}}
+                                                {{ service.description !== "" ? limitDescription(service.description) :
+                    'Sin descripción' }}
                                             </p>
-                                            <p style="font-weight: normal; color: black; ">${{ service.price }}</p>
+                                            <p style="font-weight: normal; color: black; ">{{ service.price > 0 ? `$${service.price}` : 'Gratuito'}}</p>
                                         </div>
                                     </template>
                                     <template #footer>
@@ -70,9 +71,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateService :visible.sync="displayModal" :service="service" @getServices="getServices"/>
+        <ModalUpdateService :visible.sync="displayModal" :service="service"  @pagination="pagination"/>
         <ModalSaveServiceVue :visible.sync="displaySaveModal" />
-        <ModalDetailService :visible.sync="displayDetailModal" :service="service" @getServices="getServices" />
+        <ModalDetailService :visible.sync="displayDetailModal" :service="service"  @pagination="pagination"/>
     </div>
 </template>
 
@@ -87,11 +88,11 @@ import ModalDetailService from './ModalDetailService.vue';
 import Paginator from 'primevue/paginator';
 import Toast from 'primevue/toast';
 import servicios from '../service-services/Services';
-import { decrypt, encrypt } from "@/config/security"
+import { decrypt, encrypt } from "@/config/security";
 import Header from '@/components/Header.vue';
 import Loader from "@/components/loader.vue";
 import utils from '@/kernel/utils';
-import { onError } from '@/kernel/alerts';
+import { onError, onSuccess } from '@/kernel/alerts';
 export default {
     components: {
         Card,
@@ -115,7 +116,12 @@ export default {
             service: {
                 name: '',
                 description: '',
-                price: ''
+                price: '',
+                speciality: {
+                    id: 0,
+                    name: '',
+                    description: ''
+                }
             },
             pageable: {
                 page: 0,
@@ -125,7 +131,7 @@ export default {
             isLoading: false,
             search: '',
             rowsPerPage: 10
-            
+
         };
     },
     methods: {
@@ -140,7 +146,6 @@ export default {
             this.displayDetailModal = true;
             this.service = JSON.stringify(service)
         },
-
         async pagination(event) {
             if (event != undefined) {
                 const { page, rows } = event;
@@ -151,31 +156,27 @@ export default {
                 this.isLoading = true
                 const { status, data: { result } } = await servicios.get_services(this.pageable)
                 if (status === 200 || status === 201) {
-                    this.isLoading = false
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.services = content
-                }else{
-                    this.isLoading = false
-                    onError('Error', 'Ha ocurrido un error inesperado').then(() => {})
+                } else {
+                    onError('Error', 'Ha ocurrido un error inesperado').then(() => { })
                 }
-            } catch (error) {
-                this.isLoading = false
-             }
+            } catch (error) {}
+            this.isLoading = false
         },
-        async getServices(){
+        async getServices() {
             const { status, data: { result } } = await servicios.get_services(this.pageable)
             if (status === 200 || status === 201) {
-                this.isLoading = false
                 const decripted = await decrypt(result)
                 const { content, totalElements } = JSON.parse(decripted)
                 this.totalRecords = totalElements
                 this.services = content
-            }else{
-                this.isLoading = false
-                onError('Error', 'Ha ocurrido un error inesperado').then(() => {})
+            } else {
+                onError('Error', 'Ha ocurrido un error inesperado').then(() => { })
             }
+            this.isLoading = false
         },
         deleteService(serviceId) {
             this.$confirm.require({
@@ -187,12 +188,19 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(serviceId)
-                        const { status } = await servicios.delete_service(encodedId)
+                        const { status, data: {text} } = await servicios.delete_service(encodedId)
+                        if(status === 400){
+                            const message = utils.getErrorMessages(text)
+                            onError("Error", message).then(() => { 
+                                this.$confirm.close();
+                            })
+                        }
                         if (status === 200 || status === 201) {
-                            this.getServices()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Servicio eliminado correctamente', life: 3000 });
+                            this.pagination()
+                            onSuccess("¡Éxito!", "¡Servicio eliminado con éxito!");
                         }
                     } catch (error) { }
+                    this.isLoading = false
                 },
                 reject: () => { }
             });
@@ -206,27 +214,28 @@ export default {
                 return limitedWords.join(' ') + '...';
             }
         },
-        limitTitle(title){
-            const words = title.split(' ');
-            if (words.length === 3 && words.length < 3) {
-                return title;
+        limitTittle(name) {
+            const words = name.split(' ');
+            if (words.length === 2 && words.length < 2) {
+                return description;
             } else {
-                const limitedWords = words.slice(0, 3);
+                const limitedWords = words.slice(0, 2);
                 return limitedWords.join(' ') + '...';
             }
         },
-        filter(name){
-           if(name === ''){
-               this.getServices()
-            }else{
-               this.services = utils.filterByName(this.services, name)
+        filter(name) {
+            if (name === '') {
+                this.pagination()
+            } else {
+                this.services = utils.filterByName(this.services, name)
             }
         }
     },
+
     mounted() {
-        this.pagination({ page: 0, rows: 10})
+        this.pagination({ page: 0, rows: 10 })
     },
-};
+}
 </script>
 
 <style scoped>
@@ -252,7 +261,7 @@ export default {
     transition: all 0.3s;
 }
 
-.custom-card:hover {
+.card-custom:hover {
     transform: scale(1.05);
 }
 
@@ -277,13 +286,13 @@ export default {
     border-radius: 0;
 }
 
-.description{
+.description {
     font-family: 'Arial', sans-serif;
-  font-size: 18px;
-  font-weight: normal; 
-  color: #666;
-  margin-top: 0;
-  text-align: center;
-  line-height: 1.5;
+    font-size: 18px;
+    font-weight: normal;
+    color: #666;
+    margin-top: 0;
+    text-align: center;
+    line-height: 1.5;
 }
 </style>

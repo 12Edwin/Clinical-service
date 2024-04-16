@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Modificar Patología" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Modificar espacio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
@@ -67,7 +67,7 @@
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Actualizar" icon="pi pi-pencil" @click="updateSpace()"
-                                :disabled="!disableButton()" class="p-button-rounded button-style" />
+                                :disabled="v$.$invalid" class="p-button-rounded button-style" :loading="isLoading" />
                         </b-col>
                     </b-row>
                 </template>
@@ -87,6 +87,8 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown/";
 import spacesServices from '../services/spaces-services';
+import { onError, onSuccess } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 export default {
     name: "ModalUpdateSpace",
     props: {
@@ -150,6 +152,11 @@ export default {
         const v$ = useVuelidate(rules, newSpace);
         return { newSpace, v$ };
     },
+    data(){
+        return {
+            isLoading: false,
+        }
+    },
     methods: {
         closeModal() {
             this.$emit("update:visible", false);
@@ -158,36 +165,22 @@ export default {
             this.newSpace.name = oldSpace.name
             this.v$.$reset();
         },
-        disableButton() {
-            if (
-                !this.v$.name.$dirty ||
-                !this.v$.description.$dirty
-            ) {
-                return true;
-            }
-            return (
-                !this.v$.name.$invalid &&
-                !this.v$.description.$invalid
-            );
-        },
         async updateSpace() {
             if (!this.v$.name.$invalid && !this.v$.description.$invalid) {
                 try {
                     this.newSpace.id = JSON.parse(this.space).id;
                     const encodedSpace = await encrypt(JSON.stringify(this.newSpace));
-                    const { status } = await spacesServices.update_space(encodedSpace);
+                    this.isLoading = true;
+                    const { status, data: {text} } = await spacesServices.update_space(encodedSpace);
                     if (status === 200 || status === 201) {
                         this.closeModal();
-                        this.$toast.add({
-                            severity: "success",
-                            summary: "Éxito",
-                            detail: "Patologia actualizada correctamente",
-                            life: 3000,
-                        });
+                        onSuccess("¡Éxito!", "¡Espacio actualizado con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        const message = utils.getErrorMessages(text);
+                        onError("¡Error!", message).then(() => this.closeModal())
                     }
-                } catch (error) {
-                    console.log("error en la peticion", error);
-                }
+                } catch (error) {}
             } else {
                 this.$toast.add({
                     severity: "warn",
@@ -197,6 +190,7 @@ export default {
                     life: 3000,
                 });
             }
+            this.isLoading = false;
         },
     },
     watch: {
@@ -212,9 +206,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-@import "../../../styles/colors.scss";
-
+<style scoped>
 .button-style {
     background: #2a715a;
     border: none;
@@ -232,5 +224,26 @@ export default {
     .my-custom-dialog .p-dialog {
         max-width: 95%;
     }
+}
+
+.invalid-field-custom {
+    border-color: rgba(255, 0, 0, 1) !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
+
+.error-messages {
+    margin-bottom: 0;
+    font-weight: 350;
+    font-size: 15px;
+}
+
+.error-messages::before {
+    content: "* ";
+    color: red;
+}
+
+.form-label-required::after {
+    content: " *";
+    color: red;
 }
 </style>

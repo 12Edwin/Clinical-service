@@ -5,7 +5,7 @@ const get_pathology = async (pagination) => {
     const response = await api.doGet("/pathology/", {params: pagination});
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -18,7 +18,7 @@ const save_pathology = async (encodedPayload) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -31,7 +31,7 @@ const update_pathology = async (updatedPathology) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -40,7 +40,7 @@ const delete_Pathology = async (pathologyId) => {
     const response = await api.doDelete(`/pathology/${pathologyId}`);
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 

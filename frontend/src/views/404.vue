@@ -9,18 +9,16 @@
           0
         </p>
         <p>
-          4
+          3
         </p>
       </div>
       <div class="error_name">
-          Página no encontrada
+          No estas autorizado
         </div>
         <div class="error_description">
           Lo sentimos, la página que buscas no se encuentra.
         </div>
-      <button>
-        <button class="action">Volver</button>
-      </button>
+        <button class="action" @click="()=> $router.back()">Volver</button>
     </div>
   </div>
 </template>
