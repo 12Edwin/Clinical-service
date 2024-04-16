@@ -42,7 +42,7 @@ public class SpecialityController {
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('SPECILITIES')")
+    @PreAuthorize("hasAnyAuthority('SPECIALITIES')")
     @GetMapping("/all/")
     ResponseEntity<Object> findAllForAdmin (Pageable pageable) {
         try {
