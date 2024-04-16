@@ -109,7 +109,7 @@ public class DoctorService {
         }
 
         ResponseEntity resp = personService.update(new Person(person.get().getId(), doctor.getName(), doctor.getSurname(), doctor.getLastname(),
-                doctor.getBirthday(), SexType.valueOf(doctor.getSex()), null, null, null));
+                doctor.getBirthday(), SexType.valueOf(doctor.getSex()), person.get().getPhone(), null, null));
         Message message = (Message) resp.getBody();
         assert message != null;
         if (!message.getType().equals(TypeResponse.SUCCESS)){
