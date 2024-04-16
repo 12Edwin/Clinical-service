@@ -58,8 +58,8 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveSpace()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus"
+                                @click="saveSpace()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
@@ -72,7 +72,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex } from "@/utils/regex"
+import { backRegex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
@@ -80,6 +80,7 @@ import { encrypt } from '@/config/security';
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import spacesServices from '../services/spaces-services';
+import { onError, onSuccess } from "@/kernel/alerts";
 export default {
     name: 'ModalSaveSpace',
     props: {
@@ -103,13 +104,13 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre para el espacio medico", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos", (value) => backRegex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 70 caracteres", maxLength(70))
             },
             description: {
                 required: helpers.withMessage("Debes agregar una descripción para el espacio medico", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos", (value) => backRegex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres", minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 150 caracteres", maxLength(150))
             },
@@ -127,15 +128,29 @@ export default {
         async saveSpace() {
             const encoded = await encrypt(JSON.stringify(this.spaces))
             try {
-                const { status, data } = await spacesServices.save_space(encoded);
+                const { status, data: { text } } = await spacesServices.save_space(encoded);
                 if (status === 200 || status === 201) {
-                    this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                    console.log(data);
+                    this.closeModal();
+                    onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
+                    this.$emit("pagination", { page: 0, rows: 10 });
+                } else {
+                    onError("¡Error!", text).then(() => this.closeModal())
                 }
             } catch (error) {
                 return error
             }
+        },
+        disableButton() {
+            if (
+                !this.v$.name.$dirty &&
+                !this.v$.description.$dirty
+            ) {
+                return false;
+            }
+            return (
+                !this.v$.name.$invalid &&
+                !this.v$.description.$invalid
+            );
         },
     },
 }   

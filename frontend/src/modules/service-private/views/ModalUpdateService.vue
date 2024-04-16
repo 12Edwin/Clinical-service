@@ -2,7 +2,8 @@
     <b-row>
         <b-col cols="12">
             <Dialog header="Modificar Servicio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
-                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
+                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false"
+                :contentStyle="{ overflow: 'visible' }">
                 <div class="p-fluid grid">
                     <b-row>
                         <b-col class="mt-4 mb-2" lg="12">
@@ -76,9 +77,6 @@
                                         <p class="error-messages" v-if="v$.price.$dirty && v$.price.precio.$invalid">
                                             {{ v$.price.precio.$message }}
                                         </p>
-                                        <p class="error-messages" v-if="v$.price.$dirty && v$.price.maxLength.$invalid">
-                                            {{ v$.price.maxLength.$message }}
-                                        </p>
                                     </div>
                                 </span>
                             </div>
@@ -121,7 +119,9 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
+import Loader from "@/components/loader.vue";
 import { onError, onSuccess } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 export default {
     props: {
         visible: {
@@ -135,7 +135,8 @@ export default {
     data() {
         return {
             specialities: [],
-            selectedSpeciality: null
+            selectedSpeciality: null,
+            isLoading: false,
         }
     },
     components: {
@@ -143,6 +144,7 @@ export default {
         Textarea,
         Toast,
         Dropdown,
+        Loader
     },
     name: "ModalUpdateService",
     setup() {
@@ -153,23 +155,10 @@ export default {
         });
 
         const rules = {
-            name: {
-                required: helpers.withMessage(
-                    "Debes agregar un nombre para la especialidad",
-                    required
-                ),
-                onlyLettersAndAccents: helpers.withMessage(
-                    "Caracteres no válidos",
-                    (value) => newregex.test(value)
-                ),
-                minLength: helpers.withMessage(
-                    "El nombre debe tener al menos 3 caracteres",
-                    minLength(3)
-                ),
-                maxLength: helpers.withMessage(
-                    "El nombre debe tener menos de 60 caracteres",
-                    maxLength(60)
-                ),
+            name: {required: helpers.withMessage("Debes agregar un nombre para la especialidad",required),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("El nombre debe tener menos de 60 caracteres",maxLength(60)),
             },
             description: {
                 required: helpers.withMessage(
@@ -184,23 +173,19 @@ export default {
                     minLength(3)
                 ),
                 maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 100 caracteres",
-                    maxLength(100)
+                    "La descripción debe tener menos de 140 caracteres",
+                    maxLength(140)
                 ),
             },
             price: {
                 required: helpers.withMessage(
-                    "Debes agregar una descripción para la servicio",
+                    "Debes agregar un precio al servicio",
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
                     newregex.test(value)
                 ),
-                precio: helpers.withMessage("EL precio debe ser mayor a 0", (value) => +value > 0),
-                maxLength: helpers.withMessage(
-                    "La descripción debe tener menos de 60 caracteres",
-                    maxLength(60)
-                ),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
             },
         };
         const v$ = useVuelidate(rules, newService);
@@ -218,16 +203,18 @@ export default {
         },
         disableButton() {
             if (
-                !this.v$.name.$dirty ||
-                !this.v$.description.$dirty ||
-                !this.v$.price.$dirty
+                !this.v$.name.$dirty &&
+                !this.v$.description.$dirty &&
+                this.price != 0 &&
+                this.selectedSpeciality != null
             ) {
                 return true;
             }
             return (
                 !this.v$.name.$invalid &&
                 !this.v$.description.$invalid &&
-                !this.v$.price.$invalid
+                !this.v$.price.$invalid &&
+                !this.selectedSpeciality != null
             );
         },
         async updateService() {
@@ -237,13 +224,15 @@ export default {
                     this.newService.id = JSON.parse(this.service).id;
                     this.newService.speciality = +this.selectedSpeciality
                     const encodedService = await encrypt(JSON.stringify(this.newService));
-                    const { status, data: {text}} = await servicios.update_service(encodedService);
+                    const { status, data: { text } } = await servicios.update_service(encodedService);
+                    if(status === 400){
+                        const message = utils.getErrorMessages(text)
+                        onError("¡Error!", message).then(() => this.closeModal())
+                    }
                     if (status === 200 || status === 201) {
                         this.closeModal();
                         onSuccess("¡Éxito!", "¡Servicio actualizado con éxito!");
-                        this.$emit("pagination", {page: 0, rows: 10});
-                    }else{
-                        onError("¡Error!", text).then(() => this.closeModal())
+                        this.$emit("pagination", { page: 0, rows: 10 });
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);
@@ -288,9 +277,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-@import "../../../styles/colors.scss";
-
+<style scoped>
 .button-style {
     background: #2a715a;
     border: none;
@@ -310,5 +297,24 @@ export default {
     }
 }
 
+.invalid-field-custom {
+    border-color: rgba(255, 0, 0, 1) !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
 
+.error-messages {
+    margin-bottom: 0;
+    font-weight: 350;
+    font-size: 15px;
+}
+
+.error-messages::before {
+    content: "* ";
+    color: red;
+}
+
+.form-label-required::after {
+    content: " *";
+    color: red;
+}
 </style>

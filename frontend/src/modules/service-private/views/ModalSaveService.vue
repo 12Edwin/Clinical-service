@@ -1,9 +1,11 @@
 <template>
     <b-row>
+        <Loader v-if="isLoading" key="load" />
         <b-col cols="12">
             <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
                 <div class="p-fluid grid">
+
                     <b-row>
                         <b-col class="mt-4 mb-2" lg="12">
                             <div class="field">
@@ -30,6 +32,7 @@
                                 </div>
                             </div>
                         </b-col>
+
                         <b-col class="mt-3" lg="12">
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
@@ -73,8 +76,9 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
-                                        optionValue="id" v-model="selectedSpeciality"
+                                    <Dropdown id="field-speciality"
+                                        :options="specialities"
+                                        optionLabel="name" optionValue="id" v-model="v$.speciality.$model"
                                         :class="{ 'invalid-field-custom': v$.speciality.$error }" />
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
@@ -93,11 +97,12 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" icon="pi pi-plus" @click="saveService()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
+                                @click="saveService()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
+
             </Dialog>
             <Toast />
         </b-col>
@@ -107,7 +112,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex } from "@/utils/regex"
+import { newregex, text, words } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
@@ -115,6 +120,9 @@ import { decrypt, encrypt } from '@/config/security';
 import servicios from '../service-services/Services'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
+import Loader from '@/components/loader.vue';
+import { onError, onSuccess } from '@/kernel/alerts';
+import utils from '@/kernel/utils';
 export default {
     name: 'ModalSaveService',
     props: {
@@ -127,14 +135,15 @@ export default {
         Dialog,
         Textarea,
         Dropdown,
-        Toast
+        Toast,
+        Loader
     },
     setup() {
         const services = reactive({
             name: '',
             description: '',
-            price: '',
-            speciality: ''
+            price: 0,
+            speciality: null
         })
 
         const rules = {
@@ -152,11 +161,11 @@ export default {
             },
             price: {
                 required: helpers.withMessage("Debes agregar un precio al servicio", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
+                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
             },
             speciality: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             }
         }
         const v$ = useVuelidate(rules, services)
@@ -166,7 +175,8 @@ export default {
     data() {
         return {
             specialities: [],
-            selectedSpeciality: null
+            selectedSpeciality: null,
+            isLoading: false
         }
     },
     methods: {
@@ -179,19 +189,27 @@ export default {
             this.v$.$reset()
         },
         async saveService() {
-            this.services.speciality = +this.selectedSpeciality
-            this.services.price = +this.services.price
-            const encoded = await encrypt(JSON.stringify(this.services))
-            try {
-                const { status, data } = await servicios.save_Service(encoded);
-                if (status === 200 || status === 201) {
-                    this.closeModal()
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
-                } else {
-                    return data.result
+            if(!this.v$.$invalid){
+                this.isLoading = true
+                this.services.price = +this.services.price
+                const encoded = await encrypt(JSON.stringify(this.services))
+                try {
+                    const { status, data : {text} } = await servicios.save_Service(encoded);
+                    if(status === 400){
+                        this.isLoading = false
+                        const message = utils.getErrorMessages(text)
+                        onError("¡Error!", message);
+                    }
+                    if (status === 200 || status === 201) {
+                        this.closeModal()
+                        onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
+                        this.$emit("pagination", {page: 0, rows: 10})
+                    }
+                } catch (error) {
+                    return error
                 }
-            } catch (error) {
-                return error
+            }else{
+                onError("¡Error!", "¡Debes completar los campos correctamente!");
             }
         },
         async getSpecialities() {
@@ -204,7 +222,7 @@ export default {
             } catch (error) {
                 console.log("error en la peticion", error);
             }
-        }
+        },
     },
     mounted() {
         this.getSpecialities()

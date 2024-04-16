@@ -87,6 +87,7 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from "primevue/dropdown/";
+import { onSuccess } from '@/kernel/alerts';
 export default {
     name: "ModalUpdatePathology",
     props: {
@@ -161,7 +162,7 @@ export default {
         },
         disableButton() {
             if (
-                !this.v$.name.$dirty ||
+                !this.v$.name.$dirty &&
                 !this.v$.description.$dirty
             ) {
                 return true;
@@ -179,12 +180,10 @@ export default {
                     const { status } = await pathologyService.update_pathology(encodedPathology);
                     if (status === 200 || status === 201) {
                         this.closeModal();
-                        this.$toast.add({
-                            severity: "success",
-                            summary: "Éxito",
-                            detail: "Patología actualizada correctamente",
-                            life: 3000,
-                        });
+                        onSuccess("¡Éxito!", "Patología actualizada con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);
@@ -198,7 +197,7 @@ export default {
                     life: 3000,
                 });
             }
-        },
+        }
     },
     watch: {
         pathology: {
@@ -213,9 +212,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-@import "../../../styles/colors.scss";
-
+<style scoped>
 .button-style {
     background: #2a715a;
     border: none;
@@ -233,5 +230,26 @@ export default {
     .my-custom-dialog .p-dialog {
         max-width: 95%;
     }
+}
+
+.invalid-field-custom {
+    border-color: rgba(255, 0, 0, 1) !important;
+    box-shadow: 0 0 3px rgba(255, 0, 0, 0.4) !important;
+}
+
+.error-messages {
+    margin-bottom: 0;
+    font-weight: 350;
+    font-size: 15px;
+}
+
+.error-messages::before {
+    content: "* ";
+    color: red;
+}
+
+.form-label-required::after {
+    content: " *";
+    color: red;
 }
 </style>

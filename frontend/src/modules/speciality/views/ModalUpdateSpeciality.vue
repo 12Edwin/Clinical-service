@@ -75,11 +75,12 @@ import Textarea from "primevue/textarea"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
-import { newregex } from "@/utils/regex"
+import { text, words, backRegex } from "@/utils/regex"
 import Toast from 'primevue/toast';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
 import { encrypt } from '@/config/security';
-import { onSuccess } from '@/kernel/alerts';
+import { onSuccess, onError } from '@/kernel/alerts';
+import utils from '@/kernel/utils';
 export default {
     props: {
         visible: {
@@ -99,13 +100,13 @@ export default {
         const rules = {
             name : { 
                 required: helpers.withMessage("Debes agregar un nombre para la especialidad", required),
-                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => backRegex.test(value)),
                 minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
                 maxLength: helpers.withMessage("El nombre debe tener menos de 60 caracteres", maxLength(60))
             },
             description : { 
                 required: helpers.withMessage("Debes agregar una descripción para la especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                text: helpers.withMessage("Caracteres no válidos",(value) => backRegex.test(value)),
                 minLength: helpers.withMessage("La descripción debe tener al menos 3 caracteres",minLength(3)),
                 maxLength: helpers.withMessage("La descripción debe tener menos de 60 caracteres", maxLength(60))
             }
@@ -151,7 +152,7 @@ export default {
                         onSuccess("¡Éxito!", "Especialidad actualizada exitosamente").then(() => {
                             this.closeModal()
                         })
-                        this.$emit('pagination')
+                        this.$emit('pagination', {page: 0, rows: 10})
                     }else{
                         this.onUpdate = false
                         const message = utils.getErrorMessages(text)

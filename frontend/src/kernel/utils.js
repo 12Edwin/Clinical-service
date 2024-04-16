@@ -37,6 +37,7 @@ const getUserInfoByToken =() => {
     return jwtDecode(localStorage.getItem("token"))
 }
 
+
 const limitDescription = (description) => {
     const words = description.split(' ');
     if (words.length === 10 && words.length < 10) {
@@ -65,6 +66,15 @@ const getErrorMessages = (errorCode) => {
         "Speciality not deleted" : "La especialidad no se pudo eliminar",
         "Duplicated speciality" : "Esta especialidad ya existe",
         "Speciality not updated" : "La especialidad no se pudo actualizar",
+        "Duplicated service" : "Este servicio ya existe",
+        "Speciality not found" : "Especialidad no encontrada",
+        "Service is used" : "El servicio está en uso",
+        "Space already exists" : "El espacio ya existe",
+        "Unregistered space" : "Espacio no registrado",
+        "Type pathology already exists" : "Tipo de patología ya existe",
+        "Nombre inválido" : "Nombre inválido",
+        "Apellido inválido" : "Apellido inválido",
+        "Sexo inválido" : "Sexo inválido",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

@@ -78,7 +78,6 @@
         <ModalSaveSpeciality :visible.sync="displaySaveModal" @pagination="pagination" />
         <ModalDetailSpeciality :visible.sync="displayDetailModal" :speciality="speciality" />
     </div>
-    </div>
 </template>
 <script>
 import AccordionTab from 'primevue/accordiontab';
@@ -177,7 +176,7 @@ export default {
                 } else {
                     this.isLoading = false
                     const message = utils.getErrorMessages(text)
-                    onError('Error', message).then(() => { })
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) {
                 this.isLoading = false

@@ -2,10 +2,10 @@ import api from "@/config/http-client.gateway";
 
 const get_services = async (pagination) => {
   try {
-    const response = await api.doGet("/service/", pagination);
+    const response = await api.doGet("/service/", { params: pagination });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -18,7 +18,7 @@ const save_Service = async (encodedPayload) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -31,7 +31,7 @@ const update_service = async (updatedService) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -40,7 +40,7 @@ const delete_service = async (specialityId) => {
     const response = await api.doDelete(`/service/${specialityId}`);
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -49,7 +49,7 @@ const get_specialities = async () => {
     const response = await api.doGet("/speciality/");
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 

@@ -1,210 +1,213 @@
 <template>
-<div>
-    <Header style="margin-bottom: 20px" title="Doctores"/>
-    <Card class="shadow shadow-lg rounded">
-        <template #header>
-            <div class="header">
-                <h4 class="d-flex w-100">Registro de doctores</h4>
-            </div>
-        </template>
-        <template #content>
-            <div class="p-fluid grid">
-                <div class="row">
-                    <div class="col d-flex align-items-left">
-                        <h5 class="border-none pb-2 mb-1">Datos personales</h5>
-                    </div>
+    <div>
+        <Header style="margin-bottom: 20px" title="Doctores" />
+        <Card class="shadow shadow-lg rounded">
+            <template #header>
+                <div class="header">
+                    <h4 class="d-flex w-100">Registro de doctores</h4>
                 </div>
-                <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.name.$error }">
-                                <i class="pi pi-user"></i>
-                                <InputText id="field-name" type="text" v-model="v$.name.$model" />
-                                <label for="field-name" class="form-label-required">Nombre</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.name.$dirty && v$.name.required.$invalid">
-                                    {{ v$.name.required.$message }}
-                                </p>
-                                <p class="error-messages"
-                                    v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
-                                    {{ v$.name.onlyLettersAndAccents.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
-                                    {{ v$.name.minLength.$message }}
-                                </p>
-                            </div>
+            </template>
+            <template #content>
+                <div class="p-fluid grid">
+                    <div class="row">
+                        <div class="col d-flex align-items-left">
+                            <h5 class="border-none pb-2 mb-1">Datos personales</h5>
                         </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.surname.$error }">
-                                <i class="pi pi-user" />
-                                <InputText id="field-surname" type="text" v-model="v$.surname.$model" />
-                                <label for="field-surname" class="form-label-required">1er Apellido</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.required.$invalid">
-                                    {{ v$.surname.required.$message }}
-                                </p>
-                                <p class="error-messages"
-                                    v-if="v$.surname.$dirty && v$.surname.onlyLettersAndAccents.$invalid">
-                                    {{ v$.surname.onlyLettersAndAccents.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.minLength.$invalid">
-                                    {{ v$.surname.minLength.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.lastname.$error }">
-                                <i class="pi pi-user" />
-                                <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
-                                <label for="field-lastname">2do Apellido</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages"
-                                    v-if="v$.lastname.$dirty && v$.lastname.onlyLettersAndAccents.$invalid">
-                                    {{ v$.lastname.onlyLettersAndAccents.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.lastname.$dirty && v$.lastname.minLength.$invalid">
-                                    {{ v$.lastname.minLength.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="mt-4" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.birthDate.$error }">
-                                <i class="pi pi-calendar" />
-                                <Calendar id="field-birthdate" :maxDate="getNewDate()" v-model="v$.birthDate.$model"
-                                    dateFormat="dd-mm-yy" style="cursor: pointer;" :manualInput="false" />
-                                <label for="field-birthdate" class="form-label-required">Fecha de nacimiento</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.birthDate.$dirty && v$.birthDate.required.$invalid">
-                                    {{ v$.birthDate.required.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                    <b-col class="mt-4" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <Dropdown :class="{ 'invalid-field-custom': v$.sex.$error }"
-                                class="form-label-required text-start" v-model="v$.sex.$model" :options="gneres"
-                                optionLabel="value" placeholder="Seleccione un Género" />
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.sex.$dirty && v$.sex.required.$invalid">
-                                    {{ v$.sex.required.$message }}
-                                </p>
-                            </div>
-                        </div>
-                    </b-col>
-                </b-row>
-
-                <b-row>
-                    <b-col class="d-flex align-items-lelft mt-4">
-                        <h5 class="border-none pb-2">Información profesional</h5>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right">
-                                <i class="pi pi-star" />
-                                <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
-                                    class="form-label-required text-start" v-model="v$.speciality.$model"
-                                    :options="specialitys" optionLabel="name"
-                                    placeholder="Seleccione una especialidad" />
+                    </div>
+                    <b-row>
+                        <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.name.$error }">
+                                    <i class="pi pi-user"></i>
+                                    <InputText id="field-name" type="text" v-model="v$.name.$model" />
+                                    <label for="field-name" class="form-label-required">Nombre</label>
+                                </span>
                                 <div class="text-danger text-start pt-1">
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.required.$invalid">
+                                        {{ v$.name.required.$message }}
+                                    </p>
                                     <p class="error-messages"
-                                        v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
-                                        {{ v$.speciality.required.$message }}
+                                        v-if="v$.name.$dirty && v$.name.onlyLettersAndAccents.$invalid">
+                                        {{ v$.name.onlyLettersAndAccents.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.name.$dirty && v$.name.minLength.$invalid">
+                                        {{ v$.name.minLength.$message }}
                                     </p>
                                 </div>
-                            </span>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="d-flex align-items-lelft mt-4">
-                        <h5 class="border-none pb-2">Contacto</h5>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.phone.$error }">
-                                <i class="pi pi-phone" />
-                                <InputText type="number" v-model="v$.phone.$model" id="field-phone"
-                                    :useGrouping="false" />
-                                <label for="field-phone" class="form-label-required">Número de teléfono</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
-                                    {{ v$.phone.required.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
-                                    {{ v$.phone.minLength.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.maxLength.$invalid">
-                                    {{ v$.phone.maxLength.$message }}
-                                </p>
                             </div>
-                        </div>
-                    </b-col>
-                </b-row>
+                        </b-col>
+                        <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.surname.$error }">
+                                    <i class="pi pi-user" />
+                                    <InputText id="field-surname" type="text" v-model="v$.surname.$model" />
+                                    <label for="field-surname" class="form-label-required">1er Apellido</label>
+                                </span>
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.required.$invalid">
+                                        {{ v$.surname.required.$message }}
+                                    </p>
+                                    <p class="error-messages"
+                                        v-if="v$.surname.$dirty && v$.surname.onlyLettersAndAccents.$invalid">
+                                        {{ v$.surname.onlyLettersAndAccents.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.surname.$dirty && v$.surname.minLength.$invalid">
+                                        {{ v$.surname.minLength.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                        <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.lastname.$error }">
+                                    <i class="pi pi-user" />
+                                    <InputText id="field-lastname" type="text" v-model="v$.lastname.$model" />
+                                    <label for="field-lastname">2do Apellido</label>
+                                </span>
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages"
+                                        v-if="v$.lastname.$dirty && v$.lastname.onlyLettersAndAccents.$invalid">
+                                        {{ v$.lastname.onlyLettersAndAccents.$message }}
+                                    </p>
+                                    <p class="error-messages"
+                                        v-if="v$.lastname.$dirty && v$.lastname.minLength.$invalid">
+                                        {{ v$.lastname.minLength.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="mt-4" cols="12" md="6" lg="4">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.birthDate.$error }">
+                                    <i class="pi pi-calendar" />
+                                    <Calendar id="field-birthdate" :maxDate="getNewDate()" v-model="v$.birthDate.$model"
+                                        dateFormat="dd-mm-yy" style="cursor: pointer;" :manualInput="false" />
+                                    <label for="field-birthdate" class="form-label-required">Fecha de nacimiento</label>
+                                </span>
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages"
+                                        v-if="v$.birthDate.$dirty && v$.birthDate.required.$invalid">
+                                        {{ v$.birthDate.required.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                        <b-col class="mt-4" cols="12" md="6" lg="4">
+                            <div class="field">
+                                <Dropdown :class="{ 'invalid-field-custom': v$.sex.$error }"
+                                    class="form-label-required text-start" v-model="v$.sex.$model" :options="gneres"
+                                    optionLabel="value" placeholder="Seleccione el sexo" />
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages" v-if="v$.sex.$dirty && v$.sex.required.$invalid">
+                                        {{ v$.sex.required.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                    </b-row>
 
-                <b-row>
-                    <b-col class="d-flex align-items-lelft mt-4">
-                        <h5 class="border-none pb-2">Acceso al sistema</h5>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col class="mt-3" cols="12" md="6" lg="4">
-                        <div class="field">
-                            <span class="p-float-label p-input-icon-right"
-                                :class="{ 'invalid-field-custom': v$.code.$error }">
-                                <i class="pi pi-phone" />
-                                <InputText type="text" v-model="v$.code.$model" id="field-phone" :useGrouping="false" />
-                                <label for="field-phone" class="form-label-required">Código de acceso</label>
-                            </span>
-                            <div class="text-danger text-start pt-1">
-                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.required.$invalid">
-                                    {{ v$.code.required.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.minLength.$invalid">
-                                    {{ v$.code.minLength.$message }}
-                                </p>
-                                <p class="error-messages" v-if="v$.code.$dirty && v$.code.maxLength.$invalid">
-                                    {{ v$.code.maxLength.$message }}
-                                </p>
+                    <b-row>
+                        <b-col class="d-flex align-items-lelft mt-4">
+                            <h5 class="border-none pb-2">Información profesional</h5>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="mt-3" cols="12" md="6" lg="4" sm="12">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right">
+                                    <i class="pi pi-star" />
+                                    <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
+                                        class="form-label-required text-start" v-model="v$.speciality.$model"
+                                        :options="specialitys" optionLabel="name"
+                                        placeholder="Seleccione una especialidad" />
+                                    <div class="text-danger text-start pt-1">
+                                        <p class="error-messages"
+                                            v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                            {{ v$.speciality.required.$message }}
+                                        </p>
+                                    </div>
+                                </span>
                             </div>
-                        </div>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="d-flex align-items-lelft mt-4">
+                            <h5 class="border-none pb-2">Contacto</h5>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="mt-3" cols="12" md="6" lg="4">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.phone.$error }">
+                                    <i class="pi pi-phone" />
+                                    <InputText type="number" v-model="v$.phone.$model" id="field-phone"
+                                        :useGrouping="false" />
+                                    <label for="field-phone" class="form-label-required">Número de teléfono</label>
+                                </span>
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.required.$invalid">
+                                        {{ v$.phone.required.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.minLength.$invalid">
+                                        {{ v$.phone.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.phone.$dirty && v$.phone.maxLength.$invalid">
+                                        {{ v$.phone.maxLength.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                    </b-row>
+
+                    <b-row>
+                        <b-col class="d-flex align-items-lelft mt-4">
+                            <h5 class="border-none pb-2">Acceso al sistema</h5>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="mt-3" cols="12" md="6" lg="4">
+                            <div class="field">
+                                <span class="p-float-label p-input-icon-right"
+                                    :class="{ 'invalid-field-custom': v$.code.$error }">
+                                    <i class="pi pi-phone" />
+                                    <InputText type="text" v-model="v$.code.$model" id="field-phone"
+                                        :useGrouping="false" />
+                                    <label for="field-phone" class="form-label-required">Código de acceso</label>
+                                </span>
+                                <div class="text-danger text-start pt-1">
+                                    <p class="error-messages" v-if="v$.code.$dirty && v$.code.required.$invalid">
+                                        {{ v$.code.required.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.code.$dirty && v$.code.minLength.$invalid">
+                                        {{ v$.code.minLength.$message }}
+                                    </p>
+                                    <p class="error-messages" v-if="v$.code.$dirty && v$.code.maxLength.$invalid">
+                                        {{ v$.code.maxLength.$message }}
+                                    </p>
+                                </div>
+                            </div>
+                        </b-col>
+                    </b-row>
+                </div>
+            </template>
+            <template #footer>
+                <b-row class="mt-2">
+                    <b-col cols="12" class="d-flex justify-content-end">
+                        <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
+                            :loading="isLoading" :disabled="v$.$invalid" />
                     </b-col>
                 </b-row>
-            </div>
-        </template>
-        <template #footer>
-            <b-row class="mt-2">
-                <b-col cols="12" class="d-flex justify-content-end">
-                    <Button icon="pi pi-check" @click="verifyDoctors()" label="Guardar" class="p-button-rounded"
-                        :loading="isLoading" :disabled="v$.$invalid" />
-                </b-col>
-            </b-row>
-            <Toast />
-        </template>
-    </Card>
-</div>
+                <Toast />
+            </template>
+        </Card>
+    </div>
 </template>
 
 <script>
@@ -225,7 +228,8 @@ import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
 import Header from '@/components/Header.vue';
-
+import { onError, onSuccess } from '@/kernel/alerts';
+import utils from "@/kernel/utils";
 
 export default {
     name: 'SaveDoctor',
@@ -250,7 +254,6 @@ export default {
             speciality: '',
             phone: '',
             code: '',
-            photo: '',
         })
 
         const rules = {
@@ -314,8 +317,6 @@ export default {
                 page: 0,
                 size: 100
             },
-            acceptedFormats: acceptedFormatsForImages,
-            acceptTypes: acceptedFormatsForImages.map(format => `image/${format === '.jpg' ? 'jpeg' : format.substr(1)}`)
         }
     },
     mounted() {
@@ -323,16 +324,22 @@ export default {
     },
     methods: {
         getNewDate() {
-            return new Date()
+            const today = new Date();
+            const year = today.getFullYear() - 18;
+            const newDate = new Date(year, 11, 31);
+            return newDate;
         },
 
         async getSpecialities() {
             try {
-                const { status, data: { result } } = await specialityServices.getSpecialities(this.pageable)
+                const { status, data } = await specialityServices.getSpecialities(this.pageable)
                 if (status === 200 || status === 201) {
-                    const decripted = await decrypt(result)
+                    const decripted = await decrypt(data.result)
                     const { content } = JSON.parse(decripted)
                     this.specialitys = content
+                } else {
+                    const message = utils.getErrorMessages(data.text)
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) { }
 
@@ -381,18 +388,18 @@ export default {
 
             try {
                 const encoded = await encrypt(JSON.stringify(newData));
-                const { status } = await service.save_doctor(encoded)
+                const { status, data } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
-                    this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Registro exitoso', life: 3000 });
+                    onSuccess("¡Éxito!", "¡Doctor guardado exitosamente")
                     setTimeout(() => {
                         this.$router.push('/doctors');
                     }, 500);
                 } else {
-                    console.log("error en la peticion");
-                    this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal!!', life: 3000 });
+                    const message = utils.getErrorMessages(data.text);
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) {
-                this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'Algo Salio mal', life: 3000 });
+                onError("¡Error!")
             }
         },
 

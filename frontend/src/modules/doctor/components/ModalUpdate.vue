@@ -107,7 +107,7 @@
                                     <Dropdown :class="{ 'invalid-field-custom': v$.speciality.$error }"
                                         class="form-label-required text-start" v-model="v$.speciality.$model"
                                         :options="specialitys" optionLabel="name" id="dropdown"
-                                         placeholder="Selecciona una especialidad" />
+                                        placeholder="Selecciona una especialidad" />
                                     <label for="dropdown">Especialidad</label>
                                     <div class="text-danger text-start pt-1">
                                         <p class="error-messages"
@@ -148,6 +148,8 @@ import services from "../services/doctor-service"
 import { encrypt, decrypt } from '@/config/security';
 import Dropdown from 'primevue/dropdown';
 import specialityServices from '@/modules/speciality/services/speciality-services';
+import { onError, onSuccess, onWarning } from '@/kernel/alerts';
+import utils from "@/kernel/utils";
 
 export default {
     props: {
@@ -237,11 +239,14 @@ export default {
         },
         async getSpecialities() {
             try {
-                const { status, data: { result } } = await specialityServices.getSpecialities(this.pageable)
+                const { status, data: { result, text } } = await specialityServices.getSpecialities(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content } = JSON.parse(decripted)
                     this.specialitys = content
+                } else {
+                    const message = utils.getErrorMessages(text)
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) { }
 
@@ -267,15 +272,15 @@ export default {
                     const { status } = await services.updateDoctor(encodedDoctor)
                     if (status === 200 || status === 201) {
                         this.closeModal()
-                        this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Doctor(a) actualizada correctamente', life: 3000 });
+                        await onSuccess("¡Éxito!", "¡El Doctor se actualizo exitosamente!")
+                        this.$emit("getDoctors", { page: 0, rows: 10 })
                     } else {
-                        this.$toast.add({ severity: 'error', summary: '¡Hups!', detail: 'No se pudo modificar!', life: 3000 });
+                        await onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
-                    console.log("error en la peticion", error)
                 }
             } else {
-                this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: '¡Asegurate que todos los campos cumplan con el formato necesario!', life: 3000 });
+                onWarning("¡Cuidado!", "Asegurate de que todos los campos esten llenos")
             }
         }
     },
@@ -293,7 +298,7 @@ export default {
                 this.newDoctor.sex = oldDoctor.sex;
                 this.newDoctor.birthday = formattedDate;
                 this.newDoctor.speciality = oldDoctor.speciality_id;
-                this.v$.speciality.$model = {name: oldDoctor.speciality, value: oldDoctor.speciality_id}
+                this.v$.speciality.$model = { name: oldDoctor.speciality, value: oldDoctor.speciality_id }
             },
             deep: true
         }
