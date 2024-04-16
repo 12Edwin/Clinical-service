@@ -77,6 +77,9 @@ public class PersonService {
         if (!repository.existsById(person.getId())){
             return new ResponseEntity<>(new Message("Person not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
+        if (repository.existsByPhoneAndIdNot(person.getPhone(), person.getId())){
+            return new ResponseEntity<>(new Message("Phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         boolean updatedDoctor = repository.updateDoctor(
                 person.getId(), person.getName(), person.getSurname(), person.getLastname(),
                 person.getBirthday(), person.getSex()) >= 1;
