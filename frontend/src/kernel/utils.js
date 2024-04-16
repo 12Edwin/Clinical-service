@@ -72,6 +72,7 @@ const getErrorMessages = (errorCode) => {
         "Space already exists" : "El espacio ya existe",
         "Unregistered space" : "Espacio no registrado",
         "Type pathology already exists" : "Tipo de patología ya existe",
+        "Unregistered type pathology": "Tipo de patología no registrada",
         "Nombre inválido" : "Nombre inválido",
         "Apellido inválido" : "Apellido inválido",
         "Sexo inválido" : "Sexo inválido",

@@ -3,7 +3,8 @@
         <Loader v-if="isLoading" key="load" />
         <b-col cols="12">
             <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
-                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
+                @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false"
+                :contentStyle="{ overflow: 'visible' }">
                 <div class="p-fluid grid">
 
                     <b-row>
@@ -76,9 +77,8 @@
                             <div class="field">
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
-                                    <Dropdown id="field-speciality"
-                                        :options="specialities"
-                                        optionLabel="name" optionValue="id" v-model="v$.speciality.$model"
+                                    <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
+                                        optionValue="id" v-model="v$.speciality.$model"
                                         :class="{ 'invalid-field-custom': v$.speciality.$error }" />
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
@@ -97,8 +97,8 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
-                                @click="saveService()" class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus" @click="saveService()"
+                                class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
@@ -112,7 +112,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex, text, words } from "@/utils/regex"
+import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
@@ -189,13 +189,13 @@ export default {
             this.v$.$reset()
         },
         async saveService() {
-            if(!this.v$.$invalid){
+            if (!this.v$.$invalid) {
                 this.isLoading = true
                 this.services.price = +this.services.price
                 const encoded = await encrypt(JSON.stringify(this.services))
                 try {
-                    const { status, data : {text} } = await servicios.save_Service(encoded);
-                    if(status === 400){
+                    const { status, data: { text } } = await servicios.save_Service(encoded);
+                    if (status === 400) {
                         this.isLoading = false
                         const message = utils.getErrorMessages(text)
                         onError("¡Error!", message);
@@ -203,12 +203,12 @@ export default {
                     if (status === 200 || status === 201) {
                         this.closeModal()
                         onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
-                        this.$emit("pagination", {page: 0, rows: 10})
+                        this.$emit("pagination", { page: 0, rows: 10 })
                     }
                 } catch (error) {
                     return error
                 }
-            }else{
+            } else {
                 onError("¡Error!", "¡Debes completar los campos correctamente!");
             }
         },

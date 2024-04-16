@@ -80,14 +80,15 @@
 import { reactive } from "@vue/composition-api";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, maxLength, minLength } from "@vuelidate/validators";
-import { newregex } from "@/utils/regex";
+import { backRegex, newregex, regexName } from "@/utils/regex";
 import Toast from "primevue/toast";
 import { encrypt } from "@/config/security";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from "primevue/dropdown/";
-import { onSuccess } from '@/kernel/alerts';
+import { onSuccess, onWarning } from '@/kernel/alerts';
+import utils from '@/kernel/utils';
 export default {
     name: "ModalUpdatePathology",
     props: {
@@ -119,7 +120,7 @@ export default {
                 ),
                 onlyLettersAndAccents: helpers.withMessage(
                     "Caracteres no válidos",
-                    (value) => newregex.test(value)
+                    (value) => regexName.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "El nombre debe tener al menos 3 caracteres",
@@ -136,7 +137,7 @@ export default {
                     required
                 ),
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
-                    newregex.test(value)
+                    backRegex.test(value)
                 ),
                 minLength: helpers.withMessage(
                     "La descripción debe tener al menos 3 caracteres",
@@ -150,6 +151,9 @@ export default {
         };
         const v$ = useVuelidate(rules, newPathology);
         return { newPathology, v$ };
+    },
+    data(){
+        isLoading = false
     },
     methods: {
         closeModal() {
@@ -177,25 +181,20 @@ export default {
                 try {
                     this.newPathology.id = JSON.parse(this.pathology).id;
                     const encodedPathology = await encrypt(JSON.stringify(this.newPathology));
-                    const { status } = await pathologyService.update_pathology(encodedPathology);
+                    const { status, data : {text} } = await pathologyService.update_pathology(encodedPathology);
                     if (status === 200 || status === 201) {
                         this.closeModal();
                         onSuccess("¡Éxito!", "Patología actualizada con éxito!");
                         this.$emit("pagination", { page: 0, rows: 10 });
-                    } else {
-                        onError("¡Error!", text).then(() => this.closeModal())
+                    } else if(status === 400) {
+                        const message = utils.getErrorMessages(text)
+                        onError("¡Error!", message).then(() => this.closeModal())
                     }
                 } catch (error) {
-                    console.log("error en la peticion", error);
+                    
                 }
             } else {
-                this.$toast.add({
-                    severity: "warn",
-                    summary: "¡Cuidado!",
-                    detail:
-                        "¡Asegurate que todos los campos cumplan con el formato necesario!",
-                    life: 3000,
-                });
+                onWarning("¡Error!", "¡Debes completar los campos correctamente!");
             }
         }
     },

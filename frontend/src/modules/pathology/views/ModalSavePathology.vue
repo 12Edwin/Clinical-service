@@ -58,8 +58,8 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus" @click="savePathology()"
-                                class="p-button-rounded button-style" />
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
+                                @click="savePathology()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
                 </template>
@@ -80,7 +80,8 @@ import { encrypt } from '@/config/security';
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
-import { onError, onSuccess } from '@/kernel/alerts';
+import { onError, onSuccess, onWarning } from '@/kernel/alerts';
+import utils from '@/kernel/alerts';
 export default {
     name: 'ModalSavePathology',
     props: {
@@ -118,6 +119,9 @@ export default {
         const v$ = useVuelidate(rules, pathologies)
         return { pathologies, v$ }
     },
+    data(){
+        isLoading = false
+    },
     methods: {
         closeModal() {
             this.$emit('update:visible', false);
@@ -126,19 +130,27 @@ export default {
             this.v$.$reset()
         },
         async savePathology() {
-            const encoded = await encrypt(JSON.stringify(this.pathologies))
-            try {
-                const { status } = await pathologyService.save_pathology(encoded);
-                if (status === 200 || status === 201) {
-                    this.closeModal()
-                    onSuccess("¡Éxito!", "Patología guardada con éxito!")
-                    this.$emit("pagination", {page:0, rows:10})
-                } else {
-                    onError("¡Error!", text).then(() => this.closeModal())
+            if (!this.v$.$invalid) {
+                this.isLoading = true
+                const encoded = await encrypt(JSON.stringify(this.pathologies))
+                try {
+                    const { status, data : {text} } = await pathologyService.save_pathology(encoded);
+                    if (status === 200 || status === 201) {
+                        this.closeModal()
+                        await onSuccess("¡Éxito!", "Patología guardada con éxito!")
+                        this.$emit("pagination", { page: 0, rows: 10 })
+                    } else if(status === 400) {
+                        this.isLoading= false
+                        const message = utils.getErrorMessages(text)
+                        await onError("¡Error!", message).then(() => this.closeModal())
+                    }
+                } catch (error) {
+                    return error
                 }
-            } catch (error) {
-                return error
+            } else {
+                await onWarning("¡Cuidado!", "¡Debes de completar los campos correctamente!")
             }
+
         },
         disableButton() {
             if (

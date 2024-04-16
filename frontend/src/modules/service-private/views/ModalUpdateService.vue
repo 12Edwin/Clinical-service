@@ -235,16 +235,10 @@ export default {
                         this.$emit("pagination", { page: 0, rows: 10 });
                     }
                 } catch (error) {
-                    console.log("error en la peticion", error);
+                    return error
                 }
             } else {
-                this.$toast.add({
-                    severity: "warn",
-                    summary: "¡Cuidado!",
-                    detail:
-                        "¡Asegurate que todos los campos cumplan con el formato necesario!",
-                    life: 3000,
-                });
+                 onWarning("¡Cuidado!", "¡Debes de completar los campos correctamente!")
             }
         },
         async getSpecialities() {
