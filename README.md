@@ -1,6 +1,6 @@
 1.  Primeramente crear la base de datos con nombre clinic
 2.  Asegurarse de las credenciales en el propperties del back, que sean correspondientes a la de su administrador de postrgres versión 15
-3.  Ejecutar el proyecto de spring rectificar el JDK en la versión 17
+3.  Ejecutar el proyecto de spring rectificar el JDK en la versión 17 **NOTA: La versión de spring especificada en el poom.xml es la 2.7.10**
 4.  Ejecutar el siguiente extracto sql:
 
 DROP table if exists view_doctors;
