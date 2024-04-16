@@ -121,6 +121,7 @@ import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
 import Loader from "@/components/loader.vue";
 import { onError, onSuccess } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 export default {
     props: {
         visible: {
@@ -154,23 +155,10 @@ export default {
         });
 
         const rules = {
-            name: {
-                required: helpers.withMessage(
-                    "Debes agregar un nombre para la especialidad",
-                    required
-                ),
-                onlyLettersAndAccents: helpers.withMessage(
-                    "Caracteres no válidos",
-                    (value) => newregex.test(value)
-                ),
-                minLength: helpers.withMessage(
-                    "El nombre debe tener al menos 3 caracteres",
-                    minLength(3)
-                ),
-                maxLength: helpers.withMessage(
-                    "El nombre debe tener menos de 60 caracteres",
-                    maxLength(60)
-                ),
+            name: {required: helpers.withMessage("Debes agregar un nombre para la especialidad",required),
+                onlyLettersAndAccents: helpers.withMessage("Caracteres no válidos",(value) => newregex.test(value)),
+                minLength: helpers.withMessage("El nombre debe tener al menos 3 caracteres",minLength(3)),
+                maxLength: helpers.withMessage("El nombre debe tener menos de 60 caracteres",maxLength(60)),
             },
             description: {
                 required: helpers.withMessage(
@@ -237,12 +225,14 @@ export default {
                     this.newService.speciality = +this.selectedSpeciality
                     const encodedService = await encrypt(JSON.stringify(this.newService));
                     const { status, data: { text } } = await servicios.update_service(encodedService);
+                    if(status === 400){
+                        const message = utils.getErrorMessages(text)
+                        onError("¡Error!", message).then(() => this.closeModal())
+                    }
                     if (status === 200 || status === 201) {
                         this.closeModal();
                         onSuccess("¡Éxito!", "¡Servicio actualizado con éxito!");
                         this.$emit("pagination", { page: 0, rows: 10 });
-                    } else {
-                        onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
                     console.log("error en la peticion", error);
@@ -267,13 +257,7 @@ export default {
             } catch (error) {
                 console.log("error en la peticion", error);
             }
-        },
-        disableButton() {
-            if (!this.v$.name.$dirty && !this.v$.description.$dirty && this.price != 0 && this.selectedSpeciality != null) {
-                return true;
-            }
-            return !this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$dirty && !this.selectedSpeciality != null
-        },
+        }
     },
     mounted() {
         this.getSpecialities()
