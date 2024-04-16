@@ -37,6 +37,7 @@ const getUserInfoByToken =() => {
     return jwtDecode(localStorage.getItem("token"))
 }
 
+
 const limitDescription = (description) => {
     const words = description.split(' ');
     if (words.length === 10 && words.length < 10) {
@@ -68,6 +69,9 @@ const getErrorMessages = (errorCode) => {
         "Duplicated service" : "Este servicio ya existe",
         "Speciality not found" : "Especialidad no encontrada",
         "Service is used" : "El servicio está en uso",
+        "Space already exists" : "El espacio ya existe",
+        "Unregistered space" : "Espacio no registrado",
+        
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }
