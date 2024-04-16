@@ -176,7 +176,7 @@ export default {
                 } else {
                     this.isLoading = false
                     const message = utils.getErrorMessages(text)
-                    onError('Error', message).then(() => { })
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) {
                 this.isLoading = false
