@@ -1,8 +1,7 @@
 <template>
     <b-row>
-        <Loader v-if="isLoading" key="load" />
         <b-col cols="12">
-            <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Registrar servicio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false" :contentStyle="{overflow: 'visible'}">
                 <div class="p-fluid grid">
 
@@ -98,7 +97,7 @@
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
-                                @click="saveService()" class="p-button-rounded button-style" />
+                                @click="saveService()" class="p-button-rounded button-style" :loading="isLoading"/>
                         </b-col>
                     </b-row>
                 </template>
@@ -162,7 +161,7 @@ export default {
             price: {
                 required: helpers.withMessage("Debes agregar un precio al servicio", required),
                 text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value)),
-                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value >= 0),
             },
             speciality: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
@@ -194,14 +193,13 @@ export default {
                 this.services.price = +this.services.price
                 const encoded = await encrypt(JSON.stringify(this.services))
                 try {
+
                     const { status, data : {text} } = await servicios.save_Service(encoded);
                     if(status === 400){
-                        this.isLoading = false
                         const message = utils.getErrorMessages(text)
                         onError("¡Error!", message);
                     }
                     if (status === 200 || status === 201) {
-                        this.closeModal()
                         onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
                         this.$emit("pagination", {page: 0, rows: 10})
                     }
@@ -211,6 +209,7 @@ export default {
             }else{
                 onError("¡Error!", "¡Debes completar los campos correctamente!");
             }
+            this.isLoading = false
         },
         async getSpecialities() {
             try {
@@ -220,7 +219,7 @@ export default {
                     this.specialities = JSON.parse(decripted).content
                 }
             } catch (error) {
-                console.log("error en la peticion", error);
+                onError("¡Error!", "¡Error al obtener las especialidades!")
             }
         },
     },

@@ -46,18 +46,23 @@ const router = new VueRouter({
     routes
 })
 
-router.beforeEach((to, from, next)=> {
+ router.beforeEach(async (to, from, next)=> {
     const publicPages = ['/login','/recovery-password', "/our_doctors", "/services", "/home", "/blog"];
     const authRequired = !publicPages.includes(to.path)
     const loggedIn = utils.getToken()
-
+    
     if (authRequired && !loggedIn) {
         return next('/login')
     }
     if(loggedIn){
-        const role = utils.getRoleNameBytoken()
-        if(to.meta && to.meta.role && to.meta.role.toString().toLowerCase() !== role.toString().toLowerCase()){
-            return next("/unautorized")
+        const role = await utils.getRoleNameBytoken()
+
+        if(role !== undefined && role !== null && role !== ""){
+            if(to.meta && to.meta.role && to.meta.role.toString().toLowerCase() !== role.toString().toLowerCase()){
+                return next("/unautorized")
+            }
+        }else{
+            return next("/login")
         }
         next();
     }

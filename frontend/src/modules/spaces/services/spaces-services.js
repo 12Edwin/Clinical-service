@@ -5,7 +5,7 @@ const getAllSpaces = async (pagination) => {
     const response = await api.doGet("/space/", {params: pagination});
     return response;
   } catch (error) {
-    throw new Error(error);
+    return error.response
   }
 };
 
@@ -18,7 +18,7 @@ const save_space = async (encodedPayload) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -31,7 +31,7 @@ const update_space = async (updatedSpace) => {
     });
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 
@@ -40,7 +40,7 @@ const delete_space = async (spaceId) => {
     const response = await api.doDelete(`/space/${spaceId}`);
     return response;
   } catch (error) {
-    return error;
+    return error.response;
   }
 };
 export default {

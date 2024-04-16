@@ -2,6 +2,15 @@ import api from "@/config/http-client.gateway";
 
 const get_services = async (pagination) => {
   try {
+    const response = await api.doGet("/service/all/", { params: pagination });
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+const getPublicServices = async (pagination) => {
+  try {
     const response = await api.doGet("/service/", { params: pagination });
     return response;
   } catch (error) {
@@ -59,4 +68,5 @@ export default {
   update_service,
   delete_service,
   get_specialities,
+  getPublicServices
 };

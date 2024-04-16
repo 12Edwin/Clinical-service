@@ -2,6 +2,7 @@
     <b-row>
         <b-col cols="12">
             <Dialog header="Modificar doctor (a)" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            :contentStyle="{overflow: 'visible'}"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>

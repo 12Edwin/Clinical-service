@@ -1,18 +1,36 @@
+import { decrypt } from "@/config/security"
 import jwtDecode from "jwt-decode"
 
-const getRoleNameBytoken = () => {
-    const { role : {name}} = jwtDecode(localStorage.getItem("token"))
+const getRoleNameBytoken = async () => {
+   try {
+    const tokenDecrypted = await decrypt(getToken());
+    const { role : {name}} = jwtDecode(tokenDecrypted)
     return name
+   } catch (error) {
+        removeToken()
+   }
 }
 
-export const getNamesByToken = () => {
-    const { name } = jwtDecode(localStorage.getItem("token"))
-    return name
+export const getNamesByToken = async () => {
+    try {
+        const decrypted = await decrypt(getToken());
+        const { name } = jwtDecode(decrypted)
+        return name
+    } catch (error) {
+        removeToken()
+    }
 }
 
-export const getUserIdByToken = () => {
-    const { user_id } = jwtDecode(localStorage.getItem("token"))
-    return user_id
+export const getUserIdByToken = async () => {
+
+    try {
+        const decrypted = await decrypt(getToken());
+        const { user_id } = jwtDecode(decrypted)
+        return user_id
+    } catch (error) {
+        removeToken()
+    }
+    
 }
 
 const getToken = () => {
@@ -33,8 +51,12 @@ async function encodeBase64(file) {
     });
 }
 
-const getUserInfoByToken =() => {
-    return jwtDecode(localStorage.getItem("token"))
+const getUserInfoByToken = async () => {
+    try {
+        return jwtDecode(await decrypt(getToken()))
+    } catch (error) {
+        removeToken()
+    }
 }
 
 
@@ -75,9 +97,9 @@ const getErrorMessages = (errorCode) => {
         "Nombre inválido" : "Nombre inválido",
         "Apellido inválido" : "Apellido inválido",
         "Sexo inválido" : "Sexo inválido",
-        "Type pathology already exists": "La patología ya existe",
-        "Space already exists": "El espacio ya existe",
-        "code already exists": "El código ya existe"
+        "code already exists": "El código ya existe",
+        "Space is used": "El espacio está en uso",
+        "Type pathology is used" : "Patología está en uso",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

@@ -40,7 +40,7 @@
                                                 {{ service.description !== "" ? limitDescription(service.description) :
                     'Sin descripción' }}
                                             </p>
-                                            <p style="font-weight: normal; color: black; ">${{ service.price }}</p>
+                                            <p style="font-weight: normal; color: black; ">{{ service.price > 0 ? `$${service.price}` : 'Gratuito'}}</p>
                                         </div>
                                     </template>
                                     <template #footer>
@@ -71,9 +71,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalUpdateService :visible.sync="displayModal" :service="service" />
+        <ModalUpdateService :visible.sync="displayModal" :service="service"  @pagination="pagination"/>
         <ModalSaveServiceVue :visible.sync="displaySaveModal" />
-        <ModalDetailService :visible.sync="displayDetailModal" :service="service" />
+        <ModalDetailService :visible.sync="displayDetailModal" :service="service"  @pagination="pagination"/>
     </div>
 </template>
 
@@ -116,7 +116,12 @@ export default {
             service: {
                 name: '',
                 description: '',
-                price: ''
+                price: '',
+                speciality: {
+                    id: 0,
+                    name: '',
+                    description: ''
+                }
             },
             pageable: {
                 page: 0,
@@ -151,31 +156,27 @@ export default {
                 this.isLoading = true
                 const { status, data: { result } } = await servicios.get_services(this.pageable)
                 if (status === 200 || status === 201) {
-                    this.isLoading = false
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.services = content
                 } else {
-                    this.isLoading = false
                     onError('Error', 'Ha ocurrido un error inesperado').then(() => { })
                 }
-            } catch (error) {
-                this.isLoading = false
-            }
+            } catch (error) {}
+            this.isLoading = false
         },
         async getServices() {
             const { status, data: { result } } = await servicios.get_services(this.pageable)
             if (status === 200 || status === 201) {
-                this.isLoading = false
                 const decripted = await decrypt(result)
                 const { content, totalElements } = JSON.parse(decripted)
                 this.totalRecords = totalElements
                 this.services = content
             } else {
-                this.isLoading = false
                 onError('Error', 'Ha ocurrido un error inesperado').then(() => { })
             }
+            this.isLoading = false
         },
         deleteService(serviceId) {
             this.$confirm.require({
@@ -188,20 +189,18 @@ export default {
                     try {
                         const encodedId = await encrypt(serviceId)
                         const { status, data: {text} } = await servicios.delete_service(encodedId)
-
                         if(status === 400){
-                            this.isLoading = false
                             const message = utils.getErrorMessages(text)
                             onError("Error", message).then(() => { 
                                 this.$confirm.close();
                             })
                         }
                         if (status === 200 || status === 201) {
-                            this.isLoading = false
                             this.pagination()
                             onSuccess("¡Éxito!", "¡Servicio eliminado con éxito!");
                         }
                     } catch (error) { }
+                    this.isLoading = false
                 },
                 reject: () => { }
             });

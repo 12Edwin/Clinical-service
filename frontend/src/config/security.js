@@ -32,7 +32,7 @@ const getKey = async () => {
         );
         return base64UrlEncode(String.fromCharCode.apply(null, new Uint8Array(encrypted)));
     }catch (err){
-        console.log(err)
+        console.log("Error de encruptacion")
     }
 }
 

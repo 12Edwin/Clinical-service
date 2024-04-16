@@ -15,12 +15,22 @@ const saveSpeciality = async (encodedPayload) => {
 
 const getSpecialities = async (pagination) => {
     try {
+        const response = await api.doGet("/speciality/all/", {params: pagination})
+        return response
+    } catch (error) {
+        return error.response
+    }
+}
+
+const getPublicSpecialities = async (pagination) => {
+    try {
         const response = await api.doGet("/speciality/", {params: pagination})
         return response
     } catch (error) {
         return error.response
     }
 }
+
 
 const deleteSpeciality = async (specialityId) => {
     try {

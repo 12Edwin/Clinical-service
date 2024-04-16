@@ -86,9 +86,14 @@
                                 <span class="p-float-label p-input-icon-right">
                                     <i class="pi pi-bitcoin" />
                                     <Dropdown id="field-speciality" :options="specialities" optionLabel="name"
-                                        optionValue="id" v-model="selectedSpeciality" />
+                                        optionValue="id" v-model="v$.speciality.$model" class="text-start"/>
                                     <label for="field-speciality" class="form-label-required">Especialidad</label>
                                 </span>
+                                <div class="text-danger text-start pt-2">
+                                        <p class="error-messages" v-if="v$.speciality.$dirty && v$.speciality.required.$invalid">
+                                            {{ v$.speciality.required.$message }}
+                                        </p>
+                                </div>
                             </div>
                         </b-col>
                     </b-row>
@@ -99,7 +104,7 @@
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal"
                                 class="p-button-rounded p-button-secondary" />
                             <Button label="Actualizar" icon="pi pi-pencil" @click="updateService()"
-                                :disabled="!disableButton()" class="p-button-rounded button-style" />
+                                :disabled="v$.$invalid" class="p-button-rounded button-style" :loading="isLoandig" />
                         </b-col>
                     </b-row>
                 </template>
@@ -119,7 +124,6 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import servicios from "@/modules/service-private/service-services/Services";
 import Dropdown from "primevue/dropdown/";
-import Loader from "@/components/loader.vue";
 import { onError, onSuccess } from "@/kernel/alerts";
 import utils from "@/kernel/utils";
 export default {
@@ -136,7 +140,7 @@ export default {
         return {
             specialities: [],
             selectedSpeciality: null,
-            isLoading: false,
+            isLoandig: false,
         }
     },
     components: {
@@ -144,14 +148,14 @@ export default {
         Textarea,
         Toast,
         Dropdown,
-        Loader
     },
     name: "ModalUpdateService",
     setup() {
         const newService = reactive({
             name: "",
             description: "",
-            price: 0
+            price: 0,
+            speciality: null,
         });
 
         const rules = {
@@ -187,6 +191,12 @@ export default {
                 ),
                 precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
             },
+            speciality: {
+                required: helpers.withMessage(
+                    "Debes seleccionar una especialidad para el servicio",
+                    required
+                ),
+            }
         };
         const v$ = useVuelidate(rules, newService);
         return { newService, v$ };
@@ -199,31 +209,16 @@ export default {
             this.newService.name = oldService.name
             this.newService.description = oldService.description
             this.newService.price = oldService.price
+            this.newService.speciality = oldService.speciality
             this.v$.$reset();
-        },
-        disableButton() {
-            if (
-                !this.v$.name.$dirty &&
-                !this.v$.description.$dirty &&
-                this.price != 0 &&
-                this.selectedSpeciality != null
-            ) {
-                return true;
-            }
-            return (
-                !this.v$.name.$invalid &&
-                !this.v$.description.$invalid &&
-                !this.v$.price.$invalid &&
-                !this.selectedSpeciality != null
-            );
         },
         async updateService() {
             this.speciality = +this.selectedSpeciality
-            if (!this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$invalid && this.selectedSpeciality != null) {
+            if (!this.v$.$invalid) {
                 try {
                     this.newService.id = JSON.parse(this.service).id;
-                    this.newService.speciality = +this.selectedSpeciality
                     const encodedService = await encrypt(JSON.stringify(this.newService));
+                    this.isLoading = true;
                     const { status, data: { text } } = await servicios.update_service(encodedService);
                     if(status === 400){
                         const message = utils.getErrorMessages(text)
@@ -235,7 +230,7 @@ export default {
                         this.$emit("pagination", { page: 0, rows: 10 });
                     }
                 } catch (error) {
-                    console.log("error en la peticion", error);
+                    onError("¡Error!", "¡Error al actualizar el servicio!");
                 }
             } else {
                 this.$toast.add({
@@ -246,6 +241,7 @@ export default {
                     life: 3000,
                 });
             }
+            this.isLoading = false;
         },
         async getSpecialities() {
             try {
@@ -255,7 +251,7 @@ export default {
                     this.specialities = JSON.parse(decripted).content
                 }
             } catch (error) {
-                console.log("error en la peticion", error);
+                onError()
             }
         }
     },
@@ -266,10 +262,10 @@ export default {
         service: {
             handler() {
                 const oldService = JSON.parse(this.service);
-                this.newService.name = oldService.name;
-                this.newService.description = oldService.description;
-                this.newService.price = oldService.price;
-                this.newService.speciality = oldService.speciality;
+                this.v$.name.$model = oldService.name;
+                this.v$.description.$model = oldService.description;
+                this.v$.price.$model = oldService.price;
+                this.v$.speciality.$model = oldService.speciality.id;
             },
             deep: true,
         },

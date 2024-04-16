@@ -109,8 +109,9 @@ export default {
       return this.items.filter(item => this.role === item.role);
     }
   },
-  mounted() {
-    this.role = utils.getRoleNameBytoken().toLowerCase()
+  async mounted() {
+    this.role = await utils.getRoleNameBytoken()
+    this.role = this.role.toLowerCase()
     this.showUserInfo()
   }
 }

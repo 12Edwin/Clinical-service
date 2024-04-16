@@ -9,12 +9,12 @@ const AxiosClient = axios.create({
 })
 
 export const getServerUrl = () => {
-    return SERVER_URL
+    return  process.env.VUE_APP_BASE_URL
 }
 AxiosClient.interceptors.request.use(
     function(config){
         const auth_token = localStorage.getItem('token')
-        if(auth_token !== undefined){
+        if(auth_token !== undefined && auth_token !== null && auth_token !== ""){
             if(!config.url.includes('auth')){
                 config.headers.Authorization = `Bearer ${auth_token}`
             }
