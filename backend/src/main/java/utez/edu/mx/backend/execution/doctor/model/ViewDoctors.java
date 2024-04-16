@@ -27,7 +27,7 @@ public class ViewDoctors {
 
     private String fullname;
     @NotBlank(groups = {Register.class, Modify.class})
-    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+$", groups = {Register.class, Modify.class}, message = "Nombre invalido")
+    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+( [a-zA-ZñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]+)*$", groups = {Register.class, Modify.class}, message = "Nombre invalido")
     private String name;
     @NotBlank(groups = {Register.class})
     private String code;

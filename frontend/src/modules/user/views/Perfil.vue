@@ -47,7 +47,7 @@
               <b-row>
                 <b-col cols="12" class="d-flex justify-content-center w-100">
                   <Button icon="pi pi-camera" class="p-button-rounded p-button-outlined button-margin" @click="toggleShow" v-tooltip.top="'Cambiar foto'" />
-                  <Button icon="pi pi-lock-open" class="p-button-rounded p-button-outlined button-margin" @click="openChangePassword" v-tooltip.bottom="'Cambiar contraseña'"/>
+                  <Button icon="pi pi-lock-open" class="p-button-rounded p-button-outlined button-margin" @click="() => $router.push({name : 'recovery-password'})" v-tooltip.bottom="'Cambiar contraseña'"/>
                 </b-col>
               </b-row>
             </b-col>

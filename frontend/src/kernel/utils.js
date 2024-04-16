@@ -68,6 +68,9 @@ const getErrorMessages = (errorCode) => {
         "Duplicated service" : "Este servicio ya existe",
         "Speciality not found" : "Especialidad no encontrada",
         "Service is used" : "El servicio está en uso",
+        "Nombre inválido" : "Nombre inválido",
+        "Apellido inválido" : "Apellido inválido",
+        "Sexo inválido" : "Sexo inválido",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

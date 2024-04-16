@@ -1,7 +1,9 @@
 <template>
     <div>
         <Header style="margin-bottom: 20px" title="Doctores"/>
-        <Panel class="w-100 shadow-lg">
+        <TransitionGroup name="fade">
+            <loader v-if="isLoading" key="load" />
+            <Panel class="w-100 shadow-lg" v-else key="content">
             <template #header>
                 <div class="d-flex justify-content-between w-100 align-items-center">
                     <p class="h5 text-secondary"><b>Gestión de doctores</b></p>
@@ -91,6 +93,7 @@
                 </b-col>
             </b-row>
         </Panel>
+        </TransitionGroup>
         <Toast />
         <ConfirmDialog></ConfirmDialog>
         <ModalUpdateVue :visible.sync="displayUpdateModal" :doctor="doctor" />
@@ -111,6 +114,7 @@ import ModalUpdateVue from './ModalUpdate.vue'
 import Header from '@/components/Header.vue';
 import { onError } from "@/kernel/alerts";
 import utils from "@/kernel/utils";
+import Loader from '@/components/loader.vue';
 
 export default {
     components: {
@@ -122,11 +126,13 @@ export default {
         Toast,
         ModalUpdateVue,
         Badge, 
-        Header
+        Header,
+        Loader
     },
     data() {
         return {
             loading: false,
+            isLoading: false,
             doctors: [],
             displayUpdateModal: false,
             doctor: {
@@ -151,22 +157,24 @@ export default {
     },
     methods: {
         async getDoctors(event) {
-            this.loading = true;
             if (event != undefined) {
                 const { page, rows } = event;
                 this.pageable.page = page;
                 this.pageable.size = rows;
             }
             try {
+                this.isLoading = true;
                 const { status, data: { result, text } } = await service.get_doctors(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.doctors = content;
+                    this.isLoading = false;
                 }else {
                     let message = utils.getErrorMessages(text);
                     await onError('Ha ocurrido un error', message);
+                    this.isLoading = false;
                 }
             } catch (error) {
             }
