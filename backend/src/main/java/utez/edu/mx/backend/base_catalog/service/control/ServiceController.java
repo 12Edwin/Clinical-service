@@ -34,6 +34,18 @@ public class ServiceController {
     private final ObjectMapper mapper;
     private final CustomRestExceptionHandler<DtoService> exceptionHandler;
 
+    @PreAuthorize("hasAnyAuthority('SERVICES')")
+    @GetMapping("/all/")
+    ResponseEntity<Object> findAllForAdmin (Pageable pageable) {
+        try {
+            return serv.findAll(pageable);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/")
     ResponseEntity<Object> findAll (Pageable pageable) {
         try {

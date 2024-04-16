@@ -42,6 +42,18 @@ public class SpecialityController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('SPECILITIES')")
+    @GetMapping("/all/")
+    ResponseEntity<Object> findAllForAdmin (Pageable pageable) {
+        try {
+            return service.findAll(pageable);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/{str_id}")
     ResponseEntity<Object> findById (@PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {

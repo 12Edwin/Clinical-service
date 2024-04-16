@@ -32,6 +32,7 @@ public class DoctorController {
     private final ObjectMapper objectMapper;
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
     @GetMapping("/")
     ResponseEntity<Object> findAllDoctors (Pageable pageable) {
         try {
