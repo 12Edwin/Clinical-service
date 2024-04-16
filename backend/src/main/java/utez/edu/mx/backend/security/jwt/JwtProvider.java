@@ -45,12 +45,12 @@ public class JwtProvider {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get("user_id", Long.class);
     }
 
-    public boolean validateToken(String crypt_token) throws UnsupportedEncodingException {
-        String token = crypt.decrypt(crypt_token);
+    public boolean validateToken(String crypt_token) {
         try {
+            String token = crypt.decrypt(crypt_token);
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException e) {
+        } catch (MalformedJwtException | UnsupportedEncodingException e) {
             logger.error("Token mal formado");
         } catch (UnsupportedJwtException e) {
             logger.error("Token no soportado");
