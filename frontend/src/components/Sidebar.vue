@@ -26,9 +26,6 @@
         <li class="item" @click="() => $router.push({name : 'perfil'})">
           <i class="pi pi-user"></i><span class="ms-3">Perfil</span>
         </li>
-        <li class="item" @click="() => $router.push({name : 'recovery-password'})">
-          <i class="pi pi-key"></i><span class="ms-3">Cambiar Contraseña</span>
-        </li>
         <li class="item" @click="logout()">
           <i class="pi pi-sign-out"></i><span class="ms-3">Cerrar sesión</span>
         </li>

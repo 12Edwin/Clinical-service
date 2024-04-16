@@ -72,7 +72,9 @@ const getErrorMessages = (errorCode) => {
         "Space already exists" : "El espacio ya existe",
         "Unregistered space" : "Espacio no registrado",
         "Type pathology already exists" : "Tipo de patología ya existe",
-        
+        "Nombre inválido" : "Nombre inválido",
+        "Apellido inválido" : "Apellido inválido",
+        "Sexo inválido" : "Sexo inválido",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import utez.edu.mx.backend.security.entity.MyUserDetails;
+import utez.edu.mx.backend.security.service.CryptService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map;
 
@@ -18,25 +20,33 @@ public class JwtProvider {
     private String secret;
     @Value("${jwt.expiration}")
     private int expiration;
+    private final CryptService crypt;
 
-    public String generateToken(Authentication authentication, Map<String, Object> claims) {
+    public JwtProvider(CryptService crypt) {
+        this.crypt = crypt;
+    }
+
+    public String generateToken(Authentication authentication, Map<String, Object> claims) throws UnsupportedEncodingException {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        return Jwts.builder()
+        return  crypt.encrypt( Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername()).setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + expiration * 1000L))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(SignatureAlgorithm.HS512, secret).compact() );
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String crypt_token) throws UnsupportedEncodingException {
+        String token = crypt.decrypt(crypt_token);
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Long getUserId(String token) {
+    public Long getUserId(String crypt_token) throws UnsupportedEncodingException {
+        String token = crypt.decrypt(crypt_token);
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get("user_id", Long.class);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String crypt_token) throws UnsupportedEncodingException {
+        String token = crypt.decrypt(crypt_token);
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
