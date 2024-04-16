@@ -228,12 +228,12 @@ export default {
             isGraterThanFive: false,
             isLoading: false,
             onSave: false,
-            showDate: false
+            showDate: false,
+            treatment: 0
         }
     },
     methods: {
         dateDidMount(info) {
-            console.log(info)
             if (info.date < new Date()) {
                 info.el.classList.add('fc-day-past');
             }else{
@@ -278,6 +278,7 @@ export default {
                     return;
                 }
                 const appoint = await this.prepareAppointment();
+                console.log(appoint)
                 const result = await this.saveAppointment(appoint);
                 this.handleSaveResult(result);
             } catch (error) {
@@ -295,12 +296,17 @@ export default {
             return {
                 start_hour: moment(this.formatDate(start)).format(formatDate),
                 end_hour: moment(this.formatDate(end)).format(formatDate),
-                treatment: await this.getTreatmentFromUrl(),
+                treatment: this.treatment,
                 space: this.selectedSpace
             };
         },
         async getTreatmentFromUrl(){
-            return await decrypt(this.$route.params.idTreatment)
+            try {
+                this.treatment = await decrypt(this.$route.params.idTreatment)
+                console.log(this.treatment)
+            } catch (error) {
+                this.$router.push({name: 'unautorized'})
+            } 
         },
         validateHours(start, end) {
             const startTime = moment(this.formatHour(start), formatTime)
@@ -360,12 +366,11 @@ export default {
         async onSpaceSelected(){
             if(this.selectedSpace != null){
                 try {
-                    this.isLoading = true
                     this.appoints = []
                     const id = JSON.parse(JSON.stringify(this.selectedSpace))
                     const {status, data : {result}} = await appointServices.getAppointmentsBySpace(await encrypt(id))
+                    this.isLoading = true
                     if(status === 200 || status === 201){
-                        this.isLoading = false
                         const appointsDecryoted = JSON.parse(await decrypt(result))
                         if(appointsDecryoted.length > 0){
                             appointsDecryoted.map((appoint) => {
@@ -378,15 +383,14 @@ export default {
                                 })
                             }) 
                         }else{
-                            this.isLoading = false
                             this.$toast.add({severity:'info', summary: 'Sin citas', detail:'¡Este espacio no contiene citas hasta ahora!', life: 3000});
                         }
                     } 
-                    
                 } catch (error) {
-                    console.log("Error: ", error)
+                    onError('Error', 'Ocurrio un error en el servidor').then(() => {})
                 }
             }
+            this.isLoading = false
         },
         async getAllSpaces(){
             try {
@@ -396,7 +400,7 @@ export default {
                     this.spaces = content
                 }
             }catch(error){
-                console.log("Error: ", error)
+                onError('Error', 'Ocurrio un error al consultar los espacios').then(() => {})
             }
         },
         cleanFields(){
@@ -441,6 +445,7 @@ export default {
     },
     mounted(){
         this.getAllSpaces()
+        this.getTreatmentFromUrl()
     },
     watch: {
         appoints: {

@@ -5,7 +5,6 @@ const getRoleNameBytoken = async () => {
    try {
     const tokenDecrypted = await decrypt(getToken());
     const { role : {name}} = jwtDecode(tokenDecrypted)
-    console.log("role", name)
     return name
    } catch (error) {
         removeToken()
@@ -98,9 +97,9 @@ const getErrorMessages = (errorCode) => {
         "Nombre inválido" : "Nombre inválido",
         "Apellido inválido" : "Apellido inválido",
         "Sexo inválido" : "Sexo inválido",
-        "Type pathology already exists": "La patología ya existe",
-        "Space already exists": "El espacio ya existe",
-        "code already exists": "El código ya existe"
+        "code already exists": "El código ya existe",
+        "Space is used": "El espacio está en uso",
+        "Type pathology is used" : "Patología está en uso",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

@@ -148,25 +148,22 @@ export default {
                     this.onUpdate = true
                     const {status, data: { text }} = await specialitiesServices.updateSpeciality(encodedSpeciality)
                     if(status === 200 || status === 201){
-                        this.onUpdate = false
                         onSuccess("¡Éxito!", "Especialidad actualizada exitosamente").then(() => {
                             this.closeModal()
                         })
                         this.$emit('pagination', {page: 0, rows: 10})
                     }else{
-                        this.onUpdate = false
                         const message = utils.getErrorMessages(text)
                         onError("Error al actualizar la especialidad", message).then(() => {
                             this.onSave = false
                             this.closeModal()
                         })
                     }
-                } catch (error) {
-                    console.log("error en la peticion",error)
-                }
+                } catch (error) {}
             }else{
                 this.$toast.add({severity:'warn', summary: '¡Cuidado!', detail: '¡Asegurate que todos los campos cumplan con el formato necesario!', life: 3000});
             }
+            this.onUpdate = false
         }
     },
     watch:{

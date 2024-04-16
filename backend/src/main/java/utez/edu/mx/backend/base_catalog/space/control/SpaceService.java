@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backend.base_catalog.space.model.Space;
 import utez.edu.mx.backend.base_catalog.space.model.SpaceRepository;
+import utez.edu.mx.backend.execution.appoint.model.AppointRepository;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class SpaceService {
 
     private final SpaceRepository repository;
+
+    private final AppointRepository appointRepository;
     @Transactional
     public Space saveInitial(Space space){
         return repository.save(space);
@@ -82,6 +85,9 @@ public class SpaceService {
         Optional<Space> space = repository.findById(id);
         if (space.isEmpty()) {
             return new ResponseEntity<>(new Message("Space not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+        }
+        if(appointRepository.findBySpace(space.get()).size()>0){
+            return new ResponseEntity<>(new Message("Space is used", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         repository.deleteById(id);
         if (repository.findById(id).isPresent()) {

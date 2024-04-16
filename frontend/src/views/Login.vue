@@ -147,7 +147,6 @@ export default {
         this.isLogging = false
         localStorage.setItem('token', token)
         const roleName = await utils.getRoleNameBytoken(token)
-        console.log("nombre del rol",roleName)
         if(roleName.toLowerCase() === 'admin'){
           this.$router.push({ name: 'doctors' })
         }else{
@@ -179,8 +178,7 @@ export default {
       this.verifyCaptcha(solution);
     },
     errorCallback: (err) => {
-      console.log("There was an error when trying to solve the Captcha.");
-      console.log(err);
+      onError("Error", 'Error al verificar captcha')
     },
     submitForm: () => { },
 

@@ -87,7 +87,7 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import pathologyService from '../pathology-service/Pathology'
 import Dropdown from "primevue/dropdown/";
-import { onSuccess } from '@/kernel/alerts';
+import { onError, onSuccess } from '@/kernel/alerts';
 export default {
     name: "ModalUpdatePathology",
     props: {
@@ -151,6 +151,11 @@ export default {
         const v$ = useVuelidate(rules, newPathology);
         return { newPathology, v$ };
     },
+    data(){
+        return {
+            onUpdate: false
+        }
+    },
     methods: {
         closeModal() {
             this.$emit("update:visible", false);
@@ -177,6 +182,7 @@ export default {
                 try {
                     this.newPathology.id = JSON.parse(this.pathology).id;
                     const encodedPathology = await encrypt(JSON.stringify(this.newPathology));
+                    this.onUpdate= true
                     const { status } = await pathologyService.update_pathology(encodedPathology);
                     if (status === 200 || status === 201) {
                         this.closeModal();
@@ -186,7 +192,7 @@ export default {
                         onError("¡Error!", text).then(() => this.closeModal())
                     }
                 } catch (error) {
-                    console.log("error en la peticion", error);
+                    onError("¡Error!", "Error al actualizar la patología")
                 }
             } else {
                 this.$toast.add({
@@ -197,6 +203,7 @@ export default {
                     life: 3000,
                 });
             }
+            this.onUpdate= false
         }
     },
     watch: {

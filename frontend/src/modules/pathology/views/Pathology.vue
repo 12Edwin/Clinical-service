@@ -66,9 +66,9 @@
             </b-col>
             <ConfirmDialog></ConfirmDialog>
         </b-row>
-        <ModalSavePathology :visible.sync="displaySaveModal" />
+        <ModalSavePathology :visible.sync="displaySaveModal" @pagination="pagination"/>
         <ModalDetailPathology :visible.sync="displayDetailModal" :pathology="pathology" />
-        <ModalUpdatePathology :visible.sync="displayModal" :pathology="pathology" />
+        <ModalUpdatePathology :visible.sync="displayModal" :pathology="pathology" @pagination="pagination"/>
     </div>
 </template>
 
@@ -85,7 +85,7 @@ import ModalSavePathology from './ModalSavePathology.vue'
 import ModalDetailPathology from './ModalDetailPathology.vue';
 import ModalUpdatePathology from './ModalUpdatePathology.vue';
 import Header from '@/components/Header.vue';
-import { onError } from "@/kernel/alerts";
+import { onError, onSuccess } from "@/kernel/alerts";
 import Loader from "@/components/loader.vue";
 import utils from "@/kernel/utils";
 
@@ -173,7 +173,7 @@ export default {
                         const { status, data } = await pathologyService.delete_Pathology(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Patología eliminada correctamente', life: 3000 });
+                            onSuccess('¡Éxito!', '¡Patología eliminada con éxito!');
                         }else {
                             let message = utils.getErrorMessages(data.text);
                             await onError('Ha ocurrido un error', message);

@@ -85,7 +85,7 @@ import ModalSaveSpace from './ModalSaveSpace.vue'
 import { decrypt, encrypt } from "@/config/security"
 import ModalUpdateSpace from './ModalUpdateSpace.vue';
 import Header from '@/components/Header.vue';
-import { onError } from "@/kernel/alerts";
+import { onError, onSuccess } from "@/kernel/alerts";
 import Loader from "@/components/loader.vue";
 import utils from "@/kernel/utils";
 export default {
@@ -170,7 +170,7 @@ export default {
                         const { status, data } = await spaceService.delete_space(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Espacio medico eliminado correctamente', life: 3000 });
+                           await onSuccess('¡Éxito!', '¡Espacio eliminado con éxito!');
                         } else {
                             let message = utils.getErrorMessages(data.text);
                             await onError('Ha ocurrido un error', message);

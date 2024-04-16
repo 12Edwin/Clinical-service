@@ -104,7 +104,7 @@ export default {
       }
       try {
         this.isLoading = true
-        const {status, data: {result}} = await doctorService.get_doctors(this.pageable)
+        const {status, data: {result}} = await doctorService.getPublicDoctors(this.pageable)
         if (status === 200 || status === 201) {
           const decripted = await decrypt(result)
           const {content, totalElements} = JSON.parse(decripted)

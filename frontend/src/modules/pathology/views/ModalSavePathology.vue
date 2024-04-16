@@ -58,7 +58,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus" @click="savePathology()"
+                            <Button label="Registrar" :disabled="v$.$invalid" :loading="isLoading" icon="pi pi-plus" @click="savePathology()"
                                 class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -96,6 +96,11 @@ export default {
         Dropdown,
         Toast
     },
+    data(){
+        return {
+            isLoading: false
+        }
+    },
     setup() {
         const pathologies = reactive({
             name: '',
@@ -129,30 +134,19 @@ export default {
         async savePathology() {
             const encoded = await encrypt(JSON.stringify(this.pathologies))
             try {
-                const { status, response } = await pathologyService.save_pathology(encoded);
+                this.isLoading = true
+                const { status, data: {text} } = await pathologyService.save_pathology(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
                     await onSuccess("¡Éxito!", "Patología guardada con éxito!")
                     this.$emit("pagination", {page:0, rows:10})
                 } else {
-                    const message = utils.getErrorMessages(response.data.text)
+                    const message = utils.getErrorMessages(text)
                     await onError("¡Error!", message).then(() => this.closeModal())
                 }
-            } catch (error) {
-            }
-        },
-        disableButton() {
-            if (
-                !this.v$.name.$dirty &&
-                !this.v$.description.$dirty
-            ) {
-                return false;
-            }
-            return (
-                !this.v$.name.$invalid &&
-                !this.v$.description.$invalid
-            );
-        },
+            } catch (error) {}
+            this.this.isLoading = false
+        }
     },
 }   
 </script>

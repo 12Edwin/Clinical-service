@@ -52,4 +52,6 @@ public interface AppointRepository extends JpaRepository<Appoint, Long> {
             "                LEFT JOIN people pe on pa.person_id = pe.id\n" +
             "                WHERE ap.id = :id", nativeQuery = true)
     Optional<ViewAppointPatient> findFullAppointById(@Param("id") Long id);
+
+    List<Appoint> findBySpace(Space space);
 }

@@ -1,7 +1,7 @@
 <template>
     <b-row>
         <b-col cols="12">
-            <Dialog header="Registrar Servicio Medico" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
+            <Dialog header="Registrar espacio" :visible.sync="visible" :containerStyle="{ width: '40vw' }"
                 @hide="() => closeModal()" :modal="true" :closeOnEscape="false" :closable="false">
                 <div class="p-fluid grid">
                     <b-row>
@@ -58,7 +58,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus"
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
                                 @click="saveSpace()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -96,6 +96,11 @@ export default {
         Dropdown,
         Toast
     },
+    data(){
+        return {
+            isLoading: true,
+        }
+    },
     setup() {
         const spaces = reactive({
             name: '',
@@ -127,19 +132,26 @@ export default {
             this.v$.$reset()
         },
         async saveSpace() {
-            const encoded = await encrypt(JSON.stringify(this.spaces))
-            try {
-                const { status, response : {data} } = await spacesServices.save_space(encoded);
-                if (status === 200 || status === 201) {
-                    this.closeModal();
-                    await onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
-                    this.$emit("pagination", { page: 0, rows: 10 });
-                } else {
-                    let message = utils.getErrorMessages(data.text);
-                    await onError("¡Error!", message).then(() => this.closeModal())
+            if(!this.v$.$invalid){
+                const encoded = await encrypt(JSON.stringify(this.spaces))
+                try {
+                    this.isLoading = true
+                    const { status, data: { text } } = await spacesServices.save_space(encoded);
+                    if (status === 200 || status === 201) {
+                        this.closeModal();
+                        await onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
+                        this.$emit("pagination", { page: 0, rows: 10 });
+                    } else {
+                        let message = utils.getErrorMessages(text);
+                        await onError("¡Error!", message).then(() => this.closeModal())
+                    }
+                } catch (error) {
+                    onError("¡Error!", "Ocurrió un error al guardar el espacio")
                 }
-            } catch (error) {
+            }else{
+                onError("¡Error!", "Debes completar los campos correctamente")
             }
+            this.isLoading= false
         },
         disableButton() {
             if (

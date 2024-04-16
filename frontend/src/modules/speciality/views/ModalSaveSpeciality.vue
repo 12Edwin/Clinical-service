@@ -146,25 +146,20 @@ export default {
                     const { status, data: { text } } = await specialityService.saveSpeciality(encoded)
                     this.onSave = true
                     if (status === 200 || status === 201) {
-                        this.onSave = false
                         this.closeModal()
                         onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
                         this.$emit("pagination", { page: 0, rows: 10 });
                     } else {
                         const message = utils.getErrorMessages(text)
                         onError("Error al registrar la especialidad", message).then(() => {
-                            this.onSave = false
                             this.closeModal()
                         })
                     }
-                } catch (error) {
-                    this.onSave = false
-                    console.log("error en la peticion", error)
-                }
+                } catch (error) {}
             } else {
-
                 this.$toast.add({ severity: 'warn', summary: '¡Cuidado!', detail: 'Debes completar todos los campos', life: 3000 });
             }
+            this.onSave = false
         }
     },
 }   
