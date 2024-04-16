@@ -187,12 +187,19 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(serviceId)
-                        const { status } = await servicios.delete_service(encodedId)
+                        const { status, data: {text} } = await servicios.delete_service(encodedId)
+
+                        if(status === 400){
+                            this.isLoading = false
+                            const message = utils.getErrorMessages(text)
+                            onError("Error", message).then(() => { 
+                                this.$confirm.close();
+                            })
+                        }
                         if (status === 200 || status === 201) {
+                            this.isLoading = false
                             this.pagination()
                             onSuccess("¡Éxito!", "¡Servicio eliminado con éxito!");
-                        } else {
-
                         }
                     } catch (error) { }
                 },

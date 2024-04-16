@@ -65,6 +65,9 @@ const getErrorMessages = (errorCode) => {
         "Speciality not deleted" : "La especialidad no se pudo eliminar",
         "Duplicated speciality" : "Esta especialidad ya existe",
         "Speciality not updated" : "La especialidad no se pudo actualizar",
+        "Duplicated service" : "Este servicio ya existe",
+        "Speciality not found" : "Especialidad no encontrada",
+        "Service is used" : "El servicio está en uso",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

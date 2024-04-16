@@ -78,7 +78,7 @@
                                     <i class="pi pi-bitcoin" />
                                     <Dropdown id="field-speciality"
                                         :options="specialities"
-                                        optionLabel="name" optionValue="id" v-model="selectedSpeciality"
+                                        optionLabel="name" optionValue="id" v-model="v$.speciality.$model"
                                         :class="{ 'invalid-field-custom': v$.speciality.$error }" />
                                     <label for="field-price" class="form-label-required">Especialidad</label>
                                 </span>
@@ -97,7 +97,7 @@
                         <b-col cols="12">
                             <Button label="Cancelar" icon="pi pi-times" @click="closeModal()"
                                 class="p-button-rounded p-button-secondary" />
-                            <Button label="Registrar" :disabled="!disableButton()" icon="pi pi-plus"
+                            <Button label="Registrar" :disabled="v$.$invalid" icon="pi pi-plus"
                                 @click="saveService()" class="p-button-rounded button-style" />
                         </b-col>
                     </b-row>
@@ -122,6 +122,7 @@ import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import Loader from '@/components/loader.vue';
 import { onError, onSuccess } from '@/kernel/alerts';
+import utils from '@/kernel/utils';
 export default {
     name: 'ModalSaveService',
     props: {
@@ -141,8 +142,8 @@ export default {
         const services = reactive({
             name: '',
             description: '',
-            price: '',
-            speciality: ''
+            price: 0,
+            speciality: null
         })
 
         const rules = {
@@ -165,7 +166,6 @@ export default {
             },
             speciality: {
                 required: helpers.withMessage("Debes agregar una especialidad", required),
-                text: helpers.withMessage("Caracteres no válidos", (value) => newregex.test(value))
             }
         }
         const v$ = useVuelidate(rules, services)
@@ -189,21 +189,27 @@ export default {
             this.v$.$reset()
         },
         async saveService() {
-            this.isLoading = true
-            this.services.speciality = +this.selectedSpeciality
-            this.services.price = +this.services.price
-            const encoded = await encrypt(JSON.stringify(this.services))
-            try {
-                const { status } = await servicios.save_Service(encoded);
-                if (status === 200 || status === 201) {
-                    this.closeModal()
-                    onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
-                    this.$emit("pagination", {page: 0, rows: 10})
-                } else{
-                    onError("¡Error!", text).then(() => this.closeModal())
+            if(!this.v$.$invalid){
+                this.isLoading = true
+                this.services.price = +this.services.price
+                const encoded = await encrypt(JSON.stringify(this.services))
+                try {
+                    const { status, data : {text} } = await servicios.save_Service(encoded);
+                    if(status === 400){
+                        this.isLoading = false
+                        const message = utils.getErrorMessages(text)
+                        onError("¡Error!", message);
+                    }
+                    if (status === 200 || status === 201) {
+                        this.closeModal()
+                        onSuccess("¡Éxito!", "¡Servicio guardado con éxito!");
+                        this.$emit("pagination", {page: 0, rows: 10})
+                    }
+                } catch (error) {
+                    return error
                 }
-            } catch (error) {
-                return error
+            }else{
+                onError("¡Error!", "¡Debes completar los campos correctamente!");
             }
         },
         async getSpecialities() {
@@ -216,12 +222,6 @@ export default {
             } catch (error) {
                 console.log("error en la peticion", error);
             }
-        },
-        disableButton() {
-            if (this.v$.name.$dirty && this.v$.description.$dirty && this.price != 0 && !this.selectedSpeciality != null) {
-                return true;
-            }
-            return !this.v$.name.$invalid && !this.v$.description.$invalid && !this.v$.price.$dirty && !this.selectedSpeciality != null
         },
     },
     mounted() {

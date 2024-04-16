@@ -47,7 +47,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next)=> {
-    const publicPages = ['/login','/recovery-password', "/our_doctors", "/services", "/home"];
+    const publicPages = ['/login','/recovery-password', "/our_doctors", "/services", "/home", "/blog"];
     const authRequired = !publicPages.includes(to.path)
     const loggedIn = utils.getToken()
 
