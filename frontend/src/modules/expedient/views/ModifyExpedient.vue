@@ -617,7 +617,7 @@ export default {
 
       if (await onQuestion('Actualizar expediente', '¿Está seguro de actualizar este expediente?')) {
 
-        const created_by = getNamesByToken() || 'Doctor'
+        const created_by = await getNamesByToken() || 'Doctor'
 
         const {pathologies, sex, marital_status, gender, lastname, ...rest} = exp
         if (this.diseases.length === 1 && this.diseases[0].name === '' && this.diseases[0].description === '') {

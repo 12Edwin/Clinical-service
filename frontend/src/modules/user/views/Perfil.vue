@@ -300,7 +300,7 @@ export default {
   methods: {
     async getProfile() {
       this.isLoading = true
-      const id = getUserIdByToken()
+      const id = await getUserIdByToken()
       const {status, data} = await getProfile(id)
       if (status !== 200) {
         let message = 'Error al obtener el perfil'
@@ -402,7 +402,7 @@ export default {
   computed: {
     getImage() {
       const timestamp = Date.now();
-      return this.availableImage ? `${getServerUrl()}${this.data.img}?t=${timestamp}` : 'assets/latido-del-corazon.gif'
+      return this.availableImage ? `${process.env.VUE_APP_BASE_URL}${this.data.img}?t=${timestamp}` : 'assets/latido-del-corazon.gif'
     },
     fullName(){
       return this.data.id ? `${this.data.person.name} ${this.data.person.surname} ${(this.data.person.lastname || '')}` : ''

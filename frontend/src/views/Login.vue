@@ -146,7 +146,8 @@ export default {
       if(status === 200 || status === 201){
         this.isLogging = false
         localStorage.setItem('token', token)
-        const roleName = utils.getRoleNameBytoken(token)
+        const roleName = await utils.getRoleNameBytoken(token)
+        console.log("nombre del rol",roleName)
         if(roleName.toLowerCase() === 'admin'){
           this.$router.push({ name: 'doctors' })
         }else{

@@ -6,7 +6,7 @@
 
       <div style="margin-right:20px; display: flex;" class="align-items-center">
         <Avatar icon="pi pi-user" size="medium" style="margin-right: 10px;" shape="circle" />
-        <label class="text-white">{{ usernameRole() }}</label>
+        <label class="text-white" v-if="userRole != ''">{{ userRole }}</label>
       </div>
     </div>
   </div>
@@ -51,9 +51,12 @@ export default {
     }
   },
   methods: {
-    usernameRole(){
-      return utils.getRoleNameBytoken()
+    async usernameRole(){
+      this.userRole = await utils.getRoleNameBytoken()
     }
+  },
+  mounted() {
+    this.usernameRole()
   }
 
 }
