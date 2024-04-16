@@ -81,6 +81,7 @@ import pathologyService from '../pathology-service/Pathology'
 import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import { onError, onSuccess } from '@/kernel/alerts';
+import utils from "@/kernel/utils";
 export default {
     name: 'ModalSavePathology',
     props: {
@@ -128,16 +129,16 @@ export default {
         async savePathology() {
             const encoded = await encrypt(JSON.stringify(this.pathologies))
             try {
-                const { status } = await pathologyService.save_pathology(encoded);
+                const { status, response } = await pathologyService.save_pathology(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal()
-                    onSuccess("¡Éxito!", "Patología guardada con éxito!")
+                    await onSuccess("¡Éxito!", "Patología guardada con éxito!")
                     this.$emit("pagination", {page:0, rows:10})
                 } else {
-                    onError("¡Error!", text).then(() => this.closeModal())
+                    const message = utils.getErrorMessages(response.data.text)
+                    await onError("¡Error!", message).then(() => this.closeModal())
                 }
             } catch (error) {
-                return error
             }
         },
         disableButton() {

@@ -88,7 +88,6 @@ import Header from '@/components/Header.vue';
 import { onError } from "@/kernel/alerts";
 import Loader from "@/components/loader.vue";
 import utils from "@/kernel/utils";
-
 export default {
     components: {
         Card,
