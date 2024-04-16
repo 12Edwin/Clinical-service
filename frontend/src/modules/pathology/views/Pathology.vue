@@ -170,12 +170,12 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(pathologyId)
-                        const { status, data } = await pathologyService.delete_Pathology(encodedId)
+                        const { status, data: {text} } = await pathologyService.delete_Pathology(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Patología eliminada correctamente', life: 3000 });
+                            await onSuccess("¡Éxito!", "Se elimino la patología")
                         }else {
-                            let message = utils.getErrorMessages(data.text);
+                            const message = utils.getErrorMessages(text);
                             await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
