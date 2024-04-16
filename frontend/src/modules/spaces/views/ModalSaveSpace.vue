@@ -81,6 +81,7 @@ import Dropdown from 'primevue/dropdown'
 import Toast from 'primevue/toast';
 import spacesServices from '../services/spaces-services';
 import { onError, onSuccess } from "@/kernel/alerts";
+import utils from "@/kernel/utils";
 export default {
     name: 'ModalSaveSpace',
     props: {
@@ -128,16 +129,16 @@ export default {
         async saveSpace() {
             const encoded = await encrypt(JSON.stringify(this.spaces))
             try {
-                const { status, data: { text } } = await spacesServices.save_space(encoded);
+                const { status, response : {data} } = await spacesServices.save_space(encoded);
                 if (status === 200 || status === 201) {
                     this.closeModal();
-                    onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
+                    await onSuccess("¡Éxito!", "¡Espacio guardado con éxito!");
                     this.$emit("pagination", { page: 0, rows: 10 });
                 } else {
-                    onError("¡Error!", text).then(() => this.closeModal())
+                    let message = utils.getErrorMessages(data.text);
+                    await onError("¡Error!", message).then(() => this.closeModal())
                 }
             } catch (error) {
-                return error
             }
         },
         disableButton() {

@@ -88,6 +88,7 @@
                             <small>Registros: </small> {{ totalRecords }}
                         </b-col>
                         <Paginator :rows="2" :totalRecords="totalRecords" :rowsPerPageOptions="[2, 3, 5, 10, 15]"
+                            :currentPage="totalRecords > 0 ? pageable.page : 0"
                             :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="getDoctors($event)" />
                     </div>
                 </b-col>
@@ -148,7 +149,7 @@ export default {
             totalRecords: 0,
             selectedDoctors: null,
             filters1: {
-                global: { value: '' } // Inicializar el filtro global
+                global: { value: '' } 
             },
         }
     },

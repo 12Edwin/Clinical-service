@@ -1,7 +1,10 @@
 <template>
     <div>
         <Header style="margin-bottom: 20px" title="Doctores" />
-        <Card class="shadow shadow-lg rounded">
+
+        <TransitionGroup name="fade">
+            <loader v-if="isLoading" key="load" />
+            <Card class="shadow shadow-lg rounded" v-else key="content">
             <template #header>
                 <div class="header">
                     <h4 class="d-flex w-100">Registro de doctores</h4>
@@ -207,6 +210,7 @@
                 <Toast />
             </template>
         </Card>
+        </TransitionGroup>
     </div>
 </template>
 
@@ -218,7 +222,7 @@ import Dropdown from 'primevue/dropdown';
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, minLength, maxLength } from '@vuelidate/validators'
-import { words, errorMessage, acceptedFormatsForImages } from "@/utils/regex"
+import { errorMessage, newregex } from "@/utils/regex"
 import RadioButton from 'primevue/radiobutton';
 import InputMask from 'primevue/inputmask';
 import { decrypt, encrypt } from '@/config/security';
@@ -230,6 +234,7 @@ import FileUpload from 'primevue/fileupload';
 import Header from '@/components/Header.vue';
 import { onError, onSuccess } from '@/kernel/alerts';
 import utils from "@/kernel/utils";
+import Loader from '@/components/loader.vue';
 
 export default {
     name: 'SaveDoctor',
@@ -242,7 +247,8 @@ export default {
         Dropdown,
         Toast,
         FileUpload,
-        Header
+        Header,
+        Loader
     },
     setup() {
         const doctor = reactive({
@@ -259,16 +265,16 @@ export default {
         const rules = {
             name: {
                 required: helpers.withMessage("Debes agregar un nombre", required),
-                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
+                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El nombre debe de contener al menos 3 caracteres", minLength(3))
             },
             lastname: {
-                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
+                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
             surname: {
                 required: helpers.withMessage("Debes agregar un apellido", required),
-                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => words.test(value)),
+                onlyLettersAndAccents: helpers.withMessage(errorMessage, (value) => newregex.test(value)),
                 minLength: helpers.withMessage("El apellido debe de contener al menos 3 caracteres", minLength(3))
             },
             birthDate: {
@@ -300,6 +306,7 @@ export default {
         return {
             isLoading: false,
             selectedGender: null,
+            isLoading: false,
             gneres: [
                 {
                     id: 'Femenino',
@@ -332,14 +339,17 @@ export default {
 
         async getSpecialities() {
             try {
+                this.isLoading = true;
                 const { status, data } = await specialityServices.getSpecialities(this.pageable)
                 if (status === 200 || status === 201) {
                     const decripted = await decrypt(data.result)
                     const { content } = JSON.parse(decripted)
                     this.specialitys = content
+                    this.isLoading = false;
                 } else {
                     const message = utils.getErrorMessages(data.text)
                     await onError('Error', message).then(() => { })
+                    this.isLoading = false;
                 }
             } catch (error) { }
 
@@ -388,7 +398,7 @@ export default {
 
             try {
                 const encoded = await encrypt(JSON.stringify(newData));
-                const { status, data } = await service.save_doctor(encoded)
+                const { status, response: {data} } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
                     onSuccess("¡Éxito!", "¡Doctor guardado exitosamente")
                     setTimeout(() => {

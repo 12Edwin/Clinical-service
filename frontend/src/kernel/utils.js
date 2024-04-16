@@ -71,6 +71,9 @@ const getErrorMessages = (errorCode) => {
         "Nombre inválido" : "Nombre inválido",
         "Apellido inválido" : "Apellido inválido",
         "Sexo inválido" : "Sexo inválido",
+        "Type pathology already exists": "La patología ya existe",
+        "Space already exists": "El espacio ya existe",
+        "code already exists": "El código ya existe"
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }
