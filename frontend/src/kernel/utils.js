@@ -71,6 +71,7 @@ const getErrorMessages = (errorCode) => {
         "Service is used" : "El servicio está en uso",
         "Space already exists" : "El espacio ya existe",
         "Unregistered space" : "Espacio no registrado",
+        "Type pathology already exists" : "Tipo de patología ya existe",
         
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
