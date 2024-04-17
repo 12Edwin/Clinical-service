@@ -159,8 +159,8 @@ export default {
     methods: {
         closeModal() {
             this.$emit("update:visible", false);
-            const oldPathology = JSON.parse(this.pathology);
-            this.newPathology.id;
+            const oldPathology = JSON.parse(this.pathology)
+            this.newPathology.id = oldPathology.id
             this.newPathology.name = oldPathology.name
             this.newPathology.description = oldPathology.description
             this.v$.$reset();

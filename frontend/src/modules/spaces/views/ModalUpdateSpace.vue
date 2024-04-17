@@ -159,9 +159,9 @@ export default {
     },
     methods: {
         closeModal() {
-            this.$emit("update:visible", false);
-            const oldSpace = JSON.parse(this.space);
-            this.newSpace.id;
+            this.$emit("update:visible", false)
+            const oldSpace = JSON.parse(this.space)
+            this.newSpace.id = oldSpace.id;
             this.newSpace.name = oldSpace.name
             this.v$.$reset();
         },

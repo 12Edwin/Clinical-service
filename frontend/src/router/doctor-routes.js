@@ -16,7 +16,6 @@ export default [
                 return c("router-view")
             }
         },
-        meta: { title: ""},
         children:[
             {
                 path: '',

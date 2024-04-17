@@ -222,15 +222,15 @@ export default {
         closeModal() {
             this.$emit('update:visible', false);
             const oldDoctor = JSON.parse(this.doctor)
-            this.newDoctor.id
+            this.newDoctor.id = oldDoctor.id
             this.newDoctor.name = oldDoctor.name
             this.newDoctor.lastname = oldDoctor.lastname
             this.newDoctor.surname = oldDoctor.surname
-            this.newDoctor.phone = oldDoctor.phone,
-                this.newDoctor.sex = oldDoctor.sex,
-                this.newDoctor.birthday = oldDoctor.birthday,
-                this.newDoctor.speciality_id = oldDoctor.speciality_id,
-                this.v$.$reset()
+            this.newDoctor.phone = oldDoctor.phone
+            this.newDoctor.sex = oldDoctor.sex
+            this.newDoctor.birthday = oldDoctor.birthday
+            this.newDoctor.speciality_id = oldDoctor.speciality_id
+            this.v$.$reset()
         },
         disableButton() {
             if (!this.v$.name.$dirty && !this.v$.surname.$dirty && !this.v$.lastname.$dirty && !this.v$.phone.$dirty) {

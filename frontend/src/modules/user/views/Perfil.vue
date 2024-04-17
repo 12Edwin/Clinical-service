@@ -273,7 +273,7 @@ export default {
       },
       phone: {
         required: helpers.withMessage("Campo obligatorio", required),
-        isPhoneNumber: helpers.withMessage("Número de teléfono no válido", (value) => phoneRegex.test(value.toString())),
+        isPhoneNumber: helpers.withMessage("Número de teléfono no válido", (value) => phoneRegex.test(value)),
       }
     }
 
