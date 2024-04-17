@@ -75,7 +75,7 @@ import Textarea from "primevue/textarea"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength} from '@vuelidate/validators'
-import { text, words, backRegex } from "@/utils/regex"
+import { backRegex } from "@/utils/regex"
 import Toast from 'primevue/toast';
 import specialitiesServices from "@/modules/speciality/services/speciality-services"
 import { encrypt } from '@/config/security';

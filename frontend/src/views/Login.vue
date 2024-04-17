@@ -159,6 +159,8 @@ export default {
       let { data: { result }, status } = await services.captcha(encoded)
       if (status === 200 || status === 201) {
         this.captchaToken = result
+      }else{
+        onError("Error", "Captcha no válido")
       }
     },
     setTypeInput(t) {

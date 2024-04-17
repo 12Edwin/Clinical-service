@@ -227,7 +227,6 @@ import RadioButton from 'primevue/radiobutton';
 import InputMask from 'primevue/inputmask';
 import { decrypt, encrypt } from '@/config/security';
 import service from '@/modules/doctor/services/doctor-service';
-import InputText from 'primevue/inputtext/InputText';
 import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
@@ -306,7 +305,6 @@ export default {
         return {
             isLoading: false,
             selectedGender: null,
-            isLoading: false,
             gneres: [
                 {
                     id: 'Femenino',
