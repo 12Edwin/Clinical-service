@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface SpecialityRepository extends JpaRepository<Speciality, Long> {
 
     Optional<Speciality> findByName(String name);
+
+    Optional<Speciality> findFirstByNameAndIdNot(String name, Long id);
     boolean existsByName(String name);
 
     @Modifying

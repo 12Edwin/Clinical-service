@@ -1,18 +1,36 @@
+import { decrypt } from "@/config/security"
 import jwtDecode from "jwt-decode"
 
-const getRoleNameBytoken = () => {
-    const { role : {name}} = jwtDecode(localStorage.getItem("token"))
+const getRoleNameBytoken = async () => {
+   try {
+    const tokenDecrypted = await decrypt(getToken());
+    const { role : {name}} = jwtDecode(tokenDecrypted)
     return name
+   } catch (error) {
+        removeToken()
+   }
 }
 
-export const getNamesByToken = () => {
-    const { name } = jwtDecode(localStorage.getItem("token"))
-    return name
+export const getNamesByToken = async () => {
+    try {
+        const decrypted = await decrypt(getToken());
+        const { name } = jwtDecode(decrypted)
+        return name
+    } catch (error) {
+        removeToken()
+    }
 }
 
-export const getUserIdByToken = () => {
-    const { user_id } = jwtDecode(localStorage.getItem("token"))
-    return user_id
+export const getUserIdByToken = async () => {
+
+    try {
+        const decrypted = await decrypt(getToken());
+        const { user_id } = jwtDecode(decrypted)
+        return user_id
+    } catch (error) {
+        removeToken()
+    }
+    
 }
 
 const getToken = () => {
@@ -33,9 +51,14 @@ async function encodeBase64(file) {
     });
 }
 
-const getUserInfoByToken =() => {
-    return jwtDecode(localStorage.getItem("token"))
+const getUserInfoByToken = async () => {
+    try {
+        return jwtDecode(await decrypt(getToken()))
+    } catch (error) {
+        removeToken()
+    }
 }
+
 
 const limitDescription = (description) => {
     const words = description.split(' ');
@@ -65,6 +88,18 @@ const getErrorMessages = (errorCode) => {
         "Speciality not deleted" : "La especialidad no se pudo eliminar",
         "Duplicated speciality" : "Esta especialidad ya existe",
         "Speciality not updated" : "La especialidad no se pudo actualizar",
+        "Duplicated service" : "Este servicio ya existe",
+        "Speciality not found" : "Especialidad no encontrada",
+        "Service is used" : "El servicio está en uso",
+        "Space already exists" : "El espacio ya existe",
+        "Unregistered space" : "Espacio no registrado",
+        "Type pathology already exists" : "Tipo de patología ya existe",
+        "Nombre inválido" : "Nombre inválido",
+        "Apellido inválido" : "Apellido inválido",
+        "Sexo inválido" : "Sexo inválido",
+        "code already exists": "El código ya existe",
+        "Space is used": "El espacio está en uso",
+        "Type pathology is used" : "Patología está en uso",
     };
     return errorMessages[errorCode] || 'Ocurrió un error desconocido en el servidor';
 }

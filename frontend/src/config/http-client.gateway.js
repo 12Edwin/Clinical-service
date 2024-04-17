@@ -1,19 +1,20 @@
 import router from "@/router";
 import axios from "axios";
 import {onError} from "@/kernel/alerts";
-const SERVER_URL = "http://localhost:8080/api"
+
+const SERVER_URL = process.env.VUE_APP_BASE_URL
 const AxiosClient = axios.create({
     baseURL: SERVER_URL,
     timeout: 3000
 })
 
 export const getServerUrl = () => {
-    return SERVER_URL
+    return  process.env.VUE_APP_BASE_URL
 }
 AxiosClient.interceptors.request.use(
     function(config){
         const auth_token = localStorage.getItem('token')
-        if(auth_token !== undefined){
+        if(auth_token !== undefined && auth_token !== null && auth_token !== ""){
             if(!config.url.includes('auth')){
                 config.headers.Authorization = `Bearer ${auth_token}`
             }

@@ -230,7 +230,6 @@ export default {
     handleScroll(evt) {
       const welcomeHeading = document.querySelector('.welcome-heading');
       const welcomeText = document.querySelector('.welcome-text');
-      console.log(evt)
       const boundingHeading = welcomeHeading.getBoundingClientRect();
       const boundingText = welcomeText.getBoundingClientRect();
       if (boundingHeading.top >= 0 && boundingHeading.bottom <= window.innerHeight ||

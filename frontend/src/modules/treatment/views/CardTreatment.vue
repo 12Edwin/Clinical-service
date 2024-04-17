@@ -152,7 +152,7 @@ export default {
   
   computed: {
     calcProgress() {
-      return this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length / this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length * 100
+      return +(this.treatments[this.selected].appoints.filter(appoint => appoint.status === 'Completada').length / this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length * 100)
     },
     calcTotalAppoints() {
       return this.treatments[this.selected].appoints.filter(appoint => appoint.status !== 'Cancelada').length

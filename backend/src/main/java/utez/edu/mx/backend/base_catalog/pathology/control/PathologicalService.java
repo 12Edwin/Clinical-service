@@ -131,7 +131,9 @@ public class PathologicalService {
         if (!typePathologicalRepository.existsById(pathology.getId())){
             return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-
+        if (typePathologicalRepository.findFirstByNameAndIdNot(pathology.getName(), pathology.getId()).isPresent()){
+            return new ResponseEntity<>(new Message("Type pathology already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        }
         TypePathological result = typePathologicalRepository.saveAndFlush(pathology);
         if (typePathologicalRepository.findByName(result.getName()).isPresent()){
             return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);

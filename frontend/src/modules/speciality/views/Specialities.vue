@@ -92,7 +92,7 @@ import Toast from 'primevue/toast';
 import ModalDetailSpeciality from './ModalDetailSpeciality.vue';
 import Header from '@/components/Header.vue';
 import NotFound from '@/components/NotFound.vue';
-import { onError } from '@/kernel/alerts';
+import { onError, onSuccess } from '@/kernel/alerts';
 import Loader from "@/components/loader.vue";
 export default {
     components: {
@@ -137,12 +137,21 @@ export default {
                 accept: async () => {
                     try {
                         const encodedId = await encrypt(especialityId)
-                        const { status } = await specialitiesServices.deleteSpeciality(encodedId)
+                        this.isLoading = true
+                        const { status, data: {text} } = await specialitiesServices.deleteSpeciality(encodedId)
                         if (status === 200 || status === 201) {
                             this.pagination()
-                            this.$toast.add({ severity: 'success', summary: 'Éxito', detail: 'Especialidad eliminada correctamente', life: 3000 });
+                           onSuccess('Éxito', 'Especialidad eliminada correctamente')
+                        }
+
+                        if(status === 400){
+                            const message = utils.getErrorMessages(text)
+                            await onError('Error', message).then(() => { 
+                                this.$confirm.close();
+                             })
                         }
                     } catch (error) { }
+                    this.isLoading = false
                 },
                 reject: () => { }
             });
@@ -168,21 +177,18 @@ export default {
                 this.isLoading = true
                 const { status, data: { result, text } } = await specialitiesServices.getSpecialities(this.pageable)
                 if (status === 200 || status === 201) {
-                    this.isLoading = false
                     const decripted = await decrypt(result)
                     const { content, totalElements } = JSON.parse(decripted)
                     this.totalRecords = totalElements
                     this.specialities = content
                 } else {
-                    this.isLoading = false
                     const message = utils.getErrorMessages(text)
-                    onError('Error', message).then(() => { })
+                    await onError('Error', message).then(() => { })
                 }
             } catch (error) {
-                this.isLoading = false
                 onError('Error', 'Ha ocurrido un error inesperado').then(() => { })
             }
-
+            this.isLoading = false
         },
         limitDescription(description) {
             return utils.limitDescription(description)

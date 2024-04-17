@@ -165,9 +165,6 @@ export default {
         this.isLoading = true
         const encrypted = this.$route.params.idExpedient
         const id = await decrypt(encrypted)
-        if (isNaN(id)) {
-          this.$router.replace({name: '404'})
-        }
         const {status, data} = await getExpedient(id)
         if (status !== 200 && status !== 401 && status !== 500) {
           let message = 'Error al obtener el expediente'
@@ -185,9 +182,7 @@ export default {
         if (status === 200) {
           this.expedient = JSON.parse(await decrypt(data.result))
         }
-      } catch (e) {
-        this.$router.replace({name: '404'})
-      }
+      } catch (e) {}
       this.isLoading = false
     },
 

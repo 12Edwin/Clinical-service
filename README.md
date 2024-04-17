@@ -1,3 +1,10 @@
+**Clinical-Service**
+
+1.  Primeramente crear la base de datos con nombre clinic
+2.  Asegurarse de las credenciales en el propperties del back, que sean correspondientes a la de su administrador de postrgres versión 15
+3.  Ejecutar el proyecto de spring rectificar el JDK en la versión 17 **NOTA: La versión de spring especificada en el poom.xml es la 2.7.10**
+4.  Ejecutar el siguiente extracto sql:
+
 DROP table if exists view_doctors;
 Drop table if exists view_expedients;
 Drop table if exists view_appoint_patient;
@@ -62,60 +69,6 @@ CREATE OR REPLACE TRIGGER generate_noExpedient
 BEFORE INSERT ON expedients
 FOR EACH ROW
 EXECUTE PROCEDURE generate_noExpedient();
--- 
---
--- CREATE USER clinical_user WITH PASSWORD 'admin';
--- drop user clincal_user;
--- GRANT ALL PRIVILEGES ON DATABASE clinic TO clincal_user;
---
--- CREATE OR REPLACE FUNCTION grant_permissions_to_clinical_user() RETURNS VOID AS $$
--- DECLARE
---     tbl_name text;
--- BEGIN
---     FOR tbl_name IN (SELECT table_schema || '.' || table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema'))
---     LOOP
---         EXECUTE format('GRANT SELECT, UPDATE, INSERT, DELETE ON %s TO clinical_user', tbl_name);
---     END LOOP;
--- END;
--- $$ LANGUAGE plpgsql;
---
--- SELECT grant_permissions_to_clinical_user();
---
--- ALTER USER clinical_user CONNECTION LIMIT 2;
---
--- CREATE TABLE bitacora (
---     id SERIAL PRIMARY KEY,
---     tabla TEXT NOT NULL,
---     operacion TEXT NOT NULL,
---     usuario TEXT NOT NULL,
---     fecha_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
---     datos_antiguos TEXT,
---     datos_nuevos TEXT
--- );
---
--- CREATE OR REPLACE FUNCTION audit() RETURNS TRIGGER AS $$
--- BEGIN
---     IF (TG_OP = 'DELETE') THEN
---         INSERT INTO bitacora (tabla, operacion, usuario, datos_antiguos)
---         VALUES (TG_TABLE_NAME, 'DELETE', current_user, OLD::text);
---         RETURN OLD;
---     ELSIF (TG_OP = 'UPDATE') THEN
---         INSERT INTO bitacora (tabla, operacion, usuario, datos_antiguos, datos_nuevos)
---         VALUES (TG_TABLE_NAME, 'UPDATE', current_user, OLD::text, NEW::text);
---         RETURN NEW;
---     ELSIF (TG_OP = 'INSERT') THEN
---         INSERT INTO bitacora (tabla, operacion, usuario, datos_nuevos)
---         VALUES (TG_TABLE_NAME, 'INSERT', current_user, NEW::text);
---         RETURN NEW;
---     END IF;
---     RETURN NULL;
--- END;
--- $$ LANGUAGE plpgsql;
---
--- CREATE TRIGGER roles_audit
--- AFTER INSERT OR UPDATE OR DELETE ON roles
--- FOR EACH ROW EXECUTE PROCEDURE audit();
---
--- GRANT USAGE, SELECT ON SEQUENCE bitacora_id_seq TO clinical_user;
---
--- create database clinic;
+
+
+5.  Ejecutar nuevamente la instancia de backend

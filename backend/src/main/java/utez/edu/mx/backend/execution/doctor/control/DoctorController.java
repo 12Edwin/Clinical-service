@@ -32,8 +32,21 @@ public class DoctorController {
     private final ObjectMapper objectMapper;
     private final CustomRestExceptionHandler<ViewDoctors> exceptionHandler;
 
+
     @GetMapping("/")
     ResponseEntity<Object> findAllDoctors (Pageable pageable) {
+        try {
+            return service.findAllDoctors(pageable);
+        }catch (JsonProcessingException ex) {
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedEncodingException ex){
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('DOCTORS')")
+    @GetMapping("/all/")
+    ResponseEntity<Object> findAllDoctorsForAdmin (Pageable pageable) {
         try {
             return service.findAllDoctors(pageable);
         }catch (JsonProcessingException ex) {
