@@ -89,7 +89,7 @@
                                 <span class="p-float-label p-input-icon-right"
                                     :class="{ 'invalid-field-custom': v$.birthDate.$error }">
                                     <i class="pi pi-calendar" />
-                                    <Calendar id="field-birthdate" :maxDate="getNewDate()" v-model="v$.birthDate.$model"
+                                    <Calendar id="field-birthdate" :maxDate="getMaxDate()" :minDate="getMinDate()" v-model="v$.birthDate.$model"
                                         dateFormat="dd-mm-yy" style="cursor: pointer;" :manualInput="false" />
                                     <label for="field-birthdate" class="form-label-required">Fecha de nacimiento</label>
                                 </span>
@@ -232,7 +232,7 @@ import Toast from 'primevue/toast';
 import specialityServices from '@/modules/speciality/services/speciality-services';
 import FileUpload from 'primevue/fileupload';
 import Header from '@/components/Header.vue';
-import { onError, onSuccess } from '@/kernel/alerts';
+import { onError, onQuestion, onSuccess } from '@/kernel/alerts';
 import utils from "@/kernel/utils";
 import Loader from '@/components/loader.vue';
 
@@ -330,9 +330,16 @@ export default {
         this.getSpecialities();
     },
     methods: {
-        getNewDate() {
+        getMaxDate() {
             const today = new Date();
             const year = today.getFullYear() - 18;
+            const newDate = new Date(year, 11, 31);
+            return newDate;
+        },
+
+        getMinDate(){
+            const today = new Date();
+            const year = today.getFullYear() - 100;
             const newDate = new Date(year, 11, 31);
             return newDate;
         },
@@ -379,6 +386,7 @@ export default {
         },
 
         async saveDoctor() {
+           if(await onQuestion('Guardar doctor', '¿Está seguro de guardar al doctor?')){
             let pass = "DOC" + this.doctor.name;
             let selectedGender = this.doctor.sex.value;
             let selectedSpeciality = this.doctor.speciality.id;
@@ -398,7 +406,7 @@ export default {
 
             try {
                 const encoded = await encrypt(JSON.stringify(newData));
-                const { status, response: {data} } = await service.save_doctor(encoded)
+                const { status, data } = await service.save_doctor(encoded)
                 if (status === 200 || status === 201) {
                     onSuccess("¡Éxito!", "¡Doctor guardado exitosamente")
                     setTimeout(() => {
@@ -411,6 +419,7 @@ export default {
             } catch (error) {
                 onError("¡Error!")
             }
+           }
         },
 
         formatDate(dateString) {

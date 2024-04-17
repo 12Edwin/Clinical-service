@@ -87,7 +87,7 @@
                         <b-col cols="1" :style="{ marginTop: '20px' }">
                             <small>Registros: </small> {{ totalRecords }}
                         </b-col>
-                        <Paginator :rows="2" :totalRecords="totalRecords" :rowsPerPageOptions="[2, 3, 5, 10, 15]"
+                        <Paginator :rows="2" :totalRecords="totalRecords" :rowsPerPageOptions="[2, 3, 5, 10, 15, 20, 30, 100]"
                             :currentPage="totalRecords > 0 ? pageable.page : 0"
                             :first="0" :pageLinkSize="1" :style="{ marginTop: '20px' }" @page="getDoctors($event)" />
                     </div>
@@ -113,7 +113,7 @@ import service from '../services/doctor-service'
 import { decrypt, encrypt } from '@/config/security';
 import ModalUpdateVue from './ModalUpdate.vue'
 import Header from '@/components/Header.vue';
-import { onError } from "@/kernel/alerts";
+import { onError, onQuestion } from "@/kernel/alerts";
 import utils from "@/kernel/utils";
 import Loader from '@/components/loader.vue';
 
@@ -181,15 +181,9 @@ export default {
             }
             this.loading = false
         },
-        deleteDoctor(doctorId) {
-            this.$confirm.require({
-                message: '¿Está seguro de actualizar la disponibilidad este Doctor?',
-                header: 'Confirmación',
-                icon: 'pi pi-info-circle',
-                acceptLabel: 'Sí',
-                acceptClass: 'p-button-danger',
-                accept: async () => {
-                    try {
+        async deleteDoctor(doctorId) {
+            if(await onQuestion('Cambio de disponibilidad', '¿Estas seguro de actualizar el estatus del doctor?')){
+                try {
                         const encodedId = await encrypt(doctorId)
                         const { status, data } = await service.deleteDoctor(encodedId)
                         if (status === 200 || status === 201) {
@@ -200,9 +194,7 @@ export default {
                             await onError('Ha ocurrido un error', message);
                         }
                     } catch (error) { }
-                },
-                reject: () => { }
-            });
+            }
         },
         openModalUpdate(doctor) {
             this.displayUpdateModal = true;
