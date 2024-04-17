@@ -14,6 +14,7 @@ import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -52,9 +53,9 @@ public class UserController {
 
             return service.recover(session);
         } catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -73,24 +74,24 @@ public class UserController {
 
             return service.verifyCode(session);
         } catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/profile/{str_id}")
     public ResponseEntity<Object> getProfile(@RequestHeader("Authorization") String str_token, @PathVariable String str_id) {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_id);
             Long id = Long.parseLong(decrypt);
             return service.findProfile(id, idUser);
         } catch (UnsupportedEncodingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -98,7 +99,7 @@ public class UserController {
     @PutMapping("/profile/")
     public ResponseEntity<Object> updateProfile(@RequestHeader("Authorization") String str_token, @RequestBody String str_profile) {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_profile);
             UserDto profile = mapper.readValue(decrypt, UserDto.class);
@@ -118,20 +119,20 @@ public class UserController {
 
             return service.updateProfile(profile, idUser);
         } catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/upload/")
     public ResponseEntity<Object> uploadProfilePicture(@RequestHeader("Authorization") String str_token, @RequestParam("profile") MultipartFile file) {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             return service.uploadProfilePicture(idUser, file);
         } catch (UnsupportedEncodingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -142,8 +143,12 @@ public class UserController {
             Long id = Long.parseLong(decrypt);
             return service.getProfilePicture(id);
         } catch (UnsupportedEncodingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private static String getToken(String str_token) {
+        return str_token.replace("Bearer ", "");
     }
 
 }

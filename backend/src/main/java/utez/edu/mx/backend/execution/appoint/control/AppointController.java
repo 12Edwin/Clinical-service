@@ -12,6 +12,7 @@ import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -50,11 +51,11 @@ public class AppointController {
 
             return service.findByDate(appoint.cast());
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -62,14 +63,14 @@ public class AppointController {
     @GetMapping("/{str_id}")
     ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String id = cryptService.decrypt(str_id);
             return service.findById(Long.valueOf(id), idUser);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -77,7 +78,7 @@ public class AppointController {
     @PostMapping("/")
     ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -93,11 +94,11 @@ public class AppointController {
 
             return service.save(appoint.cast(), idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -105,7 +106,7 @@ public class AppointController {
     @PutMapping("/")
     ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -119,11 +120,11 @@ public class AppointController {
 
             return service.update(appoint.cast(), idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -131,7 +132,7 @@ public class AppointController {
     @PostMapping("/reschedule/")
     ResponseEntity<Object> reschedule (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -145,11 +146,11 @@ public class AppointController {
 
             return service.reschedule(appoint.cast(), idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -157,7 +158,7 @@ public class AppointController {
     @PostMapping("/complete/")
     ResponseEntity<Object> complete (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -171,11 +172,11 @@ public class AppointController {
 
             return service.complete(appoint.cast(), idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -183,7 +184,7 @@ public class AppointController {
     @PostMapping("/cancel/")
     ResponseEntity<Object> cancel (@RequestHeader("Authorization") String str_token, @RequestBody String str_appoint) throws IllegalArgumentException{
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_appoint);
             DtoAppoint appoint = mapper.readValue(decrypt, DtoAppoint.class);
@@ -197,11 +198,11 @@ public class AppointController {
 
             return service.cancel(appoint.cast(), idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (ParseException ex){
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Invalid format dates"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.INVALID_FORMAT_DATES.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -209,14 +210,18 @@ public class AppointController {
     @GetMapping("/space/{str_id}")
     ResponseEntity<Object> findBySpace (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id){
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String id = cryptService.decrypt(str_id);
             return service.findBySpace(Long.valueOf(id), idUser);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    private static String getToken(String str_token) {
+        return str_token.replace("Bearer ", "");
     }
 }

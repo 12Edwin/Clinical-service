@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
 import java.io.UnsupportedEncodingException;
@@ -36,7 +37,7 @@ public class SmsService {
                             "CLINICAL-SERVICE\nYour recovery code is: "+ code)
                     .create();
 
-            return new ResponseEntity<>( new utez.edu.mx.backend.utils.entity.Message(message.getStatus(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK) ;
+            return new ResponseEntity<>( new utez.edu.mx.backend.utils.entity.Message(message.getStatus(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK) ;
         }catch (Exception e){
             if (e.getMessage().contains("unverified")){
                 return new ResponseEntity<>(new utez.edu.mx.backend.utils.entity.Message("Phone not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
