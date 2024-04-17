@@ -1,3 +1,6 @@
+DROP table if exists view_doctors;
+Drop table if exists view_expedients;
+Drop table if exists view_appoint_patient;
 
 create or replace view view_doctors as select
                 us.id, concat(pe.name, ' ', pe.surname, ' ', pe.lastname) as fullname,

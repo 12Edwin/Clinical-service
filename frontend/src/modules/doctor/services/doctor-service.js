@@ -27,7 +27,7 @@ const save_doctor = async (data) => {
         })
         return response;
     } catch (error) {
-        return error;
+        return error.response;
     }
 }
 
