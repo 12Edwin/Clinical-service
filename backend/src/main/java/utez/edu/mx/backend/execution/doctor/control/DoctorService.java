@@ -23,6 +23,7 @@ import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.execution.doctor.model.DoctorRepository;
 import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -47,24 +48,24 @@ public class DoctorService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findDoctor(Long id) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<ViewDoctors> doctor = viewRepository.findById(id);
         if (doctor.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new Message(doctor.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(doctor.get(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findAllDoctors(Pageable pageable) throws JsonProcessingException, UnsupportedEncodingException {
-        return new ResponseEntity<> ( new Message(viewRepository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(viewRepository.findAll(pageable), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
     public ResponseEntity<Object> saveDoctor(ViewDoctors doctor) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
 
         if (doctor.getSpeciality_id() <= 0  || doctor.getCode() == null || doctor.getPassword() == null)
-            throw new IllegalArgumentException("missing fields");
+            throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
 
         if (userRepository.existsByCode(doctor.getCode())){
             return new ResponseEntity<>(new Message("code already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -94,14 +95,14 @@ public class DoctorService {
     @Transactional(value = "transactionManager", propagation = Propagation.REQUIRES_NEW, rollbackFor = {SQLException.class})
     public ResponseEntity<Object> updateDoctor(ViewDoctors doctor) throws IllegalArgumentException {
 
-        if (doctor.getSpeciality_id() <= 0) throw new IllegalArgumentException("missing fields");
+        if (doctor.getSpeciality_id() <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<Role> role = roleService.findByName(RoleTypes.DOCTOR);
         if (role.isEmpty()) return new ResponseEntity<>(new Message("invalid role", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         Optional<Speciality> speciality = specialityService.findById((long) doctor.getSpeciality_id());
         if (speciality.isEmpty()) return new ResponseEntity<>(new Message("invalid speciality", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         Optional<User> user = userService.findById(doctor.getId());
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("user not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Person> person = personService.findById(user.get().getPerson().getId());
         if (person.isEmpty()){

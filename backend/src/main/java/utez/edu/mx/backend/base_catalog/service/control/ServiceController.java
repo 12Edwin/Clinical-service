@@ -13,6 +13,7 @@ import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -40,9 +41,9 @@ public class ServiceController {
         try {
             return serv.findAll(pageable);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -51,9 +52,9 @@ public class ServiceController {
         try {
             return serv.findAll(pageable);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -64,9 +65,9 @@ public class ServiceController {
             Long idUser = provider.getUserId(token);
             return serv.findServices(idUser);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -76,9 +77,9 @@ public class ServiceController {
             String id = cryptService.decrypt(str_id);
             return serv.findById(Long.valueOf(id));
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -98,9 +99,9 @@ public class ServiceController {
 
             return serv.save(service.cast());
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -120,9 +121,9 @@ public class ServiceController {
 
             return serv.update(service.cast());
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -133,7 +134,7 @@ public class ServiceController {
             String id = cryptService.decrypt(str_id);
             return serv.delete(Long.valueOf(id));
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 }

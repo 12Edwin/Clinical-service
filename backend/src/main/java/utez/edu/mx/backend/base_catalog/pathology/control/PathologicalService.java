@@ -13,6 +13,7 @@ import utez.edu.mx.backend.base_catalog.pathology.model.TypePathological;
 import utez.edu.mx.backend.base_catalog.pathology.model.TypePathologicalRepository;
 import utez.edu.mx.backend.execution.expedient.model.Expedient;
 import utez.edu.mx.backend.execution.expedient.model.ExpedientRepository;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -38,31 +39,31 @@ public class PathologicalService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findAllPathologies(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
-        return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(repository.findAll(pageable), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findAllTypes(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
-        return new ResponseEntity<> ( new Message(typePathologicalRepository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(typePathologicalRepository.findAll(pageable), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findPathologyById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<Pathological_record> pathology = repository.findById(id);
         if (pathology.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new Message(pathology.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(pathology.get(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findTypeById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<TypePathological> pathology = typePathologicalRepository.findById(id);
         if (pathology.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new Message(pathology.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(pathology.get(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
@@ -82,7 +83,7 @@ public class PathologicalService {
 
         Pathological_record result = repository.save(pathology);
         if (repository.findByName(result.getName()).isPresent()){
-            return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Unregistered pathology", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -97,7 +98,7 @@ public class PathologicalService {
 
         TypePathological result = typePathologicalRepository.save(pathology);
         if (typePathologicalRepository.findByName(result.getName()).isPresent()){
-            return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Unregistered type pathology", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -106,7 +107,7 @@ public class PathologicalService {
     public ResponseEntity<Object> updatePathology(Pathological_record pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null || pathology.getExpedient().getId() <= 0 || pathology.getTypePathological().getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(pathology.getId())){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Expedient> expedient = expedientRepository.findById(pathology.getExpedient().getId());
         if (expedient.isEmpty()){
@@ -120,7 +121,7 @@ public class PathologicalService {
         pathology.setTypePathological(type.get());
         Pathological_record result = repository.saveAndFlush(pathology);
         if (repository.findByName(result.getName()).isPresent()){
-            return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Pathology not updated", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -129,14 +130,14 @@ public class PathologicalService {
     public ResponseEntity<Object> updateType(TypePathological pathology) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (pathology.getName() == null || pathology.getDescription() == null) throw new IllegalArgumentException();
         if (!typePathologicalRepository.existsById(pathology.getId())){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (typePathologicalRepository.findFirstByNameAndIdNot(pathology.getName(), pathology.getId()).isPresent()){
             return new ResponseEntity<>(new Message("Type pathology already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         TypePathological result = typePathologicalRepository.saveAndFlush(pathology);
         if (typePathologicalRepository.findByName(result.getName()).isPresent()){
-            return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Type pathology not updated", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -146,14 +147,14 @@ public class PathologicalService {
         if (id <= 0) throw new IllegalArgumentException();
         Optional<Pathological_record> pathology = repository.findById(id);
         if (pathology.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
 
         boolean result = repository.deletePathological_recordById(id) == 1;
         if (!result){
             return new ResponseEntity<>(new Message("Pathology not deleted", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new Message( "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message( BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
@@ -161,7 +162,7 @@ public class PathologicalService {
         if (id <= 0) throw new IllegalArgumentException();
         Optional<TypePathological> pathology = typePathologicalRepository.findById(id);
         if (pathology.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!repository.findAllByTypePathological(pathology.get()).isEmpty()){
             return new ResponseEntity<>(new Message("Type pathology is used", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -171,7 +172,7 @@ public class PathologicalService {
         if (!result){
             return new ResponseEntity<>(new Message("Type pathology not deleted", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new Message( "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message( BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})

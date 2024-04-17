@@ -17,6 +17,7 @@ import utez.edu.mx.backend.execution.patient.model.Patient;
 import utez.edu.mx.backend.execution.patient.model.PatientRepository;
 import utez.edu.mx.backend.execution.treatment.model.Treatment;
 import utez.edu.mx.backend.execution.treatment.model.TreatmentRepository;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 import utez.edu.mx.backend.utils.service.EmailService;
@@ -44,39 +45,39 @@ public class AppointService {
         if (appoint.getStartHour() == null || appoint.getEndHour() == null
         ) throw new IllegalArgumentException();
 
-        return new ResponseEntity<>(new Message(repository.findAllByStartHourBetween(appoint.getStartHour(), appoint.getEndHour()), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(repository.findAllByStartHourBetween(appoint.getStartHour(), appoint.getEndHour()), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
     public ResponseEntity<Object> findById(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
-        if (id <= 0) return new ResponseEntity<>(new Message("missing fields", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        if (id <= 0) return new ResponseEntity<>(new Message(BadRequests.MISSING_FIELDS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
 
         Optional<Appoint> appoint = repository.findById(id);
         if (appoint.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(appoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<ViewAppointPatient> result = viewRepositoryAppoint.findById(id);
         if (result.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(new Message( result.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message( result.get(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
@@ -87,37 +88,37 @@ public class AppointService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(appoint.getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Space> space = spaceRepository.findById(appoint.getSpace().getId());
         if (space.isEmpty()){
-            return new ResponseEntity<>(new Message("Space not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.SPACE_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         long millis = Math.abs(appoint.getEndHour().getTime() - appoint.getStartHour().getTime());
         long hours = millis / (60 * 60 * 1000);
         if (hours > 5){
-            return new ResponseEntity<>(new Message("Maximum 5 hours", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MAXIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (hours < 1){
-            return new ResponseEntity<>(new Message("Minimum 1 hour", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MINIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (appoint.getStartHour().before(new Date()) || appoint.getEndHour().before(new Date())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         if (appoint.getStartHour().after(appoint.getEndHour())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -125,12 +126,12 @@ public class AppointService {
         Date oneMonthFromNow = calendar.getTime();
 
         if (appoint.getStartHour().after(oneMonthFromNow)) {
-            return new ResponseEntity<>(new Message("Cannot be more than one month from now", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_AFTER_DATE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         List<Long> busySpaces = repository.findBusySpaces(space.get().getId(), appoint.getStartHour(), appoint.getEndHour(), 0L);
         if (!busySpaces.isEmpty()){
-            return new ResponseEntity<>(new Message("The space is busy in this schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.BUSY_SPACE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         appoint.setTreatment(treatment.get());
@@ -167,55 +168,55 @@ public class AppointService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Appoint> optionalAppoint = repository.findById(appoint.getId());
         if (optionalAppoint.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
-            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.CANNOT_UPDATE_APPOINT.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         treatment = treatmentRepository.findById(appoint.getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         Optional<Space> space = spaceRepository.findById(appoint.getSpace().getId());
         if (space.isEmpty()){
-            return new ResponseEntity<>(new Message("Space not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.SPACE_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         long millis = Math.abs(appoint.getEndHour().getTime() - appoint.getStartHour().getTime());
         long hours = millis / (60 * 60 * 1000);
         if (hours > 5){
-            return new ResponseEntity<>(new Message("Maximum 5 hours", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MAXIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (hours < 1){
-            return new ResponseEntity<>(new Message("Minimum 1 hour", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MINIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (appoint.getStartHour().before(new Date()) || appoint.getEndHour().before(new Date())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         if (appoint.getStartHour().after(appoint.getEndHour())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -223,12 +224,12 @@ public class AppointService {
         Date oneMonthFromNow = calendar.getTime();
 
         if (appoint.getStartHour().after(oneMonthFromNow)) {
-            return new ResponseEntity<>(new Message("Cannot be more than one month from now", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_AFTER_DATE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         List<Long> busySpaces = repository.findBusySpaces(space.get().getId(), appoint.getStartHour(), appoint.getEndHour(), appoint.getId());
         if (!busySpaces.isEmpty()){
-            return new ResponseEntity<>(new Message("The space is busy in this schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.BUSY_SPACE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         appoint.setTreatment(treatment.get());
@@ -250,46 +251,46 @@ public class AppointService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Appoint> appoint1 = repository.findById(appoint.getId());
         if (appoint1.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (appoint1.get().getStatus() == StatusAppoint.Cancelada || appoint1.get().getStatus() == StatusAppoint.Completada){
-            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.CANNOT_UPDATE_APPOINT.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(appoint1.get().getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
 
         long millis = Math.abs(appoint.getEndHour().getTime() - appoint.getStartHour().getTime());
         long hours = millis / (60 * 60 * 1000);
         if (hours > 5){
-            return new ResponseEntity<>(new Message("Maximum 5 hours", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MAXIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (hours < 1){
-            return new ResponseEntity<>(new Message("Minimum 1 hour", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.MINIMUM_HOURS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (appoint.getStartHour().before(new Date()) || appoint.getEndHour().before(new Date())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         if (appoint.getStartHour().after(appoint.getEndHour())){
-            return new ResponseEntity<>(new Message("Invalid schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_SCHEDULE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         List<Long> busySpaces = repository.findBusySpaces(appoint1.get().getSpace().getId(), appoint.getStartHour(), appoint.getEndHour(), appoint.getId());
         if (!busySpaces.isEmpty()){
-            return new ResponseEntity<>(new Message("The space is busy in this schedule", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.BUSY_SPACE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -297,7 +298,7 @@ public class AppointService {
         Date oneMonthFromNow = calendar.getTime();
 
         if (appoint.getStartHour().after(oneMonthFromNow)) {
-            return new ResponseEntity<>(new Message("Cannot be more than one month from now", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_AFTER_DATE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         appoint.setStatus(StatusAppoint.Reprogramada);
@@ -316,28 +317,28 @@ public class AppointService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Appoint> optionalAppoint = repository.findById(appoint.getId());
         if (optionalAppoint.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (new Date().before(optionalAppoint.get().getStartHour())) {
             return new ResponseEntity<>(new Message("The appointment has not yet started", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
-            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.CANNOT_UPDATE_APPOINT.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
 
 
@@ -357,25 +358,25 @@ public class AppointService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Appoint> optionalAppoint = repository.findById(appoint.getId());
         if (optionalAppoint.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (optionalAppoint.get().getStatus() == StatusAppoint.Cancelada || optionalAppoint.get().getStatus() == StatusAppoint.Completada){
-            return new ResponseEntity<>(new Message("Cannot update a canceled or completed appointment", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.CANNOT_UPDATE_APPOINT.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Optional<Treatment> treatment = treatmentRepository.findById(optionalAppoint.get().getTreatment().getId());
         if (treatment.isEmpty()){
-            return new ResponseEntity<>(new Message("Treatment not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.TREATMENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Expedient> expedient = expedientRepository.findById(treatment.get().getExpedient().getId());
         if (expedient.isEmpty()){
-            return new ResponseEntity<>(new Message("Expedient not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.EXPEDIENT_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!expedient.get().getPatient().getCreatedBy().getId().equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
 
 
@@ -391,19 +392,19 @@ public class AppointService {
 
     @Transactional
     public ResponseEntity<Object> findBySpace(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
-        if (id <= 0) return new ResponseEntity<>(new Message("missing fields", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+        if (id <= 0) return new ResponseEntity<>(new Message(BadRequests.MISSING_FIELDS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<Space> space = spaceRepository.findById(id);
         if (space.isEmpty()){
-            return new ResponseEntity<>(new Message("Space not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.SPACE_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         List<Patient> patients = patientRepository.findAllByCreatedBy(user.get());
         List<Treatment> treatments = treatmentRepository.findAllByExpedientIn(patients.stream().map(Patient::getExpedient).toList());
-        return new ResponseEntity<>(new Message(repository.findAllBySpaceAndTreatmentIn(space.get(), treatments), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(repository.findAllBySpaceAndTreatmentIn(space.get(), treatments), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 }

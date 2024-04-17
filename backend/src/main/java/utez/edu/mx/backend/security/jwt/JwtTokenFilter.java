@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final static Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
+    private final static Logger log = LoggerFactory.getLogger(JwtTokenFilter.class);
 
     @Autowired
     JwtProvider jwtProvider;
@@ -31,9 +31,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String headers = request.getHeader("Authorization");
-        logger.info(headers);
+        log.info(headers);
         if (headers != null && headers.startsWith("Bearer")) {
-            logger.info(headers.replace("Bearer ", ""));
+            log.info(headers.replace("Bearer ", ""));
             return headers.replace("Bearer ", "");
         }
         return null;

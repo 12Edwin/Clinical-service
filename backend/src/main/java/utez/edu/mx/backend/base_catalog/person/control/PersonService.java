@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.PersonRepository;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -40,7 +41,7 @@ public class PersonService {
                 || Objects.equals(person.getSurname(), "")
                 || person.getPhone() == null
                 || person.getSex() == null || person.getBirthday() == null
-        ) throw new IllegalArgumentException("missing fields");
+        ) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(person.getBirthday());
@@ -66,7 +67,7 @@ public class PersonService {
                 || Objects.equals(person.getName(), "")
                 || Objects.equals(person.getSurname(), "")
                 || person.getSex() == null || person.getBirthday() == null
-        ) throw new IllegalArgumentException("missing fields");
+        ) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(person.getBirthday());

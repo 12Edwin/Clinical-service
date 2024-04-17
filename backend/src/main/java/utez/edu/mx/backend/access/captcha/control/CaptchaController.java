@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import java.io.UnsupportedEncodingException;
 
@@ -24,9 +25,9 @@ public class CaptchaController {
             String solution = cryptService.decrypt(str_solution);
             return service.verify(solution);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 }

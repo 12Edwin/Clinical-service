@@ -23,6 +23,7 @@ import utez.edu.mx.backend.base_catalog.person.model.Person;
 import utez.edu.mx.backend.base_catalog.person.model.PersonRepository;
 import utez.edu.mx.backend.base_catalog.person.model.SexType;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -75,13 +76,13 @@ public class UserService {
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> saveUserDoctor (User user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         if (user.getCode() == null || user.getPassword() == null
-        ) throw new IllegalArgumentException("missing fields");
+        ) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
 
         if (repository.existsByCode(user.getCode())){
-            return new ResponseEntity<>(new Message("code already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.CODE_ALREADY_EXISTS.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (!roleRepository.existsById(user.getRole().getId())){
-            return new ResponseEntity<>(new Message("invalid role", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_ROLE.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (repository.existsByPerson(user.getPerson())){
             return new ResponseEntity<>(new Message("user with this person already exists", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -90,7 +91,7 @@ public class UserService {
         user.setPassword(encoder.encode(user.getPassword()));
         User newUser = repository.saveAndFlush(user);
         if (newUser.getCode() == null){
-            return new ResponseEntity<>(new Message("Unregistered user", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.UNREGISTERED_USER.getText(), TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new Message(newUser, "Registered user", TypeResponse.SUCCESS), HttpStatus.OK);
     }
@@ -98,10 +99,10 @@ public class UserService {
     @Transactional(value = "transactionManager",rollbackFor = {SQLException.class})
     public ResponseEntity<Object> updateUserDoctor (User user) throws IllegalArgumentException {
         if (user.getId() <= 0
-        ) throw new IllegalArgumentException("missing fields");
+        ) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
 
         if (!repository.existsById(user.getId())){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         boolean updatedUser = repository.updateSpeciality(user.getId(), user.getSpeciality().getId()) >= 1;
@@ -115,10 +116,10 @@ public class UserService {
     public ResponseEntity<Object> findProfile(Long id, Long id_user) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<User> userOptional = repository.findById(id);
         if (userOptional.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!id.equals(id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.WARNING), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.WARNING), HttpStatus.FORBIDDEN);
         }
         User user = userOptional.get();
         user.setPassword("");
@@ -126,21 +127,21 @@ public class UserService {
         user.setToken("");
         user.setRole(null);
         user.setImg("/user/image/" + cryptService.encrypt(user.getId().toString()));
-        return new ResponseEntity<>(new Message(user, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(user, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
     public ResponseEntity<Object> updateProfile (UserDto user, Long id_user) throws IllegalArgumentException {
         Optional<User> userOptional = repository.findById(user.getId());
         if (userOptional.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!Objects.equals(user.getId(), id_user)){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.WARNING), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.WARNING), HttpStatus.FORBIDDEN);
         }
         Optional<Person> optionalPerson = personRepository.findById(userOptional.get().getPerson().getId());
         if (optionalPerson.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
 
 
@@ -159,11 +160,11 @@ public class UserService {
         cal.setTime(person.getBirthday());
         cal.set((cal.get(Calendar.YEAR) + 18), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
         if (cal.getTime().after(Calendar.getInstance().getTime())){
-            return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.INVALID_BIRTHDAY.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         if (personRepository.existsByPhoneAndIdNot(person.getPhone(), userOptional.get().getPerson().getId())){
-            return new ResponseEntity<>(new Message("Phone already registered", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.PHONE_ALREADY_REGISTERED.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         personRepository.saveAndFlush(person);
@@ -179,10 +180,10 @@ public class UserService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> lockUser (Long id) throws IllegalArgumentException {
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<User> user = findById(id);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.ERROR), HttpStatus.BAD_REQUEST);
         }
         boolean result = repository.lockUser(id, !user.get().isAvailable()) == 1;
         if (!result){
@@ -195,15 +196,15 @@ public class UserService {
     public ResponseEntity<Object> recover(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<User> user = repository.findByPerson(person.get());
         if (user.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         User updatedUser = user.get();
         if (!updatedUser.isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
-            return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
+            return new ResponseEntity<>(new Message(BadRequests.USER_LOCKED.getText(), TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         RandomString tickets = new RandomString(5);
         updatedUser.setToken(tickets.nextString());
@@ -224,14 +225,14 @@ public class UserService {
     public ResponseEntity<Object> verifyCode(DtoSession dto) throws UnsupportedEncodingException, JsonProcessingException {
         Optional<Person> person = personRepository.findFirstByPhone(dto.getPhone());
         if (person.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         Optional<User> user = repository.findByPerson(person.get());
         if (user.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!user.get().isAvailable() && user.get().getRole().getName() != RoleTypes.ADMIN) {
-            return new ResponseEntity<>(new Message("User locked", TypeResponse.WARNING), HttpStatus.LOCKED);
+            return new ResponseEntity<>(new Message(BadRequests.USER_LOCKED.getText(), TypeResponse.WARNING), HttpStatus.LOCKED);
         }
         if (!dto.getToken().equals(user.get().getToken())) {
             return new ResponseEntity<>(new Message("The code has not matched", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -254,7 +255,7 @@ public class UserService {
     public ResponseEntity<Object> uploadProfilePicture(Long userId, MultipartFile file) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
 
         User user = userOptional.get();
@@ -290,7 +291,7 @@ public class UserService {
     public ResponseEntity<Object> getProfilePicture(Long userId) {
         Optional<User> userOptional = repository.findById(userId);
         if (userOptional.isEmpty()) {
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
 
         User user = userOptional.get();

@@ -12,6 +12,7 @@ import utez.edu.mx.backend.execution.doctor.model.ViewDoctors;
 import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -38,9 +39,9 @@ public class DoctorController {
         try {
             return service.findAllDoctors(pageable);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -50,9 +51,9 @@ public class DoctorController {
         try {
             return service.findAllDoctors(pageable);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -63,9 +64,9 @@ public class DoctorController {
             String id = cryptService.decrypt(str_id);
             return service.findDoctor(Long.valueOf(id));
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -85,9 +86,9 @@ public class DoctorController {
 
             return service.saveDoctor(doctor);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -107,9 +108,9 @@ public class DoctorController {
 
             return service.updateDoctor(doctor);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -120,7 +121,7 @@ public class DoctorController {
             String id = cryptService.decrypt(str_id);
             return service.lockDoctor(Long.valueOf(id));
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 

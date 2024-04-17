@@ -502,6 +502,6 @@ public class HtmlString {
                 "  <!--[if IE]></div><![endif]-->\n" +
                 "</body>\n" +
                 "\n" +
-                "</html>\n";
+                "</html>\n"; // NOSONAR
     }
 }

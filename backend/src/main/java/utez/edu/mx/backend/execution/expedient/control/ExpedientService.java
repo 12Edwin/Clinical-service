@@ -26,6 +26,7 @@ import utez.edu.mx.backend.execution.expedient.model.*;
 import utez.edu.mx.backend.execution.patient.model.Patient;
 import utez.edu.mx.backend.execution.patient.model.PatientRepository;
 import utez.edu.mx.backend.execution.patient.model.TypeMaritalStatus;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -47,13 +48,13 @@ public class ExpedientService {
     private final ViewExpedientRepository viewRepository;
     private final UserRepository userRepository;
 
-    private static final String NOT_FOUND = "Not found";
+    private static final String NOT_FOUND = BadRequests.NOT_FOUND.getText();
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findAll(Pageable pageable, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         List<Patient> patients = patientRepository.findAllByCreatedBy(user.get());
         Page<ViewExpedients> expedients = viewRepository.findAllByCreatedByIn(pageable, patients.stream().map(p -> p.getCreatedBy().getId()).collect(Collectors.toList()));
@@ -63,13 +64,13 @@ public class ExpedientService {
             expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
             expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
         });
-        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(dtoExpedients, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     public ResponseEntity<Object> findAllByFolio(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Page<ViewExpedients> expedients = viewRepository.findAllByFolioIsContainingIgnoreCaseAndCreatedByIn(pageable, data.getFolio(), Collections.singletonList(user.get().getId()));
         Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
@@ -79,13 +80,13 @@ public class ExpedientService {
             expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
             expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
         });
-        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(dtoExpedients, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     public ResponseEntity<Object> findAllByEmail(Pageable pageable, DtoExpedient data, Long id_user) throws JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         Page<ViewExpedients> expedients = viewRepository.findAllByEmailIsContainingIgnoreCaseAndCreatedByIn(pageable, data.getEmail(), Collections.singletonList(user.get().getId()));
         Page<DtoExpedient> dtoExpedients = expedients.map(ViewExpedients::cast);
@@ -94,22 +95,22 @@ public class ExpedientService {
             expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
             expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
         });
-        return new ResponseEntity<> ( new Message(dtoExpedients, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(dtoExpedients, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findById(Long id, Long id_user) throws IllegalArgumentException, JsonProcessingException, UnsupportedEncodingException {
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<ViewExpedients> optional = viewRepository.findById(id);
         if (optional.isEmpty()){
             return new ResponseEntity<>(new Message(NOT_FOUND, TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
         if (!(Objects.equals(optional.get().getCreatedBy(), id_user))){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
         DtoExpedient expedient = optional.get().cast();
         Optional<Expedient> exp = repository.findById(expedient.getId());
@@ -118,7 +119,7 @@ public class ExpedientService {
         }
         expedient.setPathologicalRecords(pathologicalRepository.findAllByExpedient(exp.get()).stream().map(Pathological_record::cast).toList());
         expedient.setDiseases(diseaseRepository.findAllByExpedient(exp.get()).stream().map(Disease::cast).toList());
-        return new ResponseEntity<>(new Message(expedient, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(expedient, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional
@@ -135,7 +136,7 @@ public class ExpedientService {
         cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
         Optional<User> user = userRepository.findById(idUser);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
         if (cal.getTime().after(Calendar.getInstance().getTime())){
             return new ResponseEntity<>(new Message("invalid birthday", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -160,7 +161,7 @@ public class ExpedientService {
             diseaseRepository.saveAll(diseases.stream().peek(d -> d.setExpedient(exp)).collect(Collectors.toList()));
         }
         if (repository.existsById(exp.getId())){
-            return new ResponseEntity<>(new Message(exp,"Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(exp,BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Unregistered expedient", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -177,7 +178,7 @@ public class ExpedientService {
 
         Optional<User> user = userRepository.findById(id_user);
         if (user.isEmpty()){
-            return new ResponseEntity<>(new Message("User not found", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(BadRequests.USER_NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Optional<Expedient> optionalExpedient = repository.findById(expedient.getId());
@@ -186,7 +187,7 @@ public class ExpedientService {
         }
 
         if (!(Objects.equals(optionalExpedient.get().getPatient().getCreatedBy().getId(), id_user))){
-            return new ResponseEntity<>(new Message("Unauthorized user", TypeResponse.ERROR), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message(BadRequests.UNAUTHORIZED_USER.getText(), TypeResponse.ERROR), HttpStatus.FORBIDDEN);
         }
 
         Calendar cal = Calendar.getInstance();
@@ -216,7 +217,7 @@ public class ExpedientService {
         }
         Optional<Expedient> exp = repository.findById(optionalExpedient.get().getId());
         if (exp.isPresent()){
-            return new ResponseEntity<>(new Message(exp.get(),"Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(exp.get(),BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("expedient not updated", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }

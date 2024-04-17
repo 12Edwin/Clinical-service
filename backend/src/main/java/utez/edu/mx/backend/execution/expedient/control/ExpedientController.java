@@ -15,6 +15,7 @@ import utez.edu.mx.backend.security.control.CustomRestExceptionHandler;
 import utez.edu.mx.backend.security.entity.ApiError;
 import utez.edu.mx.backend.security.jwt.JwtProvider;
 import utez.edu.mx.backend.security.service.CryptService;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -41,13 +42,13 @@ public class ExpedientController {
     @GetMapping("/")
     ResponseEntity<Object> findAll (@RequestHeader("Authorization") String str_token, Pageable pageable) {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             return service.findAll(pageable, idUser);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         } catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -55,14 +56,14 @@ public class ExpedientController {
     @GetMapping("/{str_id}")
     ResponseEntity<Object> findById (@RequestHeader("Authorization") String str_token, @PathVariable(name = "str_id") String str_id) throws IllegalArgumentException{
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String id = cryptService.decrypt(str_id);
             return service.findById(Long.valueOf(id), idUser);
         }catch (JsonProcessingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }catch (UnsupportedEncodingException ex){
-            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new  ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,7 +71,7 @@ public class ExpedientController {
     @PostMapping("/findByFolio/")
     ResponseEntity<Object> findByFolio (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
@@ -84,9 +85,9 @@ public class ExpedientController {
 
             return service.findAllByFolio(pageable, expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -94,7 +95,7 @@ public class ExpedientController {
     @PostMapping("/findByEmail/")
     ResponseEntity<Object> findByEmail (@RequestHeader("Authorization") String str_token, Pageable pageable, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
@@ -108,9 +109,9 @@ public class ExpedientController {
 
             return service.findAllByEmail(pageable, expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -118,7 +119,7 @@ public class ExpedientController {
     @PostMapping("/")
     ResponseEntity<Object> save (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
@@ -144,9 +145,9 @@ public class ExpedientController {
 
             return service.save(expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -154,7 +155,7 @@ public class ExpedientController {
     @PutMapping("/")
     ResponseEntity<Object> update (@RequestHeader("Authorization") String str_token, @RequestBody String str_expedient) throws IllegalArgumentException {
         try {
-            String token = str_token.replace("Bearer ", "");
+            String token = getToken(str_token);
             Long idUser = provider.getUserId(token);
             String decrypt = cryptService.decrypt(str_expedient);
             DtoExpedient expedient = mapper.readValue(decrypt, DtoExpedient.class);
@@ -180,9 +181,13 @@ public class ExpedientController {
 
             return service.update(expedient, idUser);
         }catch (UnsupportedEncodingException ex) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad encoded text"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.BAD_ENCODED.getText()), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Malformed request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, BadRequests.MALFORMED_REQUEST.getText()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private static String getToken(String str_token) {
+        return str_token.replace("Bearer ", "");
     }
 }

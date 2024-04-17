@@ -11,6 +11,7 @@ import utez.edu.mx.backend.access.user.model.UserRepository;
 import utez.edu.mx.backend.base_catalog.service.model.ServiceRepository;
 import utez.edu.mx.backend.base_catalog.speciality.model.Speciality;
 import utez.edu.mx.backend.base_catalog.speciality.model.SpecialityRepository;
+import utez.edu.mx.backend.utils.entity.BadRequests;
 import utez.edu.mx.backend.utils.entity.Message;
 import utez.edu.mx.backend.utils.entity.TypeResponse;
 
@@ -44,29 +45,29 @@ public class SpecialityService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findSpecialityById(Long id) throws UnsupportedEncodingException, JsonProcessingException {
-        if (id <= 0) throw new IllegalArgumentException("missing fields");
+        if (id <= 0) throw new IllegalArgumentException(BadRequests.MISSING_FIELDS.getText());
         Optional<Speciality> speciality = repository.findById(id);
         if (speciality.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.ERROR), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.ERROR), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new Message(speciality.get(), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(speciality.get(), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findAll(Pageable pageable) throws UnsupportedEncodingException, JsonProcessingException {
-        return new ResponseEntity<> ( new Message(repository.findAll(pageable), "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<> ( new Message(repository.findAll(pageable), BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> save(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (speciality.getName() == null || speciality.getDescription() == null) throw new IllegalArgumentException();
-        if (existsByName(speciality.getName())){
+        if (this.existsByName(speciality.getName())){
             return new ResponseEntity<>(new Message("Duplicated speciality", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
         }
 
         Speciality result = repository.save(speciality);
         if (repository.existsByName(result.getName())){
-            return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+            return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Message("Unregistered speciality", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -75,7 +76,7 @@ public class SpecialityService {
     public ResponseEntity<Object> update(Speciality speciality) throws IllegalArgumentException, UnsupportedEncodingException, JsonProcessingException {
         if (speciality.getName() == null || speciality.getDescription() == null || speciality.getId() <= 0) throw new IllegalArgumentException();
         if (!repository.existsById(speciality.getId())){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (repository.findFirstByNameAndIdNot(speciality.getName(), speciality.getId()).isPresent()){
             return new ResponseEntity<>(new Message("Duplicated speciality", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -84,15 +85,15 @@ public class SpecialityService {
         if (result.getName() == null || result.getName().isEmpty()){
             return new ResponseEntity<>(new Message("Speciality not updated", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new Message(result, "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message(result, BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
     public ResponseEntity<Object> delete(Long id) throws IllegalArgumentException{
         if (id <= 0) throw new IllegalArgumentException();
-        Optional<Speciality> speciality = findById(id);
+        Optional<Speciality> speciality = this.findById(id);
         if (speciality.isEmpty()){
-            return new ResponseEntity<>(new Message("Not found", TypeResponse.WARNING), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Message(BadRequests.NOT_FOUND.getText(), TypeResponse.WARNING), HttpStatus.NOT_FOUND);
         }
         if (!userRepository.findAllBySpeciality(speciality.get()).isEmpty()){
             return new ResponseEntity<>(new Message("Speciality is used", TypeResponse.WARNING), HttpStatus.BAD_REQUEST);
@@ -104,7 +105,7 @@ public class SpecialityService {
         if (!result){
             return new ResponseEntity<>(new Message("Speciality not deleted", TypeResponse.ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new Message( "Request successful", TypeResponse.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new Message( BadRequests.REQUESTS_SUCCESS.getText(), TypeResponse.SUCCESS), HttpStatus.OK);
     }
 
     @Transactional(rollbackFor = {SQLException.class})
