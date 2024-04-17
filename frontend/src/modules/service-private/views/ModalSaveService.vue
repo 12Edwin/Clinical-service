@@ -111,7 +111,7 @@
 <script>
 import Dialog from 'primevue/dialog';
 import Textarea from "primevue/textarea"
-import { newregex, text, words } from "@/utils/regex"
+import { newregex } from "@/utils/regex"
 import { reactive } from '@vue/composition-api'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, maxLength, minLength } from '@vuelidate/validators'
