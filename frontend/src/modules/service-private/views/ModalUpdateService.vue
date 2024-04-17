@@ -189,7 +189,7 @@ export default {
                 text: helpers.withMessage("Caracteres no válidos", (value) =>
                     newregex.test(value)
                 ),
-                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value > 0),
+                precio: helpers.withMessage("El precio debe ser mayor a 0", (value) => +value >= 0),
             },
             speciality: {
                 required: helpers.withMessage(
